@@ -5,6 +5,7 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from "@/components/ui/sidebar";
+import ThemeSwitchButton from "./theme-switch";
 
 export function AppSidebar() {
   return (
@@ -13,7 +14,9 @@ export function AppSidebar() {
         <h2>Soldi</h2>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup />
+        <SidebarGroup>
+          <ThemeSwitchButton />
+        </SidebarGroup>
         <SidebarGroup />
       </SidebarContent>
       <SidebarFooter />
