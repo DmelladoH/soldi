@@ -17,23 +17,18 @@ import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
   date: z.string().date(),
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
 });
 
 export function MonthlyReport() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      date: new Date().toString(),
     },
   });
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     console.log(values);
   }
 
@@ -48,19 +43,6 @@ export function MonthlyReport() {
               <FormLabel>Date</FormLabel>
               <FormControl>
                 <Input type="Date" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input placeholder="shadcn" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

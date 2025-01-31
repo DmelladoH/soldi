@@ -14,14 +14,14 @@ export interface FundEntity {
 }
 
 export interface Investments {
-  ISIN: string;
+  fund: FundEntity;
   currentValue: number;
   amountInvested: number;
-  currency: string;
 }
 
-export interface MonthlyForm {
+export interface MonthlyReport {
   income: number;
   additionalIncome: { description: string; amount: number }[];
   investments: Investments[];
+  cash: Entity[];
 }

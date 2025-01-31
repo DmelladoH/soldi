@@ -14,8 +14,8 @@ export const entities = sqliteTable("entity", {
 
 export const FundEntities = sqliteTable("fund_entity", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  ISIN: text("isin", { length: 12 }).notNull(),
-  name: text("name", { length: 256 }).notNull(),
+  ISIN: text("isin", { length: 12 }).notNull().unique(),
+  name: text("name", { length: 256 }).notNull().unique(),
   type: text("type", { length: 256 }).notNull(),
   currency: text("currency", { length: 3 }).notNull(),
   createdAt: text("created_at")

@@ -1,4 +1,4 @@
-import EntityForm from "@/components/entityForm";
+import EntityForm from "@/app/dashboard/fundEntity/components/form";
 import { getFoundEntities } from "@/server/queries";
 
 export default async function FundEntity() {
