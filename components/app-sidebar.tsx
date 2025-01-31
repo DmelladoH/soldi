@@ -6,6 +6,7 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import ThemeSwitchButton from "./theme-switch";
+import Link from "next/link";
 
 export function AppSidebar() {
   return (
@@ -16,6 +17,11 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <ThemeSwitchButton />
+          <ul>
+            <li>
+              <Link href={"/dashboard/fundEntity"}>Fund Entity</Link>
+            </li>
+          </ul>
         </SidebarGroup>
         <SidebarGroup />
       </SidebarContent>

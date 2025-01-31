@@ -6,12 +6,11 @@ export interface Entity {
   currency: string;
 }
 
-export interface FoundEntity {
+export interface FundEntity {
   ISIN: string;
   name: string;
-  currentAmount: number;
   currency: string;
-  type: Found;
+  type: string; //Found;
 }
 
 export interface Investments {
