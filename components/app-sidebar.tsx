@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import ThemeSwitchButton from "./theme-switch";
 import Link from "next/link";
+import ModalMonthlyReport from "./monthlyReport/modal";
 
 export function AppSidebar() {
   return (
@@ -17,6 +18,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <ThemeSwitchButton />
+          <ModalMonthlyReport />
           <ul>
             <li>
               <Link href={"/dashboard/fundEntity"}>Fund Entity</Link>

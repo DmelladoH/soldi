@@ -5,8 +5,8 @@ export default async function FundEntity() {
   const fundEntities = await getFoundEntities();
 
   return (
-    <div className="w-screen h-screen flex justify-center align-middle">
-      <h1>Fund Entity</h1>
+    <div className="h-screen">
+      <h1>Fund Entities</h1>
       <EntityForm entities={fundEntities} />
     </div>
   );

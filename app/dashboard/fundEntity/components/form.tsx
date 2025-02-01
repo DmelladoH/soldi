@@ -16,6 +16,16 @@ import { Button } from "@components/ui/button";
 import { useOptimistic, useTransition } from "react";
 import { FundEntity } from "@/lib/types";
 import { saveFundEntity } from "../actions";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { CurrencyTypes, FundTypes } from "@/lib/constants";
+import FundEntityCard from "@/components/ui/FundEntityCard";
 
 const formSchema = z.object({
   name: z.string().min(1, {
@@ -57,20 +67,21 @@ export default function EntityForm({ entities }: { entities: FundEntity[] }) {
   );
 
   return (
-    <>
+    <div className="grid">
       <FormSection mutate={mutate} pending={state.pending} />
-      <section>
+      <section className="mt-10">
         <h3>Entities</h3>
-        {state.entities.map((entity) => {
-          return (
-            <div key={entity.ISIN}>
-              <h4>{entity.name}</h4>
-              <p>{entity.ISIN}</p>
-            </div>
-          );
-        })}
+        <ul className="mt-3">
+          {state.entities.map((entity) => {
+            return (
+              <li key={entity.ISIN}>
+                <FundEntityCard fundEntity={entity} />
+              </li>
+            );
+          })}
+        </ul>
       </section>
-    </>
+    </div>
   );
 }
 
@@ -89,8 +100,8 @@ function FormSection({
     defaultValues: {
       name: "",
       ISIN: "",
-      currency: "",
-      type: "",
+      currency: CurrencyTypes.Euro,
+      type: FundTypes.monetary,
     },
   });
 
@@ -99,8 +110,8 @@ function FormSection({
     form.reset({
       name: "",
       ISIN: "",
-      currency: "",
-      type: "",
+      currency: CurrencyTypes.Euro,
+      type: FundTypes.monetary,
     });
 
     startTransition(async () => {
@@ -116,7 +127,10 @@ function FormSection({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex justify-center align-middle gap-2 min-w-56"
+      >
         <FormField
           control={form.control}
           name="name"
@@ -145,12 +159,28 @@ function FormSection({
         />
         <FormField
           control={form.control}
-          name="currency"
+          name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Currency</FormLabel>
+              <FormLabel>Type</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {Object.entries(FundTypes).map(([key, value]) => (
+                      <SelectItem key={key} value={key}>
+                        {value}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -158,18 +188,34 @@ function FormSection({
         />
         <FormField
           control={form.control}
-          name="type"
+          name="currency"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Type</FormLabel>
+              <FormLabel>Currency</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {Object.entries(CurrencyTypes).map(([key, value]) => (
+                      <SelectItem key={key} value={key}>
+                        {value}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending} className=" self-end">
           Submit
         </Button>
       </form>
