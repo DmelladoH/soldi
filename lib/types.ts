@@ -13,15 +13,29 @@ export interface FundEntity {
   type: string; //Found;
 }
 
+export interface FundEntityWithId extends FundEntity {
+  id: number;
+}
 export interface Investments {
-  fund: FundEntity;
+  fundEntityId: number;
   currentValue: number;
   amountInvested: number;
 }
 
-export interface MonthlyReport {
-  income: number;
-  additionalIncome: { description: string; amount: number }[];
-  investments: Investments[];
-  cash: Entity[];
-}
+export type MonthlyReport = {
+  date: string;
+  payroll: number;
+  cash: Array<{
+    name: string;
+    amount: number;
+  }>;
+  additionalIncome: Array<{
+    name: string;
+    amount: number;
+  }>;
+  investments: Array<{
+    fund: number;
+    currentValue: number;
+    amountInvested: number;
+  }>;
+};

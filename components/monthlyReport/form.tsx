@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { FundEntity } from "@/lib/types";
+import { FundEntityWithId } from "@/lib/types";
 import {
   Select,
   SelectContent,
@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { addMonthlyReport } from "@/server/queries";
 
 type FormValues = {
   date: string;
@@ -68,7 +69,7 @@ const formSchema = z.object({
 export function MonthlyReportForm({
   fundsOptions,
 }: {
-  fundsOptions: FundEntity[];
+  fundsOptions: FundEntityWithId[];
 }) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -77,19 +78,22 @@ export function MonthlyReportForm({
       payroll: 0,
       cash: [{ name: "", amount: 0 }],
       additionalIncome: [{ name: "", amount: 0 }],
-      investments: [
-        {
-          fund: "",
-          currentValue: 0,
-          amountInvested: 0,
-        },
-      ],
+      investments: [],
     },
   });
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+
+    const formattedValues = {
+      ...values,
+      investments: values.investments.map((investment) => ({
+        ...investment,
+        fund: parseInt(investment.fund),
+      })),
+    };
+    addMonthlyReport(formattedValues);
   }
 
   return (
@@ -252,7 +256,7 @@ function InvestmentForm({
   fundsOptions,
 }: {
   form: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-  fundsOptions: FundEntity[];
+  fundsOptions: FundEntityWithId[];
 }) {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -281,8 +285,8 @@ function InvestmentForm({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {fundsOptions.map(({ ISIN, name }) => (
-                          <SelectItem key={ISIN} value={name}>
+                        {fundsOptions.map(({ id, name }) => (
+                          <SelectItem key={id} value={id.toString()}>
                             {name}
                           </SelectItem>
                         ))}
@@ -330,7 +334,12 @@ function InvestmentForm({
           </li>
         ))}
       </ul>
-      <Button type="button" onClick={() => append({ fund: "", currentValue: "0", amountInvested: "0" })}>
+      <Button
+        type="button"
+        onClick={() =>
+          append({ fund: "", currentValue: "0", amountInvested: "0" })
+        }
+      >
         Add
       </Button>
     </>

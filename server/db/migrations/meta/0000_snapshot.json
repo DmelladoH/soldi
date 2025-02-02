@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "b56a8164-e31d-4658-a7fd-3e8ee2be71bb",
+  "id": "fd71d62a-9011-41d4-9cd2-28cb2b823fa0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "fund_entity": {
@@ -51,14 +51,29 @@
           "default": "CURRENT_TIMESTAMP"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "fund_entity_isin_unique": {
+          "name": "fund_entity_isin_unique",
+          "columns": [
+            "isin"
+          ],
+          "isUnique": true
+        },
+        "fund_entity_name_unique": {
+          "name": "fund_entity_name_unique",
+          "columns": [
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "entity": {
-      "name": "entity",
+    "monthly_report_investment": {
+      "name": "monthly_report_investment",
       "columns": {
         "id": {
           "name": "id",
@@ -67,32 +82,91 @@
           "notNull": true,
           "autoincrement": true
         },
-        "name": {
-          "name": "name",
-          "type": "text(256)",
+        "fund_entity_id": {
+          "name": "fund_entity_id",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
-        "isin": {
-          "name": "isin",
-          "type": "text(12)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "current_amount": {
-          "name": "current_amount",
+        "current_value": {
+          "name": "current_value",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "currency": {
-          "name": "currency",
-          "type": "text(3)",
+        "amount_invested": {
+          "name": "amount_invested",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "monthly_report_investment_fund_entity_id_fund_entity_id_fk": {
+          "name": "monthly_report_investment_fund_entity_id_fund_entity_id_fk",
+          "tableFrom": "monthly_report_investment",
+          "tableTo": "fund_entity",
+          "columnsFrom": [
+            "fund_entity_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "monthly_report": {
+      "name": "monthly_report",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "date": {
+          "name": "date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "payroll": {
+          "name": "payroll",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "cash": {
+          "name": "cash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "additional_income": {
+          "name": "additional_income",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "investment_id": {
+          "name": "investment_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "created_at": {
@@ -105,7 +179,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "monthly_report_investment_id_monthly_report_investment_id_fk": {
+          "name": "monthly_report_investment_id_monthly_report_investment_id_fk",
+          "tableFrom": "monthly_report",
+          "tableTo": "monthly_report_investment",
+          "columnsFrom": [
+            "investment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}
