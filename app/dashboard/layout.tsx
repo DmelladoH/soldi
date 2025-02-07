@@ -20,7 +20,7 @@ export default function DashboardLayout({
             <AppSidebar />
           </div>
         </header>
-        <main className="w-full grid justify-center">
+        <main className="w-full">
           <SidebarTrigger />
           {children}
         </main>
