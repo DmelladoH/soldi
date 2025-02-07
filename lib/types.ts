@@ -17,12 +17,28 @@ export interface FundEntityWithId extends FundEntity {
   id: number;
 }
 export interface Investments {
-  fundEntityId: number;
+  fund: number;
   currentValue: number;
   amountInvested: number;
+  currency: string;
 }
 
-export type MonthlyReport = {
+export interface Cash {
+  name: string;
+  amount: number;
+  currency: string;
+}
+export interface MonthlyReport {
+  date: string;
+  payroll: number;
+  payrollCurrency: string;
+  cash: Cash[];
+  additionalIncome: Cash[];
+  investments: Investments[];
+}
+
+export interface MonthResume {
+  id: number;
   date: string;
   payroll: number;
   cash: Array<{
@@ -34,8 +50,8 @@ export type MonthlyReport = {
     amount: number;
   }>;
   investments: Array<{
-    fund: number;
+    fund: string;
     currentValue: number;
     amountInvested: number;
   }>;
-};
+}

@@ -23,38 +23,47 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { addMonthlyReport } from "@/server/queries";
+import { CurrencyTypes } from "@/lib/constants";
+import { redirect } from "next/navigation";
 
 type FormValues = {
   date: string;
   payroll: number;
+  payrollCurrency: string;
   cash: Array<{
     name: string;
     amount: number;
+    currency: string;
   }>;
   additionalIncome: Array<{
     name: string;
     amount: number;
+    currency: string;
   }>;
   investments: Array<{
     fund: string;
     currentValue: number;
     amountInvested: number;
+    currency: string;
   }>;
 };
 
 const formSchema = z.object({
   date: z.string().date(),
   payroll: z.coerce.number(),
+  payrollCurrency: z.string(),
   cash: z.array(
     z.object({
       name: z.string(),
       amount: z.coerce.number(),
+      currency: z.string(),
     })
   ),
   additionalIncome: z.array(
     z.object({
       name: z.string(),
       amount: z.coerce.number(),
+      currency: z.string(),
     })
   ),
   investments: z.array(
@@ -62,6 +71,7 @@ const formSchema = z.object({
       fund: z.string(),
       currentValue: z.coerce.number(),
       amountInvested: z.coerce.number(),
+      currency: z.string(),
     })
   ),
 });
@@ -76,16 +86,14 @@ export function MonthlyReportForm({
     defaultValues: {
       date: new Date().toISOString().split("T")[0],
       payroll: 0,
-      cash: [{ name: "", amount: 0 }],
-      additionalIncome: [{ name: "", amount: 0 }],
+      payrollCurrency: CurrencyTypes.Euro,
+      cash: [{ name: "", amount: 0, currency: CurrencyTypes.Euro }],
+      additionalIncome: [],
       investments: [],
     },
   });
 
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-
     const formattedValues = {
       ...values,
       investments: values.investments.map((investment) => ({
@@ -94,6 +102,7 @@ export function MonthlyReportForm({
       })),
     };
     addMonthlyReport(formattedValues);
+    redirect("/dashboard");
   }
 
   return (
@@ -113,6 +122,8 @@ export function MonthlyReportForm({
               </FormItem>
             )}
           />
+        </div>
+        <div className="flex gap-3">
           <FormField
             control={form.control}
             name="payroll"
@@ -126,14 +137,33 @@ export function MonthlyReportForm({
               </FormItem>
             )}
           />
-        </div>
-        <div className="flex gap-3">
-          <CashForm form={form} />
+          <FormField
+            control={form.control}
+            name="payrollCurrency"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Currency</FormLabel>
+                <FormControl>
+                  <Input
+                    defaultValue={CurrencyTypes.Euro}
+                    {...field}
+                    className="max-w-10"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <AdditionalForm form={form} />
         </div>
 
+        <div className="flex gap-3">
+          <CashForm form={form} />
+        </div>
         <InvestmentForm form={form} fundsOptions={fundsOptions} />
-        <Button type="submit">Submit</Button>
+        <div>
+          <Button type="submit">Submit</Button>
+        </div>
       </form>
     </Form>
   );
@@ -172,6 +202,23 @@ function AdditionalForm({ form }: { form: any }) {
                   <FormLabel>Amount</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="payrollCurrency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currency</FormLabel>
+                  <FormControl>
+                    <Input
+                      defaultValue={CurrencyTypes.Euro}
+                      {...field}
+                      className="max-w-10"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -228,6 +275,23 @@ function CashForm({ form }: { form: any }) {
                   <FormLabel>Amount</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="payrollCurrency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currency</FormLabel>
+                  <FormControl>
+                    <Input
+                      defaultValue={CurrencyTypes.Euro}
+                      {...field}
+                      className="max-w-10"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -318,6 +382,23 @@ function InvestmentForm({
                   <FormLabel>Amount invested</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="payrollCurrency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currency</FormLabel>
+                  <FormControl>
+                    <Input
+                      defaultValue={CurrencyTypes.Euro}
+                      {...field}
+                      className="max-w-10"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
