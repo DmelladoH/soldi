@@ -12,9 +12,7 @@ export default async function ModalMonthlyReport() {
   const fundsOptions = await getFoundEntities();
   return (
     <Dialog>
-      <DialogTrigger>
-        <button>Month Report</button>
-      </DialogTrigger>
+      <DialogTrigger>Month Report</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Month Report</DialogTitle>
