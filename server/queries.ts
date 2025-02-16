@@ -68,6 +68,8 @@ export async function getMonthlyReportWithInvestments(): Promise<
       id: report.id,
       date: report.date,
       payroll: report.payroll,
+      expenses: report.expenses,
+      payrollCurrency: report.PayrollCurrency,
       cash: report.cash,
       additionalIncome: report.additionalIncome,
       investments: report.investments.map((investment) => ({
@@ -95,6 +97,7 @@ export async function addMonthlyReport(monthReport: MonthlyReport) {
       .values({
         date: monthReport.date,
         payroll: monthReport.payroll,
+        expenses: monthReport.expenses,
         PayrollCurrency: monthReport.payrollCurrency,
       })
       .returning({ id: monthlyReports.id });

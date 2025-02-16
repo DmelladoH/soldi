@@ -16,6 +16,7 @@ export const monthlyReports = sqliteTable("monthly_report", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   date: text("date").notNull(),
   payroll: integer("payroll").notNull(),
+  expenses: integer("expences").notNull(),
   PayrollCurrency: text("currency", { length: 3 }).notNull(),
   createdAt: text("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
