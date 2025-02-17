@@ -31,6 +31,7 @@ export interface Cash {
 export interface MonthlyReport {
   date: string;
   payroll: number;
+  expenses: number;
   payrollCurrency: string;
   cash: Cash[];
   additionalIncome: Cash[];
@@ -41,6 +42,7 @@ export interface MonthResume {
   id: number;
   date: string;
   payroll: number;
+  expenses: number;
   cash: Array<{
     name: string;
     amount: number;
@@ -53,5 +55,6 @@ export interface MonthResume {
     fund: string;
     currentValue: number;
     amountInvested: number;
+    currency: string;
   }>;
 }
