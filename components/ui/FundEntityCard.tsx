@@ -4,8 +4,10 @@ import { Button } from "./button";
 
 export default function FundEntityCard({
   fundEntity,
+  onDelete,
 }: {
   fundEntity: FundEntity;
+  onDelete: () => void;
 }) {
   return (
     <Card className="">
@@ -14,7 +16,9 @@ export default function FundEntityCard({
       </CardHeader>
       <CardContent>{fundEntity.ISIN}</CardContent>
       <CardFooter>
-        <Button variant="destructive">Delete</Button>
+        <Button variant="destructive" onClick={onDelete}>
+          Delete
+        </Button>
       </CardFooter>
     </Card>
   );

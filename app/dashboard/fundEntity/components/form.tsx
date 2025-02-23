@@ -13,9 +13,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
-import { useOptimistic, useTransition } from "react";
-import { FundEntity } from "@/lib/types";
-import { saveFundEntity } from "../actions";
+
 import {
   Select,
   SelectContent,
@@ -25,111 +23,37 @@ import {
 } from "@/components/ui/select";
 
 import { CurrencyTypes, FundTypes } from "@/lib/constants";
-import FundEntityCard from "@/components/ui/FundEntityCard";
+import { formSchema } from "../formSchema";
 
-const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Name is required",
-  }),
-  ISIN: z.string().min(1, {
-    message: "ISIN is required",
-  }),
-  currency: z.string().min(1, {
-    message: "Currency is required",
-  }),
-  type: z.string().min(1, {
-    message: "Type is required",
-  }),
-});
-
-type EntityState = {
-  newEntity: FundEntity;
-  updateEntity: FundEntity;
-  pending: boolean;
-};
-
-export default function EntityForm({ entities }: { entities: FundEntity[] }) {
-  const [state, mutate] = useOptimistic(
-    { entities, pending: false },
-    function createReducer(state, newState: EntityState) {
-      if (newState.newEntity) {
-        return {
-          entities: [...state.entities, newState.newEntity],
-          pending: newState.pending,
-        };
-      } else {
-        return {
-          entities: state.entities,
-          pending: newState.pending,
-        };
-      }
-    }
-  );
-
-  return (
-    <div className="grid">
-      <FormSection mutate={mutate} pending={state.pending} />
-      <section className="mt-10">
-        <h3>Entities</h3>
-        <ul className="mt-3">
-          {state.entities.map((entity) => {
-            return (
-              <li key={entity.ISIN}>
-                <FundEntityCard fundEntity={entity} />
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-    </div>
-  );
-}
-
-function FormSection({
-  mutate,
+export default function EntityForm({
+  onSubmit,
   pending,
 }: {
-  mutate: (newState: EntityState) => void;
+  onSubmit: (values: z.infer<typeof formSchema>) => void;
   pending: boolean;
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isPending, startTransition] = useTransition();
+  const defaultForm = {
+    name: "",
+    ISIN: "",
+    currency: CurrencyTypes.Euro,
+    type: FundTypes.monetary,
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      ISIN: "",
-      currency: CurrencyTypes.Euro,
-      type: FundTypes.monetary,
-    },
+    defaultValues: defaultForm,
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const fund = values;
-    form.reset({
-      name: "",
-      ISIN: "",
-      currency: CurrencyTypes.Euro,
-      type: FundTypes.monetary,
-    });
-
-    startTransition(async () => {
-      mutate({
-        newEntity: fund,
-        updateEntity: fund,
-        pending: true,
-      });
-
-      await saveFundEntity(fund);
-    });
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    form.reset(defaultForm);
+    onSubmit(values);
   };
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col md:flex-row justify-center align-middle gap-3"
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="flex flex-col lg:flex-row justify-center align-middle gap-3"
       >
         <FormField
           control={form.control}
@@ -138,7 +62,7 @@ function FormSection({
             <FormItem className="min-w-80">
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="Groupama Trésorerie IC" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -151,7 +75,7 @@ function FormSection({
             <FormItem>
               <FormLabel>ISIN</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="FR0000989626" />
               </FormControl>
               <FormMessage />
             </FormItem>

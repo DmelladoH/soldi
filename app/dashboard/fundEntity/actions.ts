@@ -1,10 +1,30 @@
 "use server";
 
-import { FundEntity } from "@/lib/types";
-import { addFoundEntity } from "@/server/queries";
+import { FundEntity, FundEntityWithId } from "@/lib/types";
+import {
+  addFoundEntity,
+  deleteFundEntity,
+  getReportsFromFundEntity,
+} from "@/server/queries";
 import { revalidatePath } from "next/cache";
 
-export async function saveFundEntity(fundEntity: FundEntity) {
-  await addFoundEntity(fundEntity);
+export async function saveFundEntity(
+  fundEntity: FundEntity
+): Promise<FundEntityWithId[]> {
+  const res = await addFoundEntity(fundEntity);
   revalidatePath("/");
+  return res;
+}
+
+export async function removeFundEntity(
+  id: number
+): Promise<{ success: boolean; res: FundEntityWithId | null }> {
+  const entities = await getReportsFromFundEntity(id);
+  if (entities.length > 0) {
+    return { success: false, res: null };
+  }
+
+  const deletedEntity = await deleteFundEntity(id);
+  revalidatePath("/");
+  return { success: true, res: deletedEntity[0] };
 }
