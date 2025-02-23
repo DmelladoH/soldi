@@ -1,4 +1,4 @@
-import { Found } from "./types";
+import { Currency, Found } from "./types";
 
 export const FundTypes: Record<Found, string> = {
   monetary: "monetary",
@@ -6,7 +6,7 @@ export const FundTypes: Record<Found, string> = {
   variable: "variable",
 };
 
-export const CurrencyTypes: Record<string, string> = {
+export const CurrencyTypes: Record<Currency, string> = {
   Euro: "€",
   Dollar: "$",
 };

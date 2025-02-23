@@ -1,5 +1,5 @@
 export type Found = "monetary" | "fixed" | "variable";
-
+export type Currency = "Euro" | "Dollar";
 export interface Entity {
   name: string;
   currentAmount: number;
