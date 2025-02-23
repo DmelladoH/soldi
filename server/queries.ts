@@ -76,6 +76,7 @@ export async function getMonthlyReportWithInvestments(): Promise<
         fund: investment.fundEntity!.name!,
         currentValue: investment.currentValue,
         amountInvested: investment.amountInvested,
+        currency: investment.currency,
       })),
     }));
     return processedReports;

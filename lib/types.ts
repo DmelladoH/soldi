@@ -20,6 +20,8 @@ export interface Investments {
   fund: number;
   currentValue: number;
   amountInvested: number;
+  difference: number | undefined;
+  profit: number | null;
   currency: string;
 }
 
@@ -46,10 +48,12 @@ export interface MonthResume {
   cash: Array<{
     name: string;
     amount: number;
+    currency: string;
   }>;
   additionalIncome: Array<{
     name: string;
     amount: number;
+    currency: string;
   }>;
   investments: Array<{
     fund: string;
