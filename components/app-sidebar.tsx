@@ -7,8 +7,8 @@ import {
 } from "@/components/ui/sidebar";
 import ThemeSwitchButton from "./theme-switch";
 import Link from "next/link";
-import ModalMonthlyReport from "./monthlyReport/modal";
 import { Button } from "./ui/button";
+import { BarChart } from "lucide-react";
 
 export function AppSidebar() {
   return (
@@ -23,7 +23,12 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <ModalMonthlyReport />
+          <Button asChild className="w-full justify-start" variant="default">
+            <Link href={"/dashboard/monthReport"}>
+              <BarChart className="mr-2 h-4 w-4" />
+              Month Report
+            </Link>
+          </Button>
           <ul className="mt-10 grid gap-3 pl-5">
             <li>
               <Button asChild variant="ghost" className="w-full justify-start">

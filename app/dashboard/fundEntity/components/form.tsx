@@ -129,13 +129,13 @@ function FormSection({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex justify-center align-middle gap-2 min-w-56"
+        className="flex flex-col md:flex-row justify-center align-middle gap-3"
       >
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="min-w-80">
               <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input {...field} />
@@ -161,7 +161,7 @@ function FormSection({
           control={form.control}
           name="type"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="min-w-28">
               <FormLabel>Type</FormLabel>
               <FormControl>
                 <Select
