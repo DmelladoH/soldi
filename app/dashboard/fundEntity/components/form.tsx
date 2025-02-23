@@ -24,14 +24,12 @@ import {
 
 import { CurrencyTypes, FundTypes } from "@/lib/constants";
 import { formSchema } from "../formSchema";
+import { saveFundEntity } from "../actions";
+import { useState } from "react";
 
-export default function EntityForm({
-  onSubmit,
-  pending,
-}: {
-  onSubmit: (values: z.infer<typeof formSchema>) => void;
-  pending: boolean;
-}) {
+export default function EntityForm() {
+  const [pending, setPending] = useState(false);
+
   const defaultForm = {
     name: "",
     ISIN: "",
@@ -45,8 +43,16 @@ export default function EntityForm({
   });
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    form.reset(defaultForm);
-    onSubmit(values);
+    try {
+      setPending(true);
+      form.reset(defaultForm);
+      const fund = values;
+      await saveFundEntity(fund);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setPending(false);
+    }
   };
 
   return (
@@ -139,7 +145,7 @@ export default function EntityForm({
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={pending} className=" self-end">
+        <Button type="submit" disabled={pending} className="self-end">
           Submit
         </Button>
       </form>
