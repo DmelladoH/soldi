@@ -20,8 +20,8 @@ export interface Investments {
   fund: number;
   currentValue: number;
   amountInvested: number;
-  difference: number | undefined;
-  profit: number | null;
+  // difference: number | undefined;
+  // profit: number | null;
   currency: string;
 }
 
@@ -38,6 +38,10 @@ export interface MonthlyReport {
   cash: Cash[];
   additionalIncome: Cash[];
   investments: Investments[];
+}
+
+export interface MonthReportWithId extends MonthlyReport {
+  id: number;
 }
 
 export interface MonthResume {

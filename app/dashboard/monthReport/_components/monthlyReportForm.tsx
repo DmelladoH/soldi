@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -22,13 +22,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { addMonthlyReport } from "@/server/queries";
 import { CurrencyTypes } from "@/lib/constants";
-import { redirect } from "next/navigation";
+import { formSchema } from "../formSchema";
+import { useState } from "react";
+import { saveMonthReport } from "../actions";
 
 type FormValues = {
   date: string;
   payroll: number;
+  expenses: number;
   payrollCurrency: string;
   cash: Array<{
     name: string;
@@ -48,67 +50,54 @@ type FormValues = {
   }>;
 };
 
-const formSchema = z.object({
-  date: z.string().date(),
-  payroll: z.coerce.number(),
-  payrollCurrency: z.string(),
-  cash: z.array(
-    z.object({
-      name: z.string(),
-      amount: z.coerce.number(),
-      currency: z.string(),
-    })
-  ),
-  additionalIncome: z.array(
-    z.object({
-      name: z.string(),
-      amount: z.coerce.number(),
-      currency: z.string(),
-    })
-  ),
-  investments: z.array(
-    z.object({
-      fund: z.string(),
-      currentValue: z.coerce.number(),
-      amountInvested: z.coerce.number(),
-      currency: z.string(),
-    })
-  ),
-});
+const defaultValue = {
+  date: new Date().toISOString().split("T")[0],
+  payroll: 0,
+  expenses: 0,
+  payrollCurrency: CurrencyTypes.Euro,
+  cash: [{ name: "", amount: 0, currency: CurrencyTypes.Euro }],
+  additionalIncome: [],
+  investments: [],
+};
 
 export function MonthlyReportForm({
   fundsOptions,
 }: {
   fundsOptions: FundEntityWithId[];
 }) {
+  const [pending, setPending] = useState(false);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      date: new Date().toISOString().split("T")[0],
-      payroll: 0,
-      payrollCurrency: CurrencyTypes.Euro,
-      cash: [{ name: "", amount: 0, currency: CurrencyTypes.Euro }],
-      additionalIncome: [],
-      investments: [],
-    },
+    defaultValues: defaultValue,
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const formattedValues = {
-      ...values,
-      investments: values.investments.map((investment) => ({
-        ...investment,
-        fund: parseInt(investment.fund),
-      })),
-    };
-    addMonthlyReport(formattedValues);
-    redirect("/dashboard");
+    try {
+      setPending(true);
+      form.reset(defaultValue);
+      const formattedValues = {
+        ...values,
+        investments: values.investments.map((investment) => ({
+          ...investment,
+          fund: parseInt(investment.fund),
+        })),
+      };
+      saveMonthReport(formattedValues);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="flex gap-3">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8 min-w-[700px]"
+      >
+        <div className="flex gap-3 mt-5">
           <FormField
             control={form.control}
             name="date"
@@ -123,37 +112,56 @@ export function MonthlyReportForm({
             )}
           />
         </div>
+        <div>
+          <div className="flex gap-3">
+            <FormField
+              control={form.control}
+              name="payroll"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Payroll</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="payrollCurrency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currency</FormLabel>
+                  <FormControl>
+                    <Input
+                      defaultValue={CurrencyTypes.Euro}
+                      {...field}
+                      className="max-w-10"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="flex gap-3">
+            <FormField
+              control={form.control}
+              name="expenses"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Expenses</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
         <div className="flex gap-3">
-          <FormField
-            control={form.control}
-            name="payroll"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Payroll</FormLabel>
-                <FormControl>
-                  <Input type="number" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="payrollCurrency"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Currency</FormLabel>
-                <FormControl>
-                  <Input
-                    defaultValue={CurrencyTypes.Euro}
-                    {...field}
-                    className="max-w-10"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <AdditionalForm form={form} />
         </div>
 
@@ -161,24 +169,25 @@ export function MonthlyReportForm({
           <CashForm form={form} />
         </div>
         <InvestmentForm form={form} fundsOptions={fundsOptions} />
-        <div>
-          <Button type="submit">Submit</Button>
+        <div className="flex justify-end">
+          <Button type="submit" disabled={pending}>
+            Submit
+          </Button>
         </div>
       </form>
     </Form>
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function AdditionalForm({ form }: { form: any }) {
+function AdditionalForm({ form }: { form: UseFormReturn<FormValues> }) {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "additionalIncome",
   });
   return (
-    <div>
+    <div className="grid gap-3">
       <h4>Additional Income</h4>
-      <ul>
+      <ul className="grid gap-2">
         {fields.map((item, index) => (
           <li key={item.id} className="flex gap-3">
             <FormField
@@ -235,23 +244,29 @@ function AdditionalForm({ form }: { form: any }) {
           </li>
         ))}
       </ul>
-      <Button type="button" onClick={() => append({ name: "", amount: 0 })}>
-        +
-      </Button>
+      <div>
+        <Button
+          type="button"
+          onClick={() =>
+            append({ name: "", amount: 0, currency: CurrencyTypes.Euro })
+          }
+        >
+          +
+        </Button>
+      </div>
     </div>
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function CashForm({ form }: { form: any }) {
+function CashForm({ form }: { form: UseFormReturn<FormValues> }) {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "cash",
   });
   return (
-    <div>
+    <div className="grid gap-3">
       <h4>Cash</h4>
-      <ul>
+      <ul className="grid gap-2">
         {fields.map((item, index) => (
           <li key={item.id} className="flex gap-3">
             <FormField
@@ -308,9 +323,16 @@ function CashForm({ form }: { form: any }) {
           </li>
         ))}
       </ul>
-      <Button type="button" onClick={() => append({ name: "", amount: 0 })}>
-        +
-      </Button>
+      <div>
+        <Button
+          type="button"
+          onClick={() =>
+            append({ name: "", amount: 0, currency: CurrencyTypes.Euro })
+          }
+        >
+          +
+        </Button>
+      </div>
     </div>
   );
 }
@@ -327,7 +349,7 @@ function InvestmentForm({
     name: "investments",
   });
   return (
-    <>
+    <div className="grid gap-3">
       <h4>Investments Income</h4>
       <ul>
         {fields.map((item, index) => (
@@ -415,14 +437,16 @@ function InvestmentForm({
           </li>
         ))}
       </ul>
-      <Button
-        type="button"
-        onClick={() =>
-          append({ fund: "", currentValue: "0", amountInvested: "0" })
-        }
-      >
-        Add
-      </Button>
-    </>
+      <div>
+        <Button
+          type="button"
+          onClick={() =>
+            append({ fund: "", currentValue: "0", amountInvested: "0" })
+          }
+        >
+          +
+        </Button>
+      </div>
+    </div>
   );
 }

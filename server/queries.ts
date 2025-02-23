@@ -141,7 +141,7 @@ export async function addMonthlyReport(monthReport: MonthlyReport) {
         expenses: monthReport.expenses,
         PayrollCurrency: monthReport.payrollCurrency,
       })
-      .returning({ id: monthlyReports.id });
+      .returning();
 
     if (monthReport.cash.length > 0) {
       const cashToInsert = monthReport.cash.map((cash) => ({
@@ -155,12 +155,14 @@ export async function addMonthlyReport(monthReport: MonthlyReport) {
     }
 
     if (monthReport.additionalIncome.length > 0) {
-      const additionalIncomeToInsert = monthReport.cash.map((cash) => ({
-        monthlyReportId: newReport.id,
-        name: cash.name,
-        amount: cash.amount,
-        currency: cash.currency,
-      }));
+      const additionalIncomeToInsert = monthReport.additionalIncome.map(
+        (income) => ({
+          monthlyReportId: newReport.id,
+          name: income.name,
+          amount: income.amount,
+          currency: income.currency,
+        })
+      );
 
       await db
         .insert(monthlyReportAdditionalIncome)

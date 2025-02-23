@@ -5,7 +5,7 @@ export default async function page() {
   const fundsOptions = await getFoundEntities();
   return (
     <div className="grid justify-center">
-      <h2>Month report</h2>
+      <h2 className="text-xl">Month report</h2>
       <MonthlyReportForm fundsOptions={fundsOptions} />
     </div>
   );
