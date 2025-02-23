@@ -1,0 +1,1 @@
+ALTER TABLE `monthly_report` ADD `expences` integer NOT NULL;
