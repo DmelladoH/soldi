@@ -1,4 +1,4 @@
-export type Found = "monetary" | "fixed" | "variable";
+export type Found = "monetary" | "fixed" | "variable" | "crypto";
 export type Currency = "Euro" | "Dollar";
 export interface Entity {
   name: string;
