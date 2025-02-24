@@ -64,12 +64,18 @@ export default async function DashBoard() {
             ),
           expenses: lastMonth.expenses,
           savingsRate:
-            lastMonth.expenses / lastMonth.payroll +
-            lastMonth.additionalIncome.reduce(
-              (acc, curr) => acc + curr.amount,
-              0
-            ) *
-              100,
+            ((lastMonth.payroll +
+              lastMonth.additionalIncome.reduce(
+                (acc, curr) => acc + curr.amount,
+                0
+              ) -
+              lastMonth.expenses) /
+              (lastMonth.payroll +
+                lastMonth.additionalIncome.reduce(
+                  (acc, curr) => acc + curr.amount,
+                  0
+                ))) *
+            100,
 
           stocks: lastMonth.investments.map((stock) => ({
             fund: stock.fund,
