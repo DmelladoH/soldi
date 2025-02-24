@@ -4,9 +4,11 @@ import FinanceCard from "@/components/financeCard";
 import MonthResumeCart from "./_components/cart";
 import AccountsCart from "@/components/accountsCart";
 import NoDataCart from "@/components/noDataCart";
+import { geStockDifference, getStockProfit } from "@/lib/utils";
 
 export default async function DashBoard() {
   const res = await getMonthlyReportWithInvestments();
+  const lastMonth = res[0];
   const monthlyReport = res.reverse();
 
   const chartTotalData = monthlyReport.map((report) => {
@@ -33,86 +35,52 @@ export default async function DashBoard() {
   });
 
   const totalWealth =
-    monthlyReport.length > 0
-      ? monthlyReport[0].cash.reduce((acc, curr) => acc + curr.amount, 0) +
-        monthlyReport[0].investments.reduce(
-          (acc, curr) => acc + curr.currentValue,
-          0
-        )
+    lastMonth != null
+      ? lastMonth.cash.reduce((acc, curr) => acc + curr.amount, 0) +
+        lastMonth.investments.reduce((acc, curr) => acc + curr.currentValue, 0)
       : 0;
 
   const bankAccounts =
-    monthlyReport.length > 0
-      ? monthlyReport[0].cash.map((account) => ({
+    lastMonth != null
+      ? lastMonth.cash.map((account) => ({
           name: account.name,
           amount: account.amount,
           currency: account.currency,
         }))
       : [];
 
-  const lastMonthSummary = monthlyReport[0]
-    ? {
-        month: new Date(monthlyReport[0].date).toLocaleDateString("en-GB", {
-          month: "long",
-        }),
-        year: new Date(monthlyReport[0].date).getFullYear(),
-        income:
-          monthlyReport[0].payroll +
-          monthlyReport[0].additionalIncome.reduce(
-            (acc, curr) => acc + curr.amount,
-            0
-          ),
-        expenses: monthlyReport[0].expenses,
-        savingsRate:
-          monthlyReport[0].expenses / monthlyReport[0].payroll +
-          monthlyReport[0].additionalIncome.reduce(
-            (acc, curr) => acc + curr.amount,
-            0
-          ) *
-            100,
+  const lastMonthSummary =
+    lastMonth != null
+      ? {
+          month: new Date(lastMonth.date).toLocaleDateString("en-GB", {
+            month: "long",
+          }),
+          year: new Date(lastMonth.date).getFullYear(),
+          income:
+            lastMonth.payroll +
+            lastMonth.additionalIncome.reduce(
+              (acc, curr) => acc + curr.amount,
+              0
+            ),
+          expenses: lastMonth.expenses,
+          savingsRate:
+            lastMonth.expenses / lastMonth.payroll +
+            lastMonth.additionalIncome.reduce(
+              (acc, curr) => acc + curr.amount,
+              0
+            ) *
+              100,
 
-        stocks: monthlyReport[0].investments.map((stock) => ({
-          fund: stock.fund,
-          currentValue: stock.currentValue,
-          amountInvested: stock.amountInvested,
-          difference:
-            (monthlyReport[0]?.investments?.find((s) => s.fund === stock.fund)
-              ?.currentValue ?? 0) - stock.currentValue,
-          profit: 0,
-          currency: stock.currency,
-        })),
-        // stocks: [
-        //   {
-        //     symbol: monthlyReport[0].investments[0].fund,
-        //     name: monthlyReport[0].investments[0],
-        //     currentValue: 10,
-        //     amountInvested: 180.95,
-        //     change: 1.25,
-        //   },
-        //   {
-        //     symbol: "GOOGL",
-        //     name: "Alphabet Inc.",
-        //     shares: 5,
-        //     price: 2750.5,
-        //     change: -0.75,
-        //   },
-        //   {
-        //     symbol: "MSFT",
-        //     name: "Microsoft Corporation",
-        //     shares: 15,
-        //     price: 335.4,
-        //     change: 0.5,
-        //   },
-        //   {
-        //     symbol: "AMZN",
-        //     name: "Amazon.com, Inc.",
-        //     shares: 8,
-        //     price: 3380.0,
-        //     change: 2.1,
-        //   },
-        // ],
-      }
-    : null;
+          stocks: lastMonth.investments.map((stock) => ({
+            fund: stock.fund,
+            currentValue: stock.currentValue,
+            amountInvested: stock.amountInvested,
+            difference: geStockDifference(res, stock, 0),
+            profit: getStockProfit(res, stock, 0),
+            currency: stock.currency,
+          })),
+        }
+      : null;
 
   return (
     <div className="flex w-full h-full gap-5">

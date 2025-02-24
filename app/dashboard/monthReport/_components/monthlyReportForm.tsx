@@ -72,10 +72,10 @@ export function MonthlyReportForm({
     defaultValues: defaultValue,
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       setPending(true);
-      form.reset(defaultValue);
+
       const formattedValues = {
         ...values,
         investments: values.investments.map((investment) => ({
@@ -83,7 +83,8 @@ export function MonthlyReportForm({
           fund: parseInt(investment.fund),
         })),
       };
-      saveMonthReport(formattedValues);
+      await saveMonthReport(formattedValues);
+      form.reset(defaultValue);
     } catch (e) {
       console.log(e);
     } finally {
@@ -134,11 +135,7 @@ export function MonthlyReportForm({
                 <FormItem>
                   <FormLabel>Currency</FormLabel>
                   <FormControl>
-                    <Input
-                      defaultValue={CurrencyTypes.Euro}
-                      {...field}
-                      className="max-w-10"
-                    />
+                    <Input {...field} className="max-w-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -218,16 +215,12 @@ function AdditionalForm({ form }: { form: UseFormReturn<FormValues> }) {
             />
             <FormField
               control={form.control}
-              name="payrollCurrency"
+              name={`additionalIncome.${index}.currency`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Currency</FormLabel>
                   <FormControl>
-                    <Input
-                      defaultValue={CurrencyTypes.Euro}
-                      {...field}
-                      className="max-w-10"
-                    />
+                    <Input {...field} className="max-w-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -297,16 +290,12 @@ function CashForm({ form }: { form: UseFormReturn<FormValues> }) {
             />
             <FormField
               control={form.control}
-              name="payrollCurrency"
+              name={`cash.${index}.currency`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Currency</FormLabel>
                   <FormControl>
-                    <Input
-                      defaultValue={CurrencyTypes.Euro}
-                      {...field}
-                      className="max-w-10"
-                    />
+                    <Input {...field} className="max-w-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -411,16 +400,12 @@ function InvestmentForm({
             />
             <FormField
               control={form.control}
-              name="payrollCurrency"
+              name={`investments.${index}.currency`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Currency</FormLabel>
                   <FormControl>
-                    <Input
-                      defaultValue={CurrencyTypes.Euro}
-                      {...field}
-                      className="max-w-10"
-                    />
+                    <Input {...field} className="max-w-10" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

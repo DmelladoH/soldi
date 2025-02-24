@@ -20,8 +20,6 @@ export interface Investments {
   fund: number;
   currentValue: number;
   amountInvested: number;
-  // difference: number | undefined;
-  // profit: number | null;
   currency: string;
 }
 

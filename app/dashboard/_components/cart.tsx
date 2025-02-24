@@ -47,7 +47,7 @@ export default function MonthResumeCart({
           </div>
           <div>
             <p className="font-semibold">Savings Rate</p>
-            <p>{savingsRate}%</p>
+            <p>{savingsRate.toFixed(2)}%</p>
           </div>
         </div>
         <div>

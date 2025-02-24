@@ -1,5 +1,6 @@
 import { getMonthlyReportWithInvestments } from "@/server/queries";
 import MonthSummaryCard from "./_components/monthSummaryCard";
+import { geStockDifference, getStockProfit } from "@/lib/utils";
 
 export default async function page() {
   const res = await getMonthlyReportWithInvestments();
@@ -14,7 +15,7 @@ export default async function page() {
           </div>
         ) : (
           <>
-            {res.map((item) => (
+            {res.map((item, indx) => (
               <MonthSummaryCard
                 key={item.id}
                 month={new Date(item.date).toLocaleDateString("es-ES", {
@@ -39,10 +40,8 @@ export default async function page() {
                   fund: stock.fund,
                   currentValue: stock.currentValue,
                   amountInvested: stock.amountInvested,
-                  difference:
-                    (item.investments?.find((s) => s.fund === stock.fund)
-                      ?.currentValue ?? 0) - stock.currentValue,
-                  profit: 0,
+                  difference: geStockDifference(res, stock, indx),
+                  profit: getStockProfit(res, stock, indx),
                   currency: stock.currency,
                 }))}
               />
