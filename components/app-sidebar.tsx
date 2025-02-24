@@ -9,6 +9,7 @@ import ThemeSwitchButton from "./theme-switch";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { BarChart } from "lucide-react";
+import UserFooter from "./userFooter";
 
 export function AppSidebar() {
   return (
@@ -44,7 +45,9 @@ export function AppSidebar() {
         </SidebarGroup>
         <SidebarGroup />
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <UserFooter />
+      </SidebarFooter>
     </Sidebar>
   );
 }
