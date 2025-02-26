@@ -34,7 +34,7 @@ export default async function page() {
                 bankAccounts={item.cash.map((cash) => ({
                   name: cash.name,
                   amount: cash.amount,
-                  currency: "EUR",
+                  currency: cash.currency,
                 }))}
                 stocks={item.investments.map((stock) => ({
                   fund: stock.fund,
