@@ -63,6 +63,7 @@ export default async function DashBoard() {
               0
             ),
           expenses: lastMonth.expenses,
+          currency: lastMonth.cash[0]?.currency,
           savingsRate:
             ((lastMonth.payroll +
               lastMonth.additionalIncome.reduce(
@@ -81,8 +82,8 @@ export default async function DashBoard() {
             fund: stock.fund,
             currentValue: stock.currentValue,
             amountInvested: stock.amountInvested,
-            difference: geStockDifference(res, stock, 0),
-            profit: getStockProfit(res, stock, 0),
+            difference: geStockDifference(monthlyReport, stock, 0),
+            profit: getStockProfit(monthlyReport, stock, 0),
             currency: stock.currency,
           })),
         }

@@ -21,7 +21,8 @@ export default function AccountsCart({
             {bankAccounts.map((account, index) => (
               <li key={account.name}>
                 <p key={index}>
-                  {account.name}: ${account.amount.toLocaleString()}
+                  {account.name}: {account.amount.toLocaleString()}
+                  {account.currency}
                 </p>
               </li>
             ))}

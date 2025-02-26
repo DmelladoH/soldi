@@ -44,7 +44,8 @@ export default function MonthSummaryCard({
         </CardTitle>
         <div className="text-center">
           <p className="text-3xl font-bold text-primary">
-            ${totalAmount.toLocaleString()}
+            {totalAmount.toLocaleString()}
+            {bankAccounts[0]?.currency || "€"}
           </p>
           <p className="text-sm text-muted-foreground">Total Amount</p>
         </div>
@@ -57,15 +58,18 @@ export default function MonthSummaryCard({
             </CardHeader>
             <CardContent>
               <p className="font-semibold">
-                Regular: ${regularIncome.toLocaleString()}
+                Regular: {regularIncome.toLocaleString()}
+                {bankAccounts[0]?.currency || "€"}
               </p>
               {additionalIncomes.map((income, index) => (
                 <p key={index}>
-                  {income.name}: ${income.amount.toLocaleString()}
+                  {income.name}: {income.amount.toLocaleString()}
+                  {bankAccounts[0]?.currency || "€"}
                 </p>
               ))}
               <p className="mt-2 font-bold">
-                Total: ${totalIncome.toLocaleString()}
+                Total: {totalIncome.toLocaleString()}
+                {bankAccounts[0]?.currency || "€"}
               </p>
             </CardContent>
           </Card>

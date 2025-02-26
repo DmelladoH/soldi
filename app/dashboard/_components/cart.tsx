@@ -15,6 +15,7 @@ type FinanceSummaryProps = {
   year: number;
   income: number;
   expenses: number;
+  currency: string;
   savingsRate: number;
   stocks?: Stocks[];
 };
@@ -25,6 +26,7 @@ export default function MonthResumeCart({
   income,
   expenses,
   savingsRate,
+  currency,
   stocks,
 }: FinanceSummaryProps) {
   return (
@@ -39,11 +41,17 @@ export default function MonthResumeCart({
         <div className="grid grid-cols-3 gap-4 text-sm">
           <div>
             <p className="font-semibold">Income</p>
-            <p className="text-green-600">${income.toLocaleString()}</p>
+            <p className="text-green-600">
+              {income.toLocaleString()}
+              {currency}
+            </p>
           </div>
           <div>
             <p className="font-semibold">Expenses</p>
-            <p className="text-red-600">${expenses.toLocaleString()}</p>
+            <p className="text-red-600">
+              {expenses.toLocaleString()}
+              {currency}
+            </p>
           </div>
           <div>
             <p className="font-semibold">Savings Rate</p>
