@@ -9,7 +9,7 @@ import { geStockDifference, getStockProfit } from "@/lib/utils";
 export default async function DashBoard() {
   const res = await getMonthlyReportWithInvestments();
   const lastMonth = res[0];
-  const monthlyReport = res.reverse();
+  const monthlyReport = [...res].reverse();
 
   const chartTotalData = monthlyReport.map((report) => {
     return {
@@ -82,8 +82,8 @@ export default async function DashBoard() {
             fund: stock.fund,
             currentValue: stock.currentValue,
             amountInvested: stock.amountInvested,
-            difference: geStockDifference(monthlyReport, stock, 0),
-            profit: getStockProfit(monthlyReport, stock, 0),
+            difference: geStockDifference(res, stock, 0),
+            profit: getStockProfit(res, stock, 0),
             currency: stock.currency,
           })),
         }
