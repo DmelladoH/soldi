@@ -90,7 +90,7 @@ export default async function DashBoard() {
       : null;
 
   return (
-    <div className="flex w-full h-full gap-5">
+    <div className="grid md:flex w-full h-full gap-5">
       <div className="w-full grid gap-5">
         <FinanceCard totalAmount={totalWealth} />
         <AccountsCart bankAccounts={bankAccounts} />
