@@ -19,14 +19,15 @@ const chartConfig = {
 
 export function TotalChart({
   chartData,
+  title,
 }: {
   chartData: { month: string; amount: number }[];
+  title: string;
 }) {
-  console.log({ chartData });
   return (
     <Card className="grid">
       <CardHeader>
-        <CardTitle>Total</CardTitle>
+        <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
         {chartData.length === 0 ? (

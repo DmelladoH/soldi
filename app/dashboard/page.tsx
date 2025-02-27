@@ -101,8 +101,8 @@ export default async function DashBoard() {
         )}
       </div>
       <div className="grid gap-2 w-full">
-        <TotalChart chartData={chartTotalData} />
-        <TotalChart chartData={chartInvestmentData} />
+        <TotalChart chartData={chartTotalData} title="Total Money" />
+        <TotalChart chartData={chartInvestmentData} title="Investments" />
       </div>
     </div>
   );
