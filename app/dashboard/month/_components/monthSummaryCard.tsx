@@ -2,10 +2,10 @@ import AccountsCart from "@/components/accountsCart";
 import { FundTable } from "@/components/fundsTable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { Cash } from "@/lib/types";
+import { Cash, FundEntityWithId } from "@/lib/types";
 
 export interface Stocks {
-  fund: string;
+  fund: FundEntityWithId;
   currentValue: number;
   amountInvested: number;
   difference: number | undefined;

@@ -2,7 +2,7 @@ import {
   FundEntity,
   FundEntityWithId,
   MonthlyReport,
-  MonthResume,
+  MonthReportWithId,
 } from "@/lib/types";
 import { db } from "./db";
 import {
@@ -88,7 +88,7 @@ export async function deleteFundEntity(
 }
 
 export async function getMonthlyReportWithInvestments(): Promise<
-  MonthResume[]
+  MonthReportWithId[]
 > {
   try {
     const res = await db.query.monthlyReports.findMany({
@@ -110,10 +110,24 @@ export async function getMonthlyReportWithInvestments(): Promise<
       payroll: report.payroll,
       expenses: report.expenses,
       payrollCurrency: report.PayrollCurrency,
-      cash: report.cash,
-      additionalIncome: report.additionalIncome,
+      cash: report.cash.map((cash) => ({
+        name: cash.name,
+        amount: cash.amount,
+        currency: cash.currency,
+      })),
+      additionalIncome: report.additionalIncome.map((income) => ({
+        name: income.name,
+        amount: income.amount,
+        currency: income.currency,
+      })),
       investments: report.investments.map((investment) => ({
-        fund: investment.fundEntity!.name!,
+        fund: {
+          id: investment.fundEntity.id,
+          ISIN: investment.fundEntity.ISIN,
+          name: investment.fundEntity.name,
+          currency: investment.fundEntity.currency,
+          type: investment.fundEntity.type,
+        },
         currentValue: investment.currentValue,
         amountInvested: investment.amountInvested,
         currency: investment.currency,
@@ -172,7 +186,7 @@ export async function addMonthlyReport(monthReport: MonthlyReport) {
     if (monthReport.investments.length > 0) {
       const investmentsToInsert = monthReport.investments.map((investment) => ({
         monthlyReportId: newReport.id,
-        fundEntityId: investment.fund,
+        fundEntityId: investment.fund.id,
         currentValue: investment.currentValue,
         amountInvested: investment.amountInvested,
         currency: investment.currency,

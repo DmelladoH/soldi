@@ -29,7 +29,13 @@ export const formSchema = z.object({
   ),
   investments: z.array(
     z.object({
-      fund: z.string(),
+      fund: z.object({
+        id: z.number(),
+        ISIN: z.string(),
+        name: z.string(),
+        currency: z.string(),
+        type: z.string(),
+      }),
       currentValue: z.coerce.number(),
       amountInvested: z.coerce.number(),
       currency: z.string(),

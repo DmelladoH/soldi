@@ -4,7 +4,7 @@ import FinanceCard from "@/components/financeCard";
 import MonthResumeCart from "./_components/cart";
 import AccountsCart from "@/components/accountsCart";
 import NoDataCart from "@/components/noDataCart";
-import { geStockDifference, getStockProfit } from "@/lib/utils";
+import { geStockDifference, getStockProfit, getTotalMoney } from "@/lib/utils";
 
 export default async function DashBoard() {
   const res = await getMonthlyReportWithInvestments();
@@ -34,11 +34,7 @@ export default async function DashBoard() {
     };
   });
 
-  const totalWealth =
-    lastMonth != null
-      ? lastMonth.cash.reduce((acc, curr) => acc + curr.amount, 0) +
-        lastMonth.investments.reduce((acc, curr) => acc + curr.currentValue, 0)
-      : 0;
+  const totalWealth = getTotalMoney(lastMonth);
 
   const bankAccounts =
     lastMonth != null

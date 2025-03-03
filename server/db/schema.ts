@@ -30,7 +30,9 @@ export const monthlyReportInvestments = sqliteTable(
     monthlyReportId: integer("monthly_report_id")
       .references(() => monthlyReports.id)
       .notNull(),
-    fundEntityId: integer("fund_entity_id").references(() => fundEntities.id),
+    fundEntityId: integer("fund_entity_id")
+      .references(() => fundEntities.id)
+      .notNull(),
     currentValue: integer("current_value").notNull(),
     amountInvested: integer("amount_invested").notNull(),
     currency: text("currency", { length: 3 }).notNull(),

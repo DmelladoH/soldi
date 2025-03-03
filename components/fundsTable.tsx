@@ -1,3 +1,4 @@
+import { FundEntityWithId } from "@/lib/types";
 import {
   Table,
   TableHeader,
@@ -8,7 +9,7 @@ import {
 } from "./ui/table";
 
 export interface Stocks {
-  fund: string;
+  fund: FundEntityWithId;
   currentValue: number;
   amountInvested: number;
   difference: number | undefined;
@@ -30,9 +31,9 @@ export function FundTable({ stocks }: { stocks: Stocks[] }) {
       </TableHeader>
       <TableBody>
         {stocks.map((stock) => (
-          <TableRow key={stock.fund}>
+          <TableRow key={stock.fund.id}>
             <TableCell>
-              <div>{stock.fund}</div>
+              <div>{stock.fund.name}</div>
             </TableCell>
             <TableCell className="text-right">
               {stock.currency}

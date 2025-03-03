@@ -43,7 +43,7 @@ type FormValues = {
     currency: string;
   }>;
   investments: Array<{
-    fund: string;
+    fund: FundEntityWithId;
     currentValue: number;
     amountInvested: number;
     currency: string;
@@ -80,7 +80,7 @@ export function MonthlyReportForm({
         ...values,
         investments: values.investments.map((investment) => ({
           ...investment,
-          fund: parseInt(investment.fund),
+          fund: investment.fund,
         })),
       };
       await saveMonthReport(formattedValues);
@@ -351,18 +351,26 @@ function InvestmentForm({
                   <FormLabel>Fund</FormLabel>
                   <FormControl>
                     <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={(id) =>
+                        field.onChange(
+                          fundsOptions.find(
+                            (fund) => fund.id === Number.parseInt(id)
+                          )
+                        )
+                      }
+                      value={field.value?.id || ""}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue />
+                          <SelectValue placeholder="Select a fund">
+                            {field.value?.name || "Select a fund"}
+                          </SelectValue>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {fundsOptions.map(({ id, name }) => (
-                          <SelectItem key={id} value={id.toString()}>
-                            {name}
+                        {fundsOptions.map((fund) => (
+                          <SelectItem key={fund.id} value={fund.id.toString()}>
+                            {fund.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -372,6 +380,7 @@ function InvestmentForm({
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name={`investments.${index}.currentValue`}
@@ -426,7 +435,7 @@ function InvestmentForm({
         <Button
           type="button"
           onClick={() =>
-            append({ fund: "", currentValue: "0", amountInvested: "0" })
+            append({ fund: null, currentValue: "0", amountInvested: "0" })
           }
         >
           +

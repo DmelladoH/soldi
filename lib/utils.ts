@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Cash, Investments, MonthlyReport, MonthResume } from "./types";
+import { Cash, Investments, MonthlyReport } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -20,13 +20,8 @@ export function getTotalMoney(resume: MonthlyReport) {
 }
 
 export const geStockDifference = (
-  reports: MonthResume[],
-  stock: {
-    fund: string;
-    currentValue: number;
-    amountInvested: number;
-    currency: string;
-  },
+  reports: MonthlyReport[],
+  stock: Investments,
   indx: number
 ) => {
   if (!reports[indx + 1]) return 0;
@@ -39,13 +34,8 @@ export const geStockDifference = (
 };
 
 export const getStockProfit = (
-  reports: MonthResume[],
-  stock: {
-    fund: string;
-    currentValue: number;
-    amountInvested: number;
-    currency: string;
-  },
+  reports: MonthlyReport[],
+  stock: Investments,
   indx: number
 ) => {
   if (!reports[indx + 1]) return 0;

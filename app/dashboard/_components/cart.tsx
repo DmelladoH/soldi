@@ -1,12 +1,13 @@
 import { FundTable } from "@/components/fundsTable";
 import { Card, CardContent } from "@/components/ui/card";
+import { FundEntityWithId } from "@/lib/types";
 
 interface Stocks {
-  fund: string;
+  fund: FundEntityWithId;
   currentValue: number;
   amountInvested: number;
-  difference: number | undefined;
-  profit: number | null;
+  difference: number;
+  profit: number;
   currency: string;
 }
 
