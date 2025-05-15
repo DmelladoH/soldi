@@ -3,6 +3,7 @@ import { FundTable } from "@/components/fundsTable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Cash, FundEntityWithId } from "@/lib/types";
+import Link from "next/link";
 
 export interface Stocks {
   fund: FundEntityWithId;
@@ -14,6 +15,7 @@ export interface Stocks {
 }
 
 type FinanceSummaryProps = {
+  id: string;
   month: string;
   totalAmount: number;
   regularIncome: number;
@@ -24,6 +26,7 @@ type FinanceSummaryProps = {
 };
 
 export default function MonthSummaryCard({
+  id,
   month,
   totalAmount,
   regularIncome,
@@ -48,6 +51,12 @@ export default function MonthSummaryCard({
             {bankAccounts[0]?.currency || "€"}
           </p>
           <p className="text-sm text-muted-foreground">Total Amount</p>
+          <Link
+            href={`/monthReport/${id}`}
+            className="text-sm text-primary underline-offset-4 hover:underline"
+          >
+            Edit
+          </Link>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">

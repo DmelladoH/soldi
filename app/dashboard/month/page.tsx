@@ -18,6 +18,7 @@ export default async function page() {
             {res.map((item, indx) => (
               <MonthSummaryCard
                 key={item.id}
+                id={item.id.toString()}
                 month={new Date(item.date).toLocaleDateString("es-ES", {
                   month: "long",
                 })}

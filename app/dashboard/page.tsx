@@ -4,46 +4,27 @@ import FinanceCard from "@/components/financeCard";
 import MonthResumeCart from "./_components/cart";
 import AccountsCart from "@/components/accountsCart";
 import NoDataCart from "@/components/noDataCart";
-import { geStockDifference, getStockProfit, getTotalMoney } from "@/lib/utils";
+import {
+  geStockDifference,
+  getBankAccounts,
+  getInvestmentChart,
+  getStockProfit,
+  getTotalChart,
+  getTotalMoney,
+} from "@/lib/utils";
 
 export default async function DashBoard() {
   const res = await getMonthlyReportWithInvestments();
   const lastMonth = res[0];
   const monthlyReport = [...res].reverse();
 
-  const chartTotalData = monthlyReport.map((report) => {
-    return {
-      month: new Date(report.date).toLocaleDateString("en-GB", {
-        month: "long",
-      }),
-      amount:
-        report.cash.reduce((acc, curr) => acc + curr.amount, 0) +
-        report.investments.reduce((acc, curr) => acc + curr.currentValue, 0),
-    };
-  });
+  const chartTotalData = getTotalChart(monthlyReport);
 
-  const chartInvestmentData = monthlyReport.map((report) => {
-    return {
-      month: new Date(report.date).toLocaleDateString("en-GB", {
-        month: "long",
-      }),
-      amount: report.investments.reduce(
-        (acc, curr) => acc + curr.currentValue,
-        0
-      ),
-    };
-  });
+  const chartInvestmentData = getInvestmentChart(monthlyReport);
 
   const totalWealth = getTotalMoney(lastMonth);
 
-  const bankAccounts =
-    lastMonth != null
-      ? lastMonth.cash.map((account) => ({
-          name: account.name,
-          amount: account.amount,
-          currency: account.currency,
-        }))
-      : [];
+  const bankAccounts = lastMonth ? getBankAccounts(lastMonth) : [];
 
   const lastMonthSummary =
     lastMonth != null

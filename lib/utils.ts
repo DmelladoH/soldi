@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Cash, Investments, MonthlyReport } from "./types";
+import { Cash, Investments, MonthReportWithId } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -14,13 +14,13 @@ export function getTotalInvestments(inv: Investments[]) {
   return inv.reduce((acc, curr) => acc + curr.currentValue, 0);
 }
 
-export function getTotalMoney(resume: MonthlyReport) {
+export function getTotalMoney(resume: MonthReportWithId) {
   if (resume === null) return 0;
   return getTotalCash(resume.cash) + getTotalInvestments(resume.investments);
 }
 
 export const geStockDifference = (
-  reports: MonthlyReport[],
+  reports: MonthReportWithId[],
   stock: Investments,
   indx: number
 ) => {
@@ -33,8 +33,38 @@ export const geStockDifference = (
   return stock.currentValue - stock.amountInvested - prevValue;
 };
 
+export const getInvestmentChart = (
+  report: MonthReportWithId[]
+): { month: string; amount: number }[] => {
+  return report.map((report) => ({
+    month: new Date(report.date).toLocaleDateString("en-GB", {
+      month: "long",
+    }),
+    amount: getTotalInvestments(report.investments),
+  }));
+};
+
+export const getTotalChart = (
+  report: MonthReportWithId[]
+): { month: string; amount: number }[] => {
+  return report.map((report) => ({
+    month: new Date(report.date).toLocaleDateString("en-GB", {
+      month: "long",
+    }),
+    amount: getTotalMoney(report),
+  }));
+};
+
+export const getBankAccounts = (lastMonth: MonthReportWithId): Cash[] => {
+  return lastMonth.cash.map((account) => ({
+    name: account.name,
+    amount: account.amount,
+    currency: account.currency,
+  }));
+};
+
 export const getStockProfit = (
-  reports: MonthlyReport[],
+  reports: MonthReportWithId[],
   stock: Investments,
   indx: number
 ) => {
