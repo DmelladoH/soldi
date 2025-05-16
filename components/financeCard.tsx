@@ -1,26 +1,50 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Euro } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Card } from "./ui/card";
 
 interface FinanceCardProps {
-  totalAmount: number;
+  title: string;
+  value: string;
+  change?: {
+    value: string;
+    positive: boolean;
+  };
+  icon: React.ReactNode;
+  className?: string;
 }
 
-export default function FinanceCard({ totalAmount }: FinanceCardProps) {
+export default function FinanceCard({
+  title,
+  value,
+  change,
+  icon,
+  className,
+}: FinanceCardProps) {
   return (
-    <Card className="w-full mx-auto">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
-        <Euro className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">
-          {totalAmount.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
+    <Card
+      className={cn("p-6 rounded-lg shadow-sm border flex-grow", className)}
+    >
+      <div className="flex items-center">
+        <div className="p-2 rounded-md bg-slate-300">{icon}</div>
+        <div className="ml-4">
+          <h3 className="text-sm font-medium ">{title}</h3>
+          <div className="flex items-baseline">
+            <p className="text-2xl font-semibold">{value}</p>
+            {change && (
+              <p
+                className={cn(
+                  "ml-2 text-sm font-medium",
+                  change.positive
+                    ? "text-finance-light-green"
+                    : "text-finance-red"
+                )}
+              >
+                {change.positive ? "+" : ""}
+                {change.value}
+              </p>
+            )}
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground">Across all accounts</p>
-      </CardContent>
+      </div>
     </Card>
   );
 }

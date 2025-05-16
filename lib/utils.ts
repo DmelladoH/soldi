@@ -81,3 +81,12 @@ export const getStockProfit = (
 
   return (stock.currentValue - prevValue) / prevValue;
 };
+
+export const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("es-ES", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};

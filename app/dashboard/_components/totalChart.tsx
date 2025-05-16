@@ -25,7 +25,7 @@ export function TotalChart({
   title: string;
 }) {
   return (
-    <Card className="grid">
+    <Card className="grid flex-grow">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>
