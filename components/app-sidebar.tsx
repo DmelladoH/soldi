@@ -15,11 +15,10 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex items-center justify-between p-4">
+        <div className="pl-10 flex items-center justify-between p-4">
           <Link href="/dashboard" className="text-xl font-semibold">
             Soldi
           </Link>
-          <ThemeSwitchButton />
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -51,7 +50,10 @@ export function AppSidebar() {
         <SidebarGroup />
       </SidebarContent>
       <SidebarFooter>
-        <UserFooter />
+        <div className="flex justify-between items-center">
+          <UserFooter />
+          <ThemeSwitchButton />
+        </div>
       </SidebarFooter>
     </Sidebar>
   );

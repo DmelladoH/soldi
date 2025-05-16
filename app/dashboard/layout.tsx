@@ -21,8 +21,8 @@ export default function DashboardLayout({
           </div>
         </header>
         <main className="w-full p-5">
-          <SidebarTrigger className="fixed left-0 top-0 z-50" />
-          {children}
+          <SidebarTrigger className="fixed left-0 top-6 z-50" />
+          <div className="pl-5">{children}</div>
         </main>
       </SidebarProvider>
     </ThemeProvider>
