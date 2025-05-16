@@ -33,9 +33,7 @@ export default function FinanceCard({
               <p
                 className={cn(
                   "ml-2 text-sm font-medium",
-                  change.positive
-                    ? "text-finance-light-green"
-                    : "text-finance-red"
+                  change.positive ? "text-green-500" : "text-red-500"
                 )}
               >
                 {change.positive ? "+" : ""}

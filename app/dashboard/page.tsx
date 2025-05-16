@@ -16,6 +16,8 @@ import { FundTable } from "@/components/fundsTable";
 export default async function DashBoard() {
   const res = await getMonthlyReportWithInvestments();
   const lastMonth = res[0];
+  const previousMonth = res[1];
+
   const monthlyReport = [...res].reverse();
 
   const chartTotalData = getTotalChart(monthlyReport);
@@ -23,13 +25,26 @@ export default async function DashBoard() {
   const chartInvestmentData = getInvestmentChart(monthlyReport);
 
   const totalWealth = getTotalMoney(lastMonth);
+  const previousMonthWealth = getTotalMoney(previousMonth);
+
   const lastMonthIncome =
     lastMonth.payroll +
     lastMonth.additionalIncome.reduce((acc, curr) => acc + curr.amount, 0);
 
+  const prevMonthIncome =
+    previousMonth.payroll +
+    previousMonth.additionalIncome.reduce((acc, curr) => acc + curr.amount, 0);
+
   const lastMonthExpenses = lastMonth.expenses;
+  const prevMonthExpenses = previousMonth.expenses;
+
   const lastMonthSavingsRate = (
     ((lastMonthIncome - lastMonthExpenses) / lastMonthIncome) *
+    100
+  ).toFixed(2);
+
+  const prevMonthSavingsRate = (
+    ((prevMonthIncome - prevMonthExpenses) / prevMonthIncome) *
     100
   ).toFixed(2);
 
@@ -42,60 +57,26 @@ export default async function DashBoard() {
     currency: stock.currency,
   }));
 
-  // const bankAccounts = lastMonth ? getBankAccounts(lastMonth) : [];
-
-  // const lastMonthSummary =
-  //   lastMonth != null
-  //     ? {
-  //         month: new Date(lastMonth.date).toLocaleDateString("en-GB", {
-  //           month: "long",
-  //         }),
-  //         year: new Date(lastMonth.date).getFullYear(),
-  //         income:
-  //           lastMonth.payroll +
-  //           lastMonth.additionalIncome.reduce(
-  //             (acc, curr) => acc + curr.amount,
-  //             0
-  //           ),
-  //         expenses: lastMonth.expenses,
-  //         currency: lastMonth.cash[0]?.currency,
-  //         savingsRate:
-  //           ((lastMonth.payroll +
-  //             lastMonth.additionalIncome.reduce(
-  //               (acc, curr) => acc + curr.amount,
-  //               0
-  //             ) -
-  //             lastMonth.expenses) /
-  //             (lastMonth.payroll +
-  //               lastMonth.additionalIncome.reduce(
-  //                 (acc, curr) => acc + curr.amount,
-  //                 0
-  //               ))) *
-  //           100,
-
-  //         stocks: lastMonth.investments.map((stock) => ({
-  //           fund: stock.fund,
-  //           currentValue: stock.currentValue,
-  //           amountInvested: stock.amountInvested,
-  //           difference: geStockDifference(res, stock, 0),
-  //           profit: getStockProfit(res, stock, 0),
-  //           currency: stock.currency,
-  //         })),
-  //       }
-  //     : null;
-
   return (
     <div className="dashboard-grid">
       <div className="totalNetwork">
         <FinanceCard
           title="Net Worth"
           value={formatCurrency(totalWealth)}
+          change={{
+            value: formatCurrency(totalWealth - previousMonthWealth),
+            positive: totalWealth > previousMonthWealth,
+          }}
           icon={<Wallet className="h-5 w-5 text-finance-blue" />}
         />
       </div>
       <div className="monthIncome">
         <FinanceCard
           title="Monthly Income"
+          change={{
+            value: formatCurrency(lastMonthIncome - prevMonthIncome),
+            positive: lastMonthIncome > prevMonthIncome,
+          }}
           value={formatCurrency(lastMonthIncome)}
           icon={<Wallet className="h-5 w-5 text-finance-blue" />}
         />
@@ -103,6 +84,10 @@ export default async function DashBoard() {
       <div className="monthExpense">
         <FinanceCard
           title="Monthly Expenses"
+          change={{
+            value: formatCurrency(lastMonthExpenses - prevMonthExpenses),
+            positive: lastMonthExpenses > prevMonthExpenses,
+          }}
           value={formatCurrency(lastMonthExpenses)}
           icon={<Wallet className="h-5 w-5 text-finance-blue" />}
         />
@@ -111,6 +96,12 @@ export default async function DashBoard() {
         <FinanceCard
           title="Saving Rate"
           value={`${lastMonthSavingsRate}%`}
+          change={{
+            value: `${(
+              Number(lastMonthSavingsRate) - Number(prevMonthSavingsRate)
+            ).toFixed(2)}%`,
+            positive: lastMonthSavingsRate > prevMonthSavingsRate,
+          }}
           icon={<Wallet className="h-5 w-5 text-finance-blue" />}
         />
       </div>
