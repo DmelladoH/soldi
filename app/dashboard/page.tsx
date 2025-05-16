@@ -28,8 +28,10 @@ export default async function DashBoard() {
     lastMonth.additionalIncome.reduce((acc, curr) => acc + curr.amount, 0);
 
   const lastMonthExpenses = lastMonth.expenses;
-  const lastMonthSavingsRate =
-    ((lastMonthIncome - lastMonthExpenses) / lastMonthIncome) * 100;
+  const lastMonthSavingsRate = (
+    ((lastMonthIncome - lastMonthExpenses) / lastMonthIncome) *
+    100
+  ).toFixed(2);
 
   const stoks = lastMonth.investments.map((stock) => ({
     fund: stock.fund,
