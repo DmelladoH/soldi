@@ -15,22 +15,18 @@ export function getTotalInvestments(inv: Investments[]) {
 }
 
 export function getTotalMoney(resume: MonthReportWithId) {
-  if (resume === null) return 0;
+  if (resume == null) return 0;
   return getTotalCash(resume.cash) + getTotalInvestments(resume.investments);
 }
 
 export const geStockDifference = (
-  reports: MonthReportWithId[],
-  stock: Investments,
-  indx: number
+  currStock: Investments | undefined,
+  prevStock: Investments | undefined
 ) => {
-  if (!reports[indx + 1]) return 0;
-  const prevValue =
-    reports[indx + 1]?.investments?.find(
-      (prevStock) => prevStock.fund === stock.fund
-    )?.currentValue || 0;
-
-  return stock.currentValue - stock.amountInvested - prevValue;
+  if (!currStock || !prevStock) return 0;
+  const prevValue = prevStock.currentValue;
+  console.log(currStock.currentValue, currStock.amountInvested, prevValue);
+  return currStock.currentValue - currStock.amountInvested - prevValue;
 };
 
 export const getInvestmentChart = (
