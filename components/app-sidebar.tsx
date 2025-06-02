@@ -32,7 +32,7 @@ export function AppSidebar() {
           <ul className="mt-10 grid gap-3 pl-5">
             <li>
               <Button asChild variant="ghost" className="w-full justify-start">
-                <Link href={"/"}>Home</Link>
+                <Link href={"/dashboard/"}>Home</Link>
               </Button>
             </li>
             <li>
@@ -40,11 +40,11 @@ export function AppSidebar() {
                 <Link href={"/dashboard/fundEntity"}>Fund Entity</Link>
               </Button>
             </li>
-            <li>
+            {/* <li>
               <Button asChild variant="ghost" className="w-full justify-start">
-                <Link href={"/dashboard/month"}>Summary</Link>
+                <Link href={"/dashboard/reports"}>Reports</Link>
               </Button>
-            </li>
+            </li> */}
           </ul>
         </SidebarGroup>
         <SidebarGroup />
