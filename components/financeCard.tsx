@@ -24,7 +24,7 @@ export default function FinanceCard({
       className={cn("p-6 rounded-lg shadow-sm border flex-grow", className)}
     >
       <div className="flex items-center">
-        <div className="p-2 rounded-md bg-slate-300">{icon}</div>
+        <div className="p-2 rounded-md bg-slate-200">{icon}</div>
         <div className="ml-4">
           <h3 className="text-sm font-medium ">{title}</h3>
           <div className="flex items-baseline">
@@ -33,7 +33,7 @@ export default function FinanceCard({
               <p
                 className={cn(
                   "ml-2 text-sm font-medium",
-                  change.positive ? "text-green-500" : "text-red-500"
+                  change.positive ? "text-moneyGreen" : "text-moneyRed"
                 )}
               >
                 {change.positive ? "+" : ""}

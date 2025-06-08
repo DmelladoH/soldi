@@ -7,6 +7,7 @@ import {
   TableBody,
   TableCell,
 } from "./ui/table";
+import { formatCurrency } from "@/lib/utils";
 
 export interface Stocks {
   fund: FundEntityWithId;
@@ -18,6 +19,12 @@ export interface Stocks {
 }
 
 export function FundTable({ stocks }: { stocks: Stocks[] }) {
+  const getTextColor = (value: number | null | undefined) => {
+    if (!value || value === 0) return "";
+    if (value >= 0) return "text-green-600";
+    return "text-red-600";
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -36,34 +43,19 @@ export function FundTable({ stocks }: { stocks: Stocks[] }) {
               <div>{stock.fund.name}</div>
             </TableCell>
             <TableCell className="text-right">
-              {stock.currency}
-              {stock.currentValue.toFixed(2)}
+              {formatCurrency(stock.currentValue)}
             </TableCell>
             <TableCell
-              className={`text-right ${
-                stock.amountInvested >= 0 ? "text-green-600" : "text-red-600"
-              }`}
+              className={`text-right ${getTextColor(stock.amountInvested)}`}
             >
-              {stock.currency}
-              {stock.amountInvested.toFixed(2)}
+              {formatCurrency(stock.amountInvested)}
             </TableCell>
             <TableCell
-              className={`text-right ${
-                stock.difference && stock.difference >= 0
-                  ? "text-green-600"
-                  : "text-red-600"
-              }`}
+              className={`text-right ${getTextColor(stock.difference)}`}
             >
-              {stock.currency}
-              {stock.difference?.toFixed(2)}
+              {formatCurrency(stock.difference || 0)}
             </TableCell>
-            <TableCell
-              className={`text-right ${
-                stock.profit && stock.profit >= 0
-                  ? "text-green-600"
-                  : "text-red-600"
-              }`}
-            >
+            <TableCell className={`text-right ${getTextColor(stock.profit)}`}>
               {stock.profit && stock.profit >= 0 ? "+" : ""}
               {stock.profit?.toFixed(2)}%
             </TableCell>

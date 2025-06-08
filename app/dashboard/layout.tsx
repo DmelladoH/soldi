@@ -22,7 +22,7 @@ export default function DashboardLayout({
         </header>
         <main className="w-full p-5">
           <SidebarTrigger className="fixed left-0 top-6 z-50" />
-          <div className="pl-5">{children}</div>
+          <div className="desktop:pl-5">{children}</div>
         </main>
       </SidebarProvider>
     </ThemeProvider>

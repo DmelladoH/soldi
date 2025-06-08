@@ -1,6 +1,6 @@
 "use client";
 
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -36,7 +36,7 @@ export function TotalChart({
           </div>
         ) : (
           <ChartContainer config={chartConfig}>
-            <LineChart
+            <BarChart
               accessibilityLayer
               data={chartData}
               margin={{
@@ -44,26 +44,14 @@ export function TotalChart({
                 right: 12,
               }}
             >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => value.slice(0, 3)}
-              />
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
               <ChartTooltip
                 cursor={false}
                 content={<ChartTooltipContent hideLabel />}
               />
-              <Line
-                dataKey="amount"
-                type="linear"
-                stroke="var(--color-desktop)"
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
+              <Bar dataKey="amount" fill="#8884d8" />
+            </BarChart>
           </ChartContainer>
         )}
       </CardContent>
