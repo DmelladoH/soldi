@@ -5,7 +5,7 @@ export default defineConfig({
   dialect: "turso",
   out: "./server/db/migrations",
   dbCredentials: {
-    url: process.env.TURSO_DATABASE_URL!,
-    authToken: process.env.TURSO_AUTH_TOKEN!,
+    url: process.env.TURSO_DATABASE_PROD_URL!,
+    authToken: process.env.TURSO_AUTH_PROD_TOKEN!,
   },
 });
