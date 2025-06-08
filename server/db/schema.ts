@@ -15,9 +15,6 @@ export const fundEntities = sqliteTable("fund_entity", {
 export const monthlyReports = sqliteTable("monthly_report", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   date: text("date").notNull(),
-  payroll: integer("payroll").notNull(),
-  expenses: integer("expences").notNull(),
-  PayrollCurrency: text("currency", { length: 3 }).notNull(),
   createdAt: text("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
@@ -55,26 +52,25 @@ export const monthlyReportCash = sqliteTable("monthly_report_cash", {
     .notNull(),
 });
 
-export const monthlyReportAdditionalIncome = sqliteTable(
-  "monthly_report_additional_income",
-  {
-    id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-    monthlyReportId: integer("monthly_report_id")
-      .references(() => monthlyReports.id)
-      .notNull(),
-    name: text("name", { length: 256 }).notNull(),
-    amount: integer("amount").notNull(),
-    currency: text("currency", { length: 3 }).notNull(),
-    createdAt: text("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-  }
-);
+export const monthlyReportMovements = sqliteTable("monthly_report_movements", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  monthlyReportId: integer("monthly_report_id")
+    .references(() => monthlyReports.id)
+    .notNull(),
+  type: text("type", { enum: ["expense", "income"] }).notNull(),
+  category: text("category", { length: 256 }).notNull(),
+  description: text("name", { length: 256 }).notNull(),
+  amount: integer("amount").notNull(),
+  currency: text("currency", { length: 3 }).notNull(),
+  createdAt: text("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
 
 export const monthlyReportRelations = relations(monthlyReports, ({ many }) => ({
   investments: many(monthlyReportInvestments),
   cash: many(monthlyReportCash),
-  additionalIncome: many(monthlyReportAdditionalIncome),
+  movements: many(monthlyReportMovements),
 }));
 
 export const monthlyReportCashRelations = relations(
@@ -87,11 +83,11 @@ export const monthlyReportCashRelations = relations(
   })
 );
 
-export const monthlyReportAdditionalIncomeRelations = relations(
-  monthlyReportAdditionalIncome,
+export const monthlyReportMovementsRelations = relations(
+  monthlyReportMovements,
   ({ one }) => ({
     monthlyReport: one(monthlyReports, {
-      fields: [monthlyReportAdditionalIncome.monthlyReportId],
+      fields: [monthlyReportMovements.monthlyReportId],
       references: [monthlyReports.id],
     }),
   })

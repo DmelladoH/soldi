@@ -10,7 +10,7 @@ import {
   monthlyReportInvestments,
   monthlyReports,
   monthlyReportCash,
-  monthlyReportAdditionalIncome,
+  monthlyReportMovements,
 } from "./db/schema";
 import { eq } from "drizzle-orm";
 
@@ -99,7 +99,7 @@ export async function getMonthlyReportWithInvestments(): Promise<
           },
         },
         cash: true,
-        additionalIncome: true,
+        movements: true,
       },
       orderBy: (monthlyReports, { desc }) => [desc(monthlyReports.date)],
     });
@@ -107,18 +107,17 @@ export async function getMonthlyReportWithInvestments(): Promise<
     const processedReports = res.map((report) => ({
       id: report.id,
       date: report.date,
-      payroll: report.payroll,
-      expenses: report.expenses,
-      payrollCurrency: report.PayrollCurrency,
       cash: report.cash.map((cash) => ({
         name: cash.name,
         amount: cash.amount,
         currency: cash.currency,
       })),
-      additionalIncome: report.additionalIncome.map((income) => ({
-        name: income.name,
-        amount: income.amount,
-        currency: income.currency,
+      movements: report.movements.map((movement) => ({
+        category: movement.category,
+        description: movement.description,
+        type: movement.type,
+        amount: movement.amount,
+        currency: movement.currency,
       })),
       investments: report.investments.map((investment) => ({
         fund: {
@@ -151,9 +150,6 @@ export async function addMonthlyReport(monthReport: MonthlyReport) {
       .insert(monthlyReports)
       .values({
         date: monthReport.date,
-        payroll: monthReport.payroll,
-        expenses: monthReport.expenses,
-        PayrollCurrency: monthReport.payrollCurrency,
       })
       .returning();
 
@@ -167,20 +163,16 @@ export async function addMonthlyReport(monthReport: MonthlyReport) {
 
       await db.insert(monthlyReportCash).values(cashToInsert);
     }
-
-    if (monthReport.additionalIncome.length > 0) {
-      const additionalIncomeToInsert = monthReport.additionalIncome.map(
-        (income) => ({
-          monthlyReportId: newReport.id,
-          name: income.name,
-          amount: income.amount,
-          currency: income.currency,
-        })
-      );
-
-      await db
-        .insert(monthlyReportAdditionalIncome)
-        .values(additionalIncomeToInsert);
+    if (monthReport.movements.length > 0) {
+      const movementsToInsert = monthReport.movements.map((movement) => ({
+        monthlyReportId: newReport.id,
+        category: movement.category,
+        description: movement.description,
+        type: movement.type,
+        amount: movement.amount,
+        currency: movement.currency,
+      }));
+      await db.insert(monthlyReportMovements).values(movementsToInsert);
     }
 
     if (monthReport.investments.length > 0) {

@@ -1,4 +1,5 @@
 export type Found = "monetary" | "fixed" | "variable" | "crypto" | "EFT";
+export type movementType = "expense" | "income";
 export type Currency = "Euro" | "Dollar";
 export interface Entity {
   name: string;
@@ -23,6 +24,13 @@ export interface Investments {
   currency: string;
 }
 
+export interface Movement {
+  description: string;
+  category: string;
+  type: movementType;
+  amount: number;
+  currency: string;
+}
 export interface Cash {
   name: string;
   amount: number;
@@ -30,12 +38,9 @@ export interface Cash {
 }
 export interface MonthlyReport {
   date: string;
-  payroll: number;
-  expenses: number;
-  payrollCurrency: string;
   cash: Cash[];
-  additionalIncome: Cash[];
   investments: Investments[];
+  movements: Movement[];
 }
 
 export interface MonthReportWithId extends MonthlyReport {
