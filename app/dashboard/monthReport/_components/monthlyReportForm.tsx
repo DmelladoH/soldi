@@ -17,28 +17,21 @@ import {
 } from "react-hook-form";
 import { saveMonthReport } from "../actions";
 
+interface transaction {
+  name: string;
+  amount: string;
+  currency: string;
+}
 interface FromFields {
   month: number;
   year: number;
-  income: {
-    name: string;
-    amount: number;
-    currency: string;
-  }[];
-  expenses: {
-    name: string;
-    amount: number;
-    currency: string;
-  }[];
-  cash: {
-    name: string;
-    amount: number;
-    currency: string;
-  }[];
+  income: transaction[];
+  expenses: transaction[];
+  cash: transaction[];
   funds: {
     fund: FundEntityWithId;
-    currentValue: number;
-    amountInvested: number;
+    currentValue: string;
+    amountInvested: string;
     currency: string;
   }[];
 }
@@ -64,21 +57,21 @@ const defaultValues = {
   income: [
     {
       name: "",
-      amount: 0,
+      amount: "0",
       currency: "€",
     },
   ],
   expenses: [
     {
       name: "",
-      amount: 0,
+      amount: "0",
       currency: "€",
     },
   ],
   cash: [
     {
       name: "",
-      amount: 0,
+      amount: "0",
       currency: "€",
     },
   ],
@@ -107,7 +100,7 @@ export function MonthlyReportForm({
     const movements = data.income.map(({ name, amount, currency }) => ({
       description: name,
       category: "income",
-      amount,
+      amount: Number.parseFloat(amount.replace(",", ".")),
       currency,
       type: "income" as movementType,
     }));
@@ -116,7 +109,7 @@ export function MonthlyReportForm({
       ...data.expenses.map(({ name, amount, currency }) => ({
         description: name,
         category: "expense",
-        amount,
+        amount: Number.parseFloat(amount.replace(",", ".")),
         currency,
         type: "expense" as movementType,
       }))
@@ -130,17 +123,23 @@ export function MonthlyReportForm({
 
     const formattedValues = {
       date: date.toISOString(),
-      cash: data.cash,
+      cash: data.cash.map((cash) => ({
+        ...cash,
+        amount: Number.parseFloat(cash.amount.replace(",", ".")),
+      })),
       investments: data.funds.map((investment) => ({
         fund: investment.fund,
-        amountInvested: investment.amountInvested,
-        currentValue: investment.currentValue,
+        amountInvested: Number.parseFloat(
+          investment.amountInvested.replace(",", ".")
+        ),
+        currentValue: Number.parseFloat(
+          investment.currentValue.replace(",", ".")
+        ),
         currency: investment.currency,
       })),
       movements: movements,
     };
 
-    console.log({ formattedValues });
     await saveMonthReport(formattedValues);
     reset(defaultValues);
   };
@@ -267,10 +266,8 @@ function IncomeAndExpenses({
                   <MonetaryInput
                     className="mt-2"
                     value={field.value}
-                    onChange={(e) => {
-                      const { value } = e.target as any; // TODO: fix this
-                      if (isNaN(value)) return;
-                      field.onChange(e.target.value);
+                    onChange={(value) => {
+                      field.onChange(value);
                     }}
                   />
                 )}
@@ -295,7 +292,7 @@ function IncomeAndExpenses({
           onClick={() => {
             append({
               name: "",
-              amount: 0,
+              amount: "0",
               currency: "",
             });
           }}
@@ -367,10 +364,8 @@ function Funds({
                   <MonetaryInput
                     className="mt-2"
                     value={field.value}
-                    onChange={(e) => {
-                      const { value } = e.target as any; // TODO: fix this
-                      if (isNaN(value)) return;
-                      field.onChange(e.target.value);
+                    onChange={(value) => {
+                      field.onChange(value);
                     }}
                   />
                 )}
@@ -385,10 +380,8 @@ function Funds({
                   <MonetaryInput
                     className="mt-2"
                     value={field.value}
-                    onChange={(e) => {
-                      const { value } = e.target as any; // TODO: fix this
-                      if (isNaN(value)) return;
-                      field.onChange(e.target.value);
+                    onChange={(value) => {
+                      field.onChange(value);
                     }}
                   />
                 )}
@@ -413,8 +406,8 @@ function Funds({
           onClick={() => {
             append({
               fund: fundsOptions[0],
-              currentValue: 0,
-              amountInvested: 0,
+              currentValue: "0",
+              amountInvested: "0",
               currency: "€",
             });
           }}

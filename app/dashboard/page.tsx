@@ -79,7 +79,7 @@ export default async function DashBoard() {
         amountInvested: stock.amountInvested,
         difference: geStockDifference(
           stock,
-          previousMonth.investments.find((f) => f.fund.id === stock.fund.id)
+          previousMonth?.investments.find((f) => f.fund.id === stock.fund.id)
         ),
         profit: getStockProfit(res, stock, 0),
         currency: stock.currency,
