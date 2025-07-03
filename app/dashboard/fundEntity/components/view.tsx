@@ -33,7 +33,7 @@ function FundList({ entities }: { entities: FundEntityWithId[] }) {
   };
 
   return (
-    <ul className="mt-3 grid gap-4">
+    <ul className="mt-3 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       {entities.map((entity) => {
         return (
           <li key={entity.ISIN}>

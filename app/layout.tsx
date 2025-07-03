@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Soldi",
   description: "Finance Tracker",
+  icons: {
+    icon: "/favicon.svg", // This supports SVG
+  },
 };
 
 export default function RootLayout({
