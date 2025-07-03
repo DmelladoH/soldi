@@ -25,34 +25,40 @@ export function TotalChart({
   title: string;
 }) {
   return (
-    <Card className="grid flex-grow h-full">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
+    <Card className="flex flex-col h-full">
+      <CardHeader className="pb-3 sm:pb-6">
+        <CardTitle className="text-base sm:text-lg">{title}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1 p-3 sm:p-6">
         {chartData.length === 0 ? (
-          <div className="flex flex-1 justify-center items-center">
-            <p className="text-sm">No Data</p>
+          <div className="flex flex-1 justify-center items-center min-h-[200px] sm:min-h-[300px]">
+            <p className="text-sm text-muted-foreground">No Data</p>
           </div>
         ) : (
-          <ChartContainer config={chartConfig}>
-            <BarChart
-              accessibilityLayer
-              data={chartData}
-              margin={{
-                left: 12,
-                right: 12,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
-              <Bar dataKey="amount" fill="#8884d8" />
-            </BarChart>
-          </ChartContainer>
+          <div className="w-full h-full min-h-[200px] sm:min-h-[300px]">
+            <ChartContainer config={chartConfig}>
+              <BarChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  left: 8,
+                  right: 8,
+                  top: 8,
+                  bottom: 8,
+                }}
+                width={undefined}
+                height={undefined}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" fontSize={12} tick={{ fontSize: 10 }} />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel />}
+                />
+                <Bar dataKey="amount" fill="#8884d8" />
+              </BarChart>
+            </ChartContainer>
+          </div>
         )}
       </CardContent>
     </Card>

@@ -21,18 +21,25 @@ export default function FinanceCard({
 }: FinanceCardProps) {
   return (
     <Card
-      className={cn("p-6 rounded-lg shadow-sm border flex-grow", className)}
+      className={cn(
+        "p-4 sm:p-6 rounded-lg shadow-sm border flex-grow",
+        className
+      )}
     >
       <div className="flex items-center">
-        <div className="p-2 rounded-md bg-slate-200">{icon}</div>
-        <div className="ml-4">
-          <h3 className="text-sm font-medium ">{title}</h3>
-          <div className="grid md:flex items-baseline">
-            <p className="text-2xl font-semibold">{value}</p>
+        <div className="p-2 rounded-md bg-slate-200 flex-shrink-0">{icon}</div>
+        <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+          <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">
+            {title}
+          </h3>
+          <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+            <p className="text-lg sm:text-2xl font-semibold truncate">
+              {value}
+            </p>
             {change && (
               <p
                 className={cn(
-                  "ml-2 text-sm font-medium",
+                  "text-xs sm:text-sm font-medium",
                   change.positive ? "text-moneyGreen" : "text-moneyRed"
                 )}
               >

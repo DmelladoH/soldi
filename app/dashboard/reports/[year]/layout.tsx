@@ -60,8 +60,8 @@ export default async function ReportLayout({
   return (
     <div className="h-screen flex flex-col">
       <header>
-        <h1 className="text-2xl font-bold text-gray-900">Financial Reports</h1>
-        <div>
+        <h1 className="text-2xl font-bold">Financial Reports</h1>
+        <div className="mt-4">
           <div className="flex justify-between">
             <Button asChild>
               <a href={`/dashboard/reports/${prevYear}/jan`}>prev</a>

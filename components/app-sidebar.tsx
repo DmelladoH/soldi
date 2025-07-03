@@ -15,8 +15,8 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="pl-10 flex items-center justify-between p-4">
-          <Link href="/dashboard" className="text-xl font-semibold">
+        <div className="pl-6 sm:pl-10 flex items-center justify-between p-3 sm:p-4">
+          <Link href="/dashboard" className="text-lg sm:text-xl font-semibold">
             Soldi
           </Link>
         </div>
@@ -29,19 +29,31 @@ export function AppSidebar() {
               Month Report
             </Link>
           </Button>
-          <ul className="mt-10 grid gap-3 pl-5">
+          <ul className="mt-8 sm:mt-10 grid gap-2 sm:gap-3 pl-3 sm:pl-5">
             <li>
-              <Button asChild variant="ghost" className="w-full justify-start">
+              <Button
+                asChild
+                variant="ghost"
+                className="w-full justify-start text-sm sm:text-base"
+              >
                 <Link href={"/dashboard/"}>Home</Link>
               </Button>
             </li>
             <li>
-              <Button asChild variant="ghost" className="w-full justify-start">
+              <Button
+                asChild
+                variant="ghost"
+                className="w-full justify-start text-sm sm:text-base"
+              >
                 <Link href={"/dashboard/fundEntity"}>Fund Entity</Link>
               </Button>
             </li>
             <li>
-              <Button asChild variant="ghost" className="w-full justify-start">
+              <Button
+                asChild
+                variant="ghost"
+                className="w-full justify-start text-sm sm:text-base"
+              >
                 <Link href={"/dashboard/reports"}>Reports</Link>
               </Button>
             </li>
@@ -50,7 +62,7 @@ export function AppSidebar() {
         <SidebarGroup />
       </SidebarContent>
       <SidebarFooter>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center p-3 sm:p-4">
           <UserFooter />
           <ThemeSwitchButton />
         </div>
