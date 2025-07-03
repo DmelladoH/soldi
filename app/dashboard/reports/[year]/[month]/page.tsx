@@ -1,7 +1,7 @@
-import FinanceCard from "@/components/financeCard";
-import { formatCurrency, getTotalMoney } from "@/lib/utils";
+import { FundTable } from "@/components/fundsTable";
+import ReportHeader from "@/components/reportHeader";
+import { formatStock } from "@/lib/utils";
 import { getMonthlyReportWithInvestments } from "@/server/queries";
-import { Wallet } from "lucide-react";
 const MONTHS = [
   "jan",
   "feb",
@@ -23,51 +23,54 @@ export default async function Page({
 }) {
   const { month, year } = await params;
 
-  const currentMonthDate = new Date(
-    Number(year),
-    MONTHS.indexOf(month.toLocaleLowerCase()),
-    new Date(
-      Number(year),
-      MONTHS.indexOf(month.toLocaleLowerCase()) + 1,
-    ).getDate()
-  );
+  // Get the last day of the current month
+  const currentMonthIndex = MONTHS.indexOf(month.toLocaleLowerCase());
+  const currentMonthDate = new Date(Number(year), currentMonthIndex + 1, 0);
 
-  const previousMonthDate = new Date(
-    currentMonthDate.getFullYear(),
-    currentMonthDate.getMonth() - 1,
-    1
-  );
+  // Handle January: if current month is January (0), previous month is December of previous year
+  const previousMonthDate =
+    currentMonthDate.getMonth() === 0
+      ? new Date(currentMonthDate.getFullYear() - 1, 11, 1)
+      : new Date(
+          currentMonthDate.getFullYear(),
+          currentMonthDate.getMonth() - 1,
+          1
+        );
 
-  console.log({ previousMonthDate, currentMonthDate });
   const res = await getMonthlyReportWithInvestments(
     previousMonthDate,
     currentMonthDate
   );
 
-  const previousMonth = res.length === 2 ? res[0] : null;
-  const currentMonth = res.length === 2 ? res[1] : res[0];
+  const currentMonth = res.find(
+    (report) => new Date(report.date).getMonth() === currentMonthIndex
+  );
+  const previousMonth = res.find(
+    (report) => new Date(report.date).getMonth() === currentMonthIndex - 1
+  );
 
-  console.log({ currentMonth, previousMonth, res });
+  const monthlyReport = [...res].reverse();
+  const stocks = formatStock(
+    currentMonth?.investments || [],
+    previousMonth?.investments || [],
+    monthlyReport
+  );
 
-  const totalWealth = getTotalMoney(currentMonth);
-  const previousMonthWealth = previousMonth ? getTotalMoney(previousMonth) : 0;
-
-  console.log({ totalWealth, previousMonthWealth });
   return (
     <>
       {currentMonth === null ? (
         <span>no reports</span>
       ) : (
-        <div>
-          <FinanceCard
-            title="Net Worth"
-            value={formatCurrency(totalWealth)}
-            change={{
-              value: formatCurrency(totalWealth - previousMonthWealth),
-              positive: totalWealth > previousMonthWealth,
-            }}
-            icon={<Wallet className="h-5 w-5 text-finance-blue" />}
-          />
+        <div className="">
+          <div className="flex gap-4 w-full mb-5">
+            <ReportHeader
+              currentMonth={currentMonth}
+              lastMonth={previousMonth}
+            />
+          </div>
+          <div className="mt-5">
+            <FundTable stocks={stocks} />
+          </div>
         </div>
       )}
     </>

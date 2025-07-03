@@ -1,21 +1,28 @@
 import { getMonthlyReportWithInvestments } from "@/server/queries";
-import { MonthGraph } from "./_components/monthGraph";
+import { MonthGraph } from "../_components/monthGraph";
 import { getTotalMovementByType } from "@/lib/utils";
 import { MonthReportWithId } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 
 export default async function ReportLayout({
+  params,
   children,
-}: Readonly<{ children: React.ReactNode }>) {
-  const today = new Date();
-  const lastYearDate = new Date(
-    today.getFullYear() - 1,
-    today.getMonth(),
-    today.getDate()
-  );
+}: Readonly<{
+  children: React.ReactNode;
+  params: Promise<{ year: string }>;
+}>) {
+  const { year } = await params;
+
+  const currentYearRange = {
+    start: new Date(Number(year), 0, 1),
+    end: new Date(Number(year), 11, 31),
+  };
 
   const res = (
-    await getMonthlyReportWithInvestments(lastYearDate, today)
+    await getMonthlyReportWithInvestments(
+      currentYearRange.start,
+      currentYearRange.end
+    )
   ).reverse();
 
   const getYearExpenseIncomeReport = (
@@ -30,7 +37,7 @@ export default async function ReportLayout({
         res.push({
           month: new Intl.DateTimeFormat("en-US", {
             month: "short",
-          }).format(new Date(lastYearDate.getFullYear(), i)),
+          }).format(new Date(currentYearRange.start.getFullYear(), i)),
           income: 0,
           expense: 0,
         });
@@ -46,11 +53,9 @@ export default async function ReportLayout({
     }
     return res;
   };
-
   const yearWithExpenseIncome = getYearExpenseIncomeReport(res);
-  const prevYear = lastYearDate.getFullYear() - 1;
-  const nextYear = lastYearDate.getFullYear() + 1;
-  const currentYear = lastYearDate.getFullYear();
+  const prevYear = Number(year) - 1;
+  const nextYear = Number(year) + 1;
 
   return (
     <div className="h-screen flex flex-col">

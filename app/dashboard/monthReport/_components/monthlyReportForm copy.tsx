@@ -76,7 +76,6 @@ export function MonthlyReportForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       setPending(true);
-      console.log(values);
       const formattedValues = {
         ...values,
         investments: values.investments.map((investment) => ({

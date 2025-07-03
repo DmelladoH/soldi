@@ -92,11 +92,7 @@ export function MonthlyReportForm({
     formState: { isSubmitting },
   } = useForm<FromFields>({ defaultValues });
 
-  console.log(watch());
-
   const onSubmit = async (data: FromFields) => {
-    console.log(data);
-
     const movements = data.income.map(({ name, amount, currency }) => ({
       description: name,
       category: "income",

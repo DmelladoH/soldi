@@ -31,7 +31,6 @@ export const geStockDifference = (
 ) => {
   if (!currStock || !prevStock) return 0;
   const prevValue = prevStock.currentValue;
-  console.log(currStock.currentValue, currStock.amountInvested, prevValue);
   return currStock.currentValue - currStock.amountInvested - prevValue;
 };
 
@@ -105,4 +104,25 @@ export const getTotalMovementByType = (
         .filter((movement) => movement.type === type)
         .reduce((acc, curr) => acc + curr.amount, 0)
     : 0;
+};
+
+export const formatStock = (
+  currentInvestments: Investments[],
+  lastInvestments: Investments[],
+  res: MonthReportWithId[]
+) => {
+  console.log({ currentInvestments, lastInvestments, res });
+  return currentInvestments.length
+    ? currentInvestments.map((stock) => ({
+        fund: stock.fund,
+        currentValue: stock.currentValue,
+        amountInvested: stock.amountInvested,
+        difference: geStockDifference(
+          stock,
+          lastInvestments.find((f) => f.fund.id === stock.fund.id)
+        ),
+        profit: getStockProfit(res, stock, 0),
+        currency: stock.currency,
+      }))
+    : [];
 };
