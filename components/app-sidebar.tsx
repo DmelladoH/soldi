@@ -40,11 +40,11 @@ export function AppSidebar() {
                 <Link href={"/dashboard/fundEntity"}>Fund Entity</Link>
               </Button>
             </li>
-            {/* <li>
+            <li>
               <Button asChild variant="ghost" className="w-full justify-start">
                 <Link href={"/dashboard/reports"}>Reports</Link>
               </Button>
-            </li> */}
+            </li>
           </ul>
         </SidebarGroup>
         <SidebarGroup />

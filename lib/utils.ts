@@ -1,6 +1,12 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Cash, Investments, MonthReportWithId } from "./types";
+import {
+  Cash,
+  Investments,
+  MonthReportWithId,
+  Movement,
+  movementType,
+} from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -87,4 +93,16 @@ export const formatCurrency = (amount: number) => {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(amount);
+};
+
+// Gets the total of a movement type for a given movement array
+export const getTotalMovementByType = (
+  reportList: Movement[],
+  type: movementType
+) => {
+  return reportList?.length
+    ? reportList
+        .filter((movement) => movement.type === type)
+        .reduce((acc, curr) => acc + curr.amount, 0)
+    : 0;
 };

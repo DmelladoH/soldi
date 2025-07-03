@@ -87,11 +87,26 @@ export async function deleteFundEntity(
   }
 }
 
-export async function getMonthlyReportWithInvestments(): Promise<
-  MonthReportWithId[]
-> {
+export async function getMonthlyReportWithInvestments(
+  startDate: Date,
+  endDate?: Date
+): Promise<MonthReportWithId[]> {
   try {
     const res = await db.query.monthlyReports.findMany({
+      where: (monthlyReports, { and, gte, lte }) =>
+        and(
+          gte(monthlyReports.date, startDate.toISOString()),
+          lte(
+            monthlyReports.date,
+            endDate
+              ? endDate.toISOString()
+              : new Date(
+                  startDate.getFullYear(),
+                  startDate.getMonth() + 1,
+                  0
+                ).toISOString()
+          )
+        ),
       with: {
         investments: {
           with: {
@@ -101,6 +116,7 @@ export async function getMonthlyReportWithInvestments(): Promise<
         cash: true,
         movements: true,
       },
+
       orderBy: (monthlyReports, { desc }) => [desc(monthlyReports.date)],
     });
 

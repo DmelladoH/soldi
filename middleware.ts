@@ -1,18 +1,45 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
+// Auth route matcher for Clerk
 const isProtectedRoute = createRouteMatcher(["/dashboard(.*)"]);
 
-export default clerkMiddleware(async (auth, req) => {
+// Your combined middleware
+const customMiddleware = clerkMiddleware(async (auth, req) => {
+  // Protect dashboard routes with Clerk
   if (isProtectedRoute(req)) {
     await auth.protect();
   }
+
+  // Report redirect logic for /dashboard/reports
+  const { pathname } = req.nextUrl;
+
+  if (pathname === "/dashboard/reports" || pathname === "/dashboard/reports/") {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Intl.DateTimeFormat("en-US", {
+      month: "short",
+    }).format(new Date());
+
+    const redirectUrl = new URL(
+      `/dashboard/reports/${currentYear}/${currentMonth}`,
+      req.url
+    );
+
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  // Let everything else through
+  return NextResponse.next();
 });
 
+export default customMiddleware;
+
+// Matcher config
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
+    // Apply to all routes excluding static files and internals
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
+    // Include API routes too
     "/(api|trpc)(.*)",
   ],
 };

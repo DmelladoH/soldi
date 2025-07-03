@@ -9,13 +9,16 @@ import {
   getStockProfit,
   getTotalChart,
   getTotalMoney,
+  getTotalMovementByType,
 } from "@/lib/utils";
 import { ArrowDown, ArrowUp, TrendingUp, Wallet } from "lucide-react";
 import { FundTable } from "@/components/fundsTable";
-import { Movement, movementType } from "@/lib/types";
 
 export default async function DashBoard() {
-  const res = await getMonthlyReportWithInvestments();
+  const today = new Date();
+  const lastMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+
+  const res = await getMonthlyReportWithInvestments(lastMonthDate, today);
   const lastMonth = res[0];
   const previousMonth = res[1];
   console.log(res);
@@ -27,17 +30,6 @@ export default async function DashBoard() {
 
   const totalWealth = getTotalMoney(lastMonth);
   const previousMonthWealth = getTotalMoney(previousMonth);
-
-  const getTotalMovementByType = (
-    reportList: Movement[],
-    type: movementType
-  ) => {
-    return reportList?.length
-      ? reportList
-          .filter((movement) => movement.type === type)
-          .reduce((acc, curr) => acc + curr.amount, 0)
-      : 0;
-  };
 
   const lastMonthIncome = getTotalMovementByType(
     lastMonth?.movements,

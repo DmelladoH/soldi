@@ -122,7 +122,7 @@ export function MonthlyReportForm({
     );
 
     const formattedValues = {
-      date: date.toISOString(),
+      date: new Date(date.getFullYear(), date.getMonth(), 1).toISOString(),
       cash: data.cash.map((cash) => ({
         ...cash,
         amount: Number.parseFloat(cash.amount.replace(",", ".")),

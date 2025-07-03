@@ -27,7 +27,7 @@ export default function FinanceCard({
         <div className="p-2 rounded-md bg-slate-200">{icon}</div>
         <div className="ml-4">
           <h3 className="text-sm font-medium ">{title}</h3>
-          <div className="flex items-baseline">
+          <div className="grid md:flex items-baseline">
             <p className="text-2xl font-semibold">{value}</p>
             {change && (
               <p
