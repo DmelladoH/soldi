@@ -1,7 +1,7 @@
 import { FundTable } from "@/components/fundsTable";
 import ReportHeader from "@/components/reportHeader";
 import { formatStock } from "@/lib/utils";
-import { getMonthlyReportWithInvestments } from "@/server/queries";
+import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
 const MONTHS = [
   "jan",
   "feb",

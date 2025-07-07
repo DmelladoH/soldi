@@ -1,4 +1,4 @@
-import { getMonthlyReportWithInvestments } from "@/server/queries";
+import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
 import { MonthGraph } from "../_components/monthGraph";
 import { getTotalMovementByType } from "@/lib/utils";
 import { MonthReportWithId } from "@/lib/types";

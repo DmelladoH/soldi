@@ -1,4 +1,4 @@
-import { getFoundEntities } from "@/server/queries";
+import { getFoundEntities } from "@/server/db/queries/foundEntities";
 import FundEntityView from "./components/view";
 
 export default async function FundEntity() {

@@ -58,15 +58,30 @@ export const monthlyReportMovements = sqliteTable("monthly_report_movements", {
   monthlyReportId: integer("monthly_report_id")
     .references(() => monthlyReports.id)
     .notNull(),
+  tagId: integer("tag_id")
+    .references(() => movementTag.id)
+    .notNull(),
   type: text("type", { enum: ["expense", "income"] }).notNull(),
-  category: text("category", { length: 256 }).notNull(),
-  description: text("name", { length: 256 }).notNull(),
+  description: text("name", { length: 256 }),
   amount: integer("amount").notNull(),
   currency: text("currency", { length: 3 }).notNull(),
   createdAt: text("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
 });
+
+export const movementTag = sqliteTable("movement_tag", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  name: text("name", { length: 256 }).notNull().unique(),
+  type: text("type", { enum: ["expense", "income"] }).notNull(),
+  createdAt: text("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+
+export const movementTagRelations = relations(movementTag, ({ many }) => ({
+  movements: many(monthlyReportMovements),
+}));
 
 export const monthlyReportRelations = relations(monthlyReports, ({ many }) => ({
   investments: many(monthlyReportInvestments),
@@ -93,6 +108,7 @@ export const monthlyReportMovementsRelations = relations(
     }),
   })
 );
+
 export const monthlyReportInvestmentsRelations = relations(
   monthlyReportInvestments,
   ({ one }) => ({

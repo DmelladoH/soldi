@@ -3,9 +3,10 @@
 import { FundEntity, FundEntityWithId } from "@/lib/types";
 import {
   addFoundEntity,
-  deleteFundEntity,
   getReportsFromFundEntity,
-} from "@/server/queries";
+  deleteFundEntity,
+} from "@/server/db/queries/foundEntities";
+
 import { revalidatePath } from "next/cache";
 
 export async function saveFundEntity(

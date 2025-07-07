@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import MonetaryInput from "@/components/ui/monetaryInput";
 import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
-import { FundEntityWithId, movementType } from "@/lib/types";
+import { FundEntityWithId, MovementTag, movementType } from "@/lib/types";
 import { SelectItem, SelectValue } from "@radix-ui/react-select";
 import { Plus, Trash } from "lucide-react";
 import {
@@ -17,17 +17,22 @@ import {
 } from "react-hook-form";
 import { saveMonthReport } from "../actions";
 
-interface transaction {
+interface cash {
   name: string;
+  amount: string;
+  currency: string;
+}
+
+interface movement {
+  tag: MovementTag;
   amount: string;
   currency: string;
 }
 interface FromFields {
   month: number;
   year: number;
-  income: transaction[];
-  expenses: transaction[];
-  cash: transaction[];
+  movements: movement[];
+  cash: cash[];
   funds: {
     fund: FundEntityWithId;
     currentValue: string;
@@ -54,61 +59,37 @@ const Months = {
 const defaultValues = {
   month: new Date().getUTCMonth() + 1,
   year: new Date().getFullYear(),
-  income: [
-    {
-      name: "",
-      amount: "0",
-      currency: "€",
-    },
-  ],
-  expenses: [
-    {
-      name: "",
-      amount: "0",
-      currency: "€",
-    },
-  ],
-  cash: [
-    {
-      name: "",
-      amount: "0",
-      currency: "€",
-    },
-  ],
+  movements: [],
+  cash: [],
   funds: [],
 };
 
 export function MonthlyReportForm({
   fundsOptions,
+  movementTags,
 }: {
   fundsOptions: FundEntityWithId[];
+  movementTags: MovementTag[];
 }) {
   const {
     register,
     control,
     handleSubmit,
     reset,
+    watch,
     formState: { isSubmitting },
   } = useForm<FromFields>({ defaultValues });
 
+  console.log(watch());
+
   const onSubmit = async (data: FromFields) => {
-    const movements = data.income.map(({ name, amount, currency }) => ({
-      description: name,
-      category: "income",
+    const movements = data.movements.map(({ tag, amount, currency }) => ({
+      description: "",
+      tagId: tag.id,
       amount: Number.parseFloat(amount.replace(",", ".")),
       currency,
-      type: "income" as movementType,
+      type: tag.type,
     }));
-
-    movements.push(
-      ...data.expenses.map(({ name, amount, currency }) => ({
-        description: name,
-        category: "expense",
-        amount: Number.parseFloat(amount.replace(",", ".")),
-        currency,
-        type: "expense" as movementType,
-      }))
-    );
 
     const formattedValues = {
       month: data.month,
@@ -178,10 +159,9 @@ export function MonthlyReportForm({
           <legend>Income</legend>
           <div className="mt-5">
             <IncomeAndExpenses
-              name="income"
-              placeholder="Payroll"
+              type="income"
+              movementTags={movementTags}
               control={control}
-              register={register}
             />
           </div>
         </fieldset>
@@ -189,10 +169,9 @@ export function MonthlyReportForm({
           <legend>Expenses</legend>
           <div className="mt-5">
             <IncomeAndExpenses
-              name="expenses"
-              placeholder="Rent"
+              type="expense"
+              movementTags={movementTags}
               control={control}
-              register={register}
             />
           </div>
         </fieldset>
@@ -200,8 +179,7 @@ export function MonthlyReportForm({
       <fieldset className="grid gap-5 mt-10 w-full">
         <legend>Cash</legend>
         <div className="mt-5">
-          <IncomeAndExpenses
-            name="cash"
+          <Cash
             placeholder="Caixa bank"
             control={control}
             register={register}
@@ -221,18 +199,19 @@ export function MonthlyReportForm({
   );
 }
 
-function IncomeAndExpenses({
-  name,
+function Cash({
   control,
   register,
   placeholder,
 }: {
-  name: "income" | "expenses" | "cash";
   control: Control<FromFields>;
   register: UseFormRegister<FromFields>;
   placeholder: string;
 }) {
-  const { fields, append, remove } = useFieldArray({ name, control });
+  const { fields, append, remove } = useFieldArray({
+    name: "cash",
+    control,
+  });
 
   return (
     <>
@@ -243,14 +222,14 @@ function IncomeAndExpenses({
               Name
               <Input
                 className="mt-2 "
-                {...register(`${name}.${index}.name`)}
+                {...register(`cash.${index}.name`)}
                 placeholder={placeholder}
               />
             </Label>
             <Label>
               Amount
               <Controller
-                name={`${name}.${index}.amount`}
+                name={`cash.${index}.amount`}
                 control={control}
                 render={({ field }) => (
                   <MonetaryInput
@@ -284,6 +263,111 @@ function IncomeAndExpenses({
               name: "",
               amount: "0",
               currency: "",
+            });
+          }}
+        >
+          <Plus /> Add
+        </Button>
+      </div>
+    </>
+  );
+}
+
+function IncomeAndExpenses({
+  type,
+  control,
+  movementTags,
+}: {
+  type: movementType;
+  control: Control<FromFields>;
+  movementTags: MovementTag[];
+}) {
+  const { fields, append, remove } = useFieldArray({
+    name: "movements",
+    control,
+  });
+
+  return (
+    <>
+      <ul className="grid gap-5">
+        {fields.map((field, index) => (
+          <li key={field.id} className="flex gap-2 items-end">
+            <Label className="flex-grow">
+              Name
+              <Controller
+                name={`movements.${index}.tag`}
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    onValueChange={(id) => {
+                      if (id == "") return;
+
+                      field.onChange(
+                        movementTags.find(
+                          (tag) => tag.id === Number.parseInt(id)
+                        )
+                      );
+                    }}
+                    value={field.value?.name}
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder="Select a tag"
+                        className=" text-wrap"
+                      >
+                        {field.value?.name}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {movementTags
+                        .filter((tag) => tag.type === type)
+                        .map((tag) => (
+                          <SelectItem key={tag.id} value={tag.id.toString()}>
+                            {tag.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </Label>
+            <Label>
+              Amount
+              <Controller
+                name={`movements.${index}.amount`}
+                control={control}
+                render={({ field }) => (
+                  <MonetaryInput
+                    className="mt-2"
+                    value={field.value}
+                    onChange={(value) => {
+                      field.onChange(value);
+                    }}
+                  />
+                )}
+              />
+            </Label>
+            <Button
+              variant="secondary"
+              type="button"
+              className="mt-2"
+              disabled={fields.length === 1}
+              onClick={() => remove(index)}
+            >
+              <Trash />
+            </Button>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-5">
+        <Button
+          variant="secondary"
+          type="button"
+          onClick={() => {
+            append({
+              tag: movementTags.find((tag) => tag.type === type)!,
+              amount: "0",
+              currency: "€",
             });
           }}
         >

@@ -26,7 +26,7 @@ export interface Investments {
 
 export interface Movement {
   description: string;
-  category: string;
+  tagId: number;
   type: movementType;
   amount: number;
   currency: string;
@@ -46,4 +46,10 @@ export interface MonthlyReport {
 
 export interface MonthReportWithId extends MonthlyReport {
   id: number;
+}
+
+export interface MovementTag {
+  id: number;
+  name: string;
+  type: movementType;
 }

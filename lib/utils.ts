@@ -38,7 +38,7 @@ export const getInvestmentChart = (
   report: MonthReportWithId[]
 ): { month: string; amount: number }[] => {
   return report.map((report) => ({
-    month: new Date(report.date).toLocaleDateString("en-GB", {
+    month: new Date(report.year, report.month, 1).toLocaleDateString("en-GB", {
       month: "long",
       timeZone: "UTC",
     }),
@@ -50,7 +50,7 @@ export const getTotalChart = (
   report: MonthReportWithId[]
 ): { month: string; amount: number }[] => {
   return report.map((report) => ({
-    month: new Date(report.date).toLocaleDateString("en-US", {
+    month: new Date(report.year, report.month, 1).toLocaleDateString("en-GB", {
       month: "long",
       timeZone: "UTC",
     }),

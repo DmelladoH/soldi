@@ -9,10 +9,10 @@ import { MonthReportWithId } from "@/lib/types";
 
 export default function ReportHeader({
   currentMonth,
-  lastMonth,
+  lastMonth = undefined,
 }: {
   currentMonth: MonthReportWithId | undefined;
-  lastMonth: MonthReportWithId | undefined;
+  lastMonth?: MonthReportWithId | undefined;
 }) {
   const currentMonthIncome = getTotalMovementByType(
     currentMonth?.movements || [],
@@ -56,20 +56,28 @@ export default function ReportHeader({
         <FinanceCard
           title="Net Worth"
           value={formatCurrency(totalWealth)}
-          change={{
-            value: formatCurrency(totalWealth - previousMonthWealth),
-            positive: totalWealth > previousMonthWealth,
-          }}
+          change={
+            lastMonth
+              ? {
+                  value: formatCurrency(totalWealth - previousMonthWealth),
+                  positive: totalWealth > previousMonthWealth,
+                }
+              : undefined
+          }
           icon={<Wallet className="h-5 w-5 text-finance-blue" />}
         />
       </div>
       <div className="monthIncome flex-grow">
         <FinanceCard
           title="Monthly Income"
-          change={{
-            value: formatCurrency(currentMonthIncome - lastMonthIncome),
-            positive: currentMonthIncome > lastMonthIncome,
-          }}
+          change={
+            lastMonth
+              ? {
+                  value: formatCurrency(currentMonthIncome - lastMonthIncome),
+                  positive: currentMonthIncome > lastMonthIncome,
+                }
+              : undefined
+          }
           value={formatCurrency(currentMonthIncome)}
           icon={<ArrowUp className="h-5 w-5 text-moneyGreen" />}
         />
@@ -77,10 +85,16 @@ export default function ReportHeader({
       <div className="monthExpense flex-grow">
         <FinanceCard
           title="Monthly Expenses"
-          change={{
-            value: formatCurrency(currentMonthExpenses - lastMonthExpenses),
-            positive: currentMonthExpenses > lastMonthExpenses,
-          }}
+          change={
+            lastMonth
+              ? {
+                  value: formatCurrency(
+                    currentMonthExpenses - lastMonthExpenses
+                  ),
+                  positive: currentMonthExpenses > lastMonthExpenses,
+                }
+              : undefined
+          }
           value={formatCurrency(currentMonthExpenses)}
           icon={<ArrowDown className="h-5 w-5 text-moneyRed" />}
         />
@@ -89,12 +103,17 @@ export default function ReportHeader({
         <FinanceCard
           title="Saving Rate"
           value={`${currentMonthSavingsRate}%`}
-          change={{
-            value: `${(
-              Number(currentMonthSavingsRate) - Number(lastMonthSavingsRate)
-            ).toFixed(2)}%`,
-            positive: currentMonthSavingsRate > lastMonthSavingsRate,
-          }}
+          change={
+            lastMonth
+              ? {
+                  value: `${(
+                    Number(currentMonthSavingsRate) -
+                    Number(lastMonthSavingsRate)
+                  ).toFixed(2)}%`,
+                  positive: currentMonthSavingsRate > lastMonthSavingsRate,
+                }
+              : undefined
+          }
           icon={<TrendingUp className="h-5 w-5 text-yellow-600" />}
         />
       </div>

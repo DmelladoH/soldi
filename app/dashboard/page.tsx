@@ -1,4 +1,4 @@
-import { getMonthlyReportWithInvestments } from "@/server/queries";
+import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
 import { TotalChart } from "./_components/totalChart";
 
 import { formatStock, getInvestmentChart, getTotalChart } from "@/lib/utils";
@@ -8,34 +8,24 @@ import ReportHeader from "@/components/reportHeader";
 export default async function DashBoard() {
   const today = new Date();
 
-  const res = await getMonthlyReportWithInvestments(
+  const monthlyReport = await getMonthlyReportWithInvestments(
     today.getUTCMonth(),
     today.getFullYear()
   );
 
-  const monthlyReport = [...res].reverse();
-
-  const currentMonth = monthlyReport.find(
-    (report) => report.month === today.getUTCMonth()
-  );
-
-  const lastMonth = monthlyReport.find(
-    (report) => report.month === today.getUTCMonth() - 1
-  );
-
   const chartTotalData = getTotalChart(monthlyReport);
-
+  console.log({ chartTotalData });
   const chartInvestmentData = getInvestmentChart(monthlyReport);
 
   const stocks = formatStock(
-    currentMonth?.investments || [],
-    lastMonth?.investments || [],
+    monthlyReport[0]?.investments || [],
+    monthlyReport[monthlyReport.length - 1]?.investments || [],
     monthlyReport
   );
 
   return (
     <div className="dashboard-grid">
-      <ReportHeader currentMonth={currentMonth} lastMonth={lastMonth} />
+      <ReportHeader currentMonth={monthlyReport[monthlyReport.length - 1]} />
       <div className="networkTrend">
         <TotalChart chartData={chartTotalData} title="Total Money" />
       </div>

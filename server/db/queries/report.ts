@@ -1,119 +1,62 @@
+import { MonthlyReport, MonthReportWithId } from "@/lib/types";
+import { db } from "..";
 import {
-  FundEntity,
-  FundEntityWithId,
-  MonthlyReport,
-  MonthReportWithId,
-} from "@/lib/types";
-import { db } from "./db";
-import {
-  fundEntities,
   monthlyReportInvestments,
   monthlyReports,
   monthlyReportCash,
   monthlyReportMovements,
-} from "./db/schema";
-import { eq } from "drizzle-orm";
-
-export async function getFoundEntities() {
-  try {
-    const res = await db.query.fundEntities.findMany();
-    const processedRes: FundEntityWithId[] = res.map((entity) => ({
-      id: entity.id,
-      ISIN: entity.ISIN,
-      name: entity.name,
-      currency: entity.currency,
-      type: entity.type,
-    }));
-    return processedRes;
-  } catch (e: unknown) {
-    if (e instanceof Error) {
-      throw new Error(`Error getting fund entity: ${e.message}`);
-    } else {
-      throw new Error(
-        "An unknown error occurred while getting all fundEntities."
-      );
-    }
-  }
-}
-
-export async function getReportsFromFundEntity(id: number) {
-  try {
-    const res = await db
-      .select()
-      .from(monthlyReportInvestments)
-      .where(eq(monthlyReportInvestments.fundEntityId, id));
-
-    return res;
-  } catch (e: unknown) {
-    if (e instanceof Error) {
-      throw new Error(`Error getting fund entity: ${e.message}`);
-    } else {
-      throw new Error(
-        "An unknown error occurred while getting all fundEntities."
-      );
-    }
-  }
-}
-
-export async function addFoundEntity(
-  fundEntity: FundEntity
-): Promise<FundEntityWithId[]> {
-  try {
-    const res = await db.insert(fundEntities).values(fundEntity).returning();
-    return res;
-  } catch (e: unknown) {
-    if (e instanceof Error) {
-      throw new Error(`Error adding fund entity: ${e.message}`);
-    } else {
-      throw new Error("An unknown error occurred while adding fund entity.");
-    }
-  }
-}
-
-export async function deleteFundEntity(
-  id: number
-): Promise<FundEntityWithId[]> {
-  try {
-    return await db
-      .delete(fundEntities)
-      .where(eq(fundEntities.id, id))
-      .returning();
-  } catch (e: unknown) {
-    if (e instanceof Error) {
-      throw new Error(`Error deleting fund entity: ${e.message}`);
-    } else {
-      throw new Error("An unknown error occurred while deleting fund entity.");
-    }
-  }
-}
+} from "../schema";
 
 export async function getMonthlyReportWithInvestments(
-  startMonth: number,
-  startYear: number,
+  startMonth?: number,
+  startYear?: number,
   endMonth?: number,
-  endYear?: number
+  endYear?: number,
+  orderBy: "asc" | "desc" = "asc"
 ): Promise<MonthReportWithId[]> {
   try {
-    const res = await db.query.monthlyReports.findMany({
-      where: (monthlyReports, { and, gte, lte }) =>
-        and(
-          gte(monthlyReports.month, startMonth),
-          gte(monthlyReports.year, startYear),
-          endMonth ? lte(monthlyReports.month, endMonth) : undefined,
-          endYear ? lte(monthlyReports.year, endYear) : undefined
-        ),
-      with: {
-        investments: {
-          with: {
-            fundEntity: true,
-          },
-        },
-        cash: true,
-        movements: true,
-      },
+    let res = null;
 
-      orderBy: (monthlyReports, { desc }) => [desc(monthlyReports.month)],
-    });
+    if (startMonth && startYear && endMonth && endYear) {
+      res = await db.query.monthlyReports.findMany({
+        where: (monthlyReports, { and, gte, lte }) =>
+          and(
+            gte(monthlyReports.month, startMonth),
+            gte(monthlyReports.year, startYear),
+            endMonth ? lte(monthlyReports.month, endMonth) : undefined,
+            endYear ? lte(monthlyReports.year, endYear) : undefined
+          ),
+        with: {
+          investments: {
+            with: {
+              fundEntity: true,
+            },
+          },
+          cash: true,
+          movements: true,
+        },
+        orderBy: (monthlyReports, { asc, desc }) =>
+          orderBy === "asc"
+            ? [asc(monthlyReports.year), asc(monthlyReports.month)]
+            : [desc(monthlyReports.year), desc(monthlyReports.month)],
+      });
+    } else {
+      res = await db.query.monthlyReports.findMany({
+        with: {
+          investments: {
+            with: {
+              fundEntity: true,
+            },
+          },
+          cash: true,
+          movements: true,
+        },
+        orderBy: (monthlyReports, { asc, desc }) =>
+          orderBy === "asc"
+            ? [asc(monthlyReports.year), asc(monthlyReports.month)]
+            : [desc(monthlyReports.year), desc(monthlyReports.month)],
+      });
+    }
 
     const processedReports = res.map((report) => ({
       id: report.id,
@@ -125,8 +68,8 @@ export async function getMonthlyReportWithInvestments(
         currency: cash.currency,
       })),
       movements: report.movements.map((movement) => ({
-        category: movement.category,
-        description: movement.description,
+        tagId: movement.tagId,
+        description: movement.description || "",
         type: movement.type,
         amount: movement.amount,
         currency: movement.currency,
@@ -179,7 +122,7 @@ export async function addMonthlyReport(monthReport: MonthlyReport) {
     if (monthReport.movements.length > 0) {
       const movementsToInsert = monthReport.movements.map((movement) => ({
         monthlyReportId: newReport.id,
-        category: movement.category,
+        tagId: movement.tagId,
         description: movement.description,
         type: movement.type,
         amount: movement.amount,
