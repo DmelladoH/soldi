@@ -88,24 +88,19 @@ export async function deleteFundEntity(
 }
 
 export async function getMonthlyReportWithInvestments(
-  startDate: Date,
-  endDate?: Date
+  startMonth: number,
+  startYear: number,
+  endMonth?: number,
+  endYear?: number
 ): Promise<MonthReportWithId[]> {
   try {
     const res = await db.query.monthlyReports.findMany({
       where: (monthlyReports, { and, gte, lte }) =>
         and(
-          gte(monthlyReports.date, startDate.toISOString()),
-          lte(
-            monthlyReports.date,
-            endDate
-              ? endDate.toISOString()
-              : new Date(
-                  startDate.getFullYear(),
-                  startDate.getMonth() + 1,
-                  0
-                ).toISOString()
-          )
+          gte(monthlyReports.month, startMonth),
+          gte(monthlyReports.year, startYear),
+          endMonth ? lte(monthlyReports.month, endMonth) : undefined,
+          endYear ? lte(monthlyReports.year, endYear) : undefined
         ),
       with: {
         investments: {
@@ -117,12 +112,13 @@ export async function getMonthlyReportWithInvestments(
         movements: true,
       },
 
-      orderBy: (monthlyReports, { desc }) => [desc(monthlyReports.date)],
+      orderBy: (monthlyReports, { desc }) => [desc(monthlyReports.month)],
     });
 
     const processedReports = res.map((report) => ({
       id: report.id,
-      date: report.date,
+      month: report.month,
+      year: report.year,
       cash: report.cash.map((cash) => ({
         name: cash.name,
         amount: cash.amount,
@@ -165,7 +161,8 @@ export async function addMonthlyReport(monthReport: MonthlyReport) {
     const [newReport] = await db
       .insert(monthlyReports)
       .values({
-        date: monthReport.date,
+        month: monthReport.month,
+        year: monthReport.year,
       })
       .returning();
 

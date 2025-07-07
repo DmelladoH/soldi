@@ -14,7 +14,8 @@ export const fundEntities = sqliteTable("fund_entity", {
 
 export const monthlyReports = sqliteTable("monthly_report", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  date: text("date").notNull(),
+  month: integer("month").notNull(),
+  year: integer("year").notNull(),
   createdAt: text("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),

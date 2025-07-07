@@ -25,28 +25,29 @@ export default async function Page({
 
   // Get the last day of the current month
   const currentMonthIndex = MONTHS.indexOf(month.toLocaleLowerCase());
-  const currentMonthDate = new Date(Number(year), currentMonthIndex + 1, 0);
 
-  // Handle January: if current month is January (0), previous month is December of previous year
-  const previousMonthDate =
-    currentMonthDate.getMonth() === 0
-      ? new Date(currentMonthDate.getFullYear() - 1, 11, 1)
-      : new Date(
-          currentMonthDate.getFullYear(),
-          currentMonthDate.getMonth() - 1,
-          1
-        );
+  const currentDate = {
+    month: currentMonthIndex + 1,
+    year: Number(year),
+  };
+
+  const previousDate = {
+    month: currentMonthIndex === 0 ? 12 : currentMonthIndex,
+    year: currentMonthIndex === 0 ? Number(year) - 1 : Number(year),
+  };
+
+  console.log({ currentDate, previousDate });
 
   const res = await getMonthlyReportWithInvestments(
-    previousMonthDate,
-    currentMonthDate
+    previousDate.month,
+    previousDate.year,
+    currentDate.month,
+    currentDate.year
   );
 
-  const currentMonth = res.find(
-    (report) => new Date(report.date).getMonth() === currentMonthIndex
-  );
+  const currentMonth = res.find((report) => report.month === currentDate.month);
   const previousMonth = res.find(
-    (report) => new Date(report.date).getMonth() === currentMonthIndex - 1
+    (report) => report.month === previousDate.month
   );
 
   const monthlyReport = [...res].reverse();

@@ -52,7 +52,7 @@ const Months = {
 };
 
 const defaultValues = {
-  month: new Date().getMonth() + 1,
+  month: new Date().getUTCMonth() + 1,
   year: new Date().getFullYear(),
   income: [
     {
@@ -86,7 +86,6 @@ export function MonthlyReportForm({
   const {
     register,
     control,
-    watch,
     handleSubmit,
     reset,
     formState: { isSubmitting },
@@ -111,14 +110,9 @@ export function MonthlyReportForm({
       }))
     );
 
-    const date = new Date(
-      Number(data.year),
-      Number(data.month) - 1,
-      new Date().getDate()
-    );
-
     const formattedValues = {
-      date: new Date(date.getFullYear(), date.getMonth(), 1).toISOString(),
+      month: data.month,
+      year: data.year,
       cash: data.cash.map((cash) => ({
         ...cash,
         amount: Number.parseFloat(cash.amount.replace(",", ".")),

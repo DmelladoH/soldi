@@ -9,18 +9,18 @@ export default async function DashBoard() {
   const today = new Date();
 
   const res = await getMonthlyReportWithInvestments(
-    new Date(today.getFullYear(), today.getMonth() - 1, 1),
-    today
+    today.getUTCMonth(),
+    today.getFullYear()
   );
 
   const monthlyReport = [...res].reverse();
 
   const currentMonth = monthlyReport.find(
-    (report) => new Date(report.date).getMonth() === today.getMonth()
+    (report) => report.month === today.getUTCMonth()
   );
 
   const lastMonth = monthlyReport.find(
-    (report) => new Date(report.date).getMonth() === today.getMonth() - 1
+    (report) => report.month === today.getUTCMonth() - 1
   );
 
   const chartTotalData = getTotalChart(monthlyReport);

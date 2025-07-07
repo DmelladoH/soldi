@@ -111,7 +111,6 @@ export const formatStock = (
   lastInvestments: Investments[],
   res: MonthReportWithId[]
 ) => {
-  console.log({ currentInvestments, lastInvestments, res });
   return currentInvestments.length
     ? currentInvestments.map((stock) => ({
         fund: stock.fund,

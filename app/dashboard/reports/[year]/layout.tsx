@@ -19,10 +19,7 @@ export default async function ReportLayout({
   };
 
   const res = (
-    await getMonthlyReportWithInvestments(
-      currentYearRange.start,
-      currentYearRange.end
-    )
+    await getMonthlyReportWithInvestments(0, Number(year), 11, Number(year))
   ).reverse();
 
   const getYearExpenseIncomeReport = (
@@ -30,9 +27,8 @@ export default async function ReportLayout({
   ): { month: string; income: number; expense: number }[] => {
     const res = [];
     for (let i = 0; i < 12; i++) {
-      const report = reports.find(
-        (report) => new Date(report.date).getMonth() === i
-      );
+      const report = reports.find((report) => report.month === i + 1);
+
       if (!report) {
         res.push({
           month: new Intl.DateTimeFormat("en-US", {
@@ -45,7 +41,7 @@ export default async function ReportLayout({
         res.push({
           month: new Intl.DateTimeFormat("en-US", {
             month: "short",
-          }).format(new Date(report.date)),
+          }).format(new Date(report.year, report.month - 1, 1)),
           income: getTotalMovementByType(report.movements, "income"),
           expense: getTotalMovementByType(report.movements, "expense"),
         });

@@ -6,7 +6,10 @@
     "dev": "NODE_OPTIONS='--inspect' next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generateDBmigration": "npx drizzle-kit generate",
+    "runMigration": "npx drizzle-kit migrate",
+    "pushMigration": "npx drizzle-kit push"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.9.6",

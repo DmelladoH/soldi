@@ -37,7 +37,8 @@ export interface Cash {
   currency: string;
 }
 export interface MonthlyReport {
-  date: string;
+  month: number;
+  year: number;
   cash: Cash[];
   investments: Investments[];
   movements: Movement[];
