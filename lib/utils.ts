@@ -103,7 +103,7 @@ export const getTotalMovementByType = (
 
 export const formatStock = (
   currentInvestments: Investments[],
-  lastInvestments: Investments[]
+  prevInvestments: Investments[]
 ) => {
   return currentInvestments.length
     ? currentInvestments.map((stock) => ({
@@ -112,11 +112,11 @@ export const formatStock = (
         amountInvested: stock.amountInvested,
         difference: geStockDifference(
           stock,
-          lastInvestments.find((f) => f.fund.id === stock.fund.id)
+          prevInvestments.find((f) => f.fund.id === stock.fund.id)
         ),
         profit: getStockProfit(
           stock,
-          lastInvestments.find((f) => f.fund.id === stock.fund.id)
+          prevInvestments.find((f) => f.fund.id === stock.fund.id)
         ),
         currency: stock.currency,
       }))

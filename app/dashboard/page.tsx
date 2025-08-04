@@ -17,9 +17,11 @@ export default async function DashBoard() {
   const chartInvestmentData = getInvestmentChart(monthlyReport);
 
   const stocks = formatStock(
-    monthlyReport[0]?.investments || [],
-    monthlyReport[monthlyReport.length - 1]?.investments || []
+    monthlyReport[monthlyReport.length - 1]?.investments || [],
+    monthlyReport[0]?.investments || []
   );
+
+  console.log({ monthlyReport });
 
   return (
     <div className="dashboard-grid">
