@@ -287,77 +287,80 @@ function IncomeAndExpenses({
     control,
   });
 
+  console.log({ fields, type });
   return (
     <>
       <ul className="grid gap-5">
-        {fields.map((field, index) => (
-          <li key={field.id} className="flex gap-2 items-end">
-            <Label className="flex-grow">
-              Name
-              <Controller
-                name={`movements.${index}.tag`}
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    onValueChange={(id) => {
-                      if (id == "") return;
+        {fields
+          .filter((field) => field.tag.type === type)
+          .map((field, index) => (
+            <li key={field.id} className="flex gap-2 items-end">
+              <Label className="flex-grow">
+                Name
+                <Controller
+                  name={`movements.${index}.tag`}
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={(id) => {
+                        if (id == "") return;
 
-                      field.onChange(
-                        movementTags.find(
-                          (tag) => tag.id === Number.parseInt(id)
-                        )
-                      );
-                    }}
-                    value={field.value?.name}
-                  >
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder="Select a tag"
-                        className=" text-wrap"
-                      >
-                        {field.value?.name}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {movementTags
-                        .filter((tag) => tag.type === type)
-                        .map((tag) => (
-                          <SelectItem key={tag.id} value={tag.id.toString()}>
-                            {tag.name}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </Label>
-            <Label>
-              Amount
-              <Controller
-                name={`movements.${index}.amount`}
-                control={control}
-                render={({ field }) => (
-                  <MonetaryInput
-                    className="mt-2"
-                    value={field.value}
-                    onChange={(value) => {
-                      field.onChange(value);
-                    }}
-                  />
-                )}
-              />
-            </Label>
-            <Button
-              variant="secondary"
-              type="button"
-              className="mt-2"
-              disabled={fields.length === 1}
-              onClick={() => remove(index)}
-            >
-              <Trash />
-            </Button>
-          </li>
-        ))}
+                        field.onChange(
+                          movementTags.find(
+                            (tag) => tag.id === Number.parseInt(id)
+                          )
+                        );
+                      }}
+                      value={field.value?.name}
+                    >
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder="Select a tag"
+                          className=" text-wrap"
+                        >
+                          {field.value?.name}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {movementTags
+                          .filter((tag) => tag.type === type)
+                          .map((tag) => (
+                            <SelectItem key={tag.id} value={tag.id.toString()}>
+                              {tag.name}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </Label>
+              <Label>
+                Amount
+                <Controller
+                  name={`movements.${index}.amount`}
+                  control={control}
+                  render={({ field }) => (
+                    <MonetaryInput
+                      className="mt-2"
+                      value={field.value}
+                      onChange={(value) => {
+                        field.onChange(value);
+                      }}
+                    />
+                  )}
+                />
+              </Label>
+              <Button
+                variant="secondary"
+                type="button"
+                className="mt-2"
+                disabled={fields.length === 1}
+                onClick={() => remove(index)}
+              >
+                <Trash />
+              </Button>
+            </li>
+          ))}
       </ul>
       <div className="mt-5">
         <Button

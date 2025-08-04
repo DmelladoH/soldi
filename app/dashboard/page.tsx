@@ -19,8 +19,7 @@ export default async function DashBoard() {
 
   const stocks = formatStock(
     monthlyReport[0]?.investments || [],
-    monthlyReport[monthlyReport.length - 1]?.investments || [],
-    monthlyReport
+    monthlyReport[monthlyReport.length - 1]?.investments || []
   );
 
   return (

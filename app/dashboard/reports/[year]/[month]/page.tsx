@@ -50,11 +50,9 @@ export default async function Page({
     (report) => report.month === previousDate.month
   );
 
-  const monthlyReport = [...res].reverse();
   const stocks = formatStock(
     currentMonth?.investments || [],
-    previousMonth?.investments || [],
-    monthlyReport
+    previousMonth?.investments || []
   );
 
   return (

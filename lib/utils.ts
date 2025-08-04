@@ -67,22 +67,17 @@ export const getBankAccounts = (lastMonth: MonthReportWithId): Cash[] => {
 };
 
 export const getStockProfit = (
-  reports: MonthReportWithId[],
-  stock: Investments,
-  indx: number
+  currStock: Investments | undefined,
+  prevStock: Investments | undefined
 ) => {
-  if (!reports[indx + 1]) return 0;
-
-  const prevStock = reports[indx + 1]?.investments?.find(
-    (prevStock) => prevStock.fund === stock.fund
-  );
+  if (!currStock || !prevStock) return 0;
 
   const prevValue = prevStock?.currentValue ?? 0;
 
   // Prevent division by zero
   if (prevValue === 0) return 0;
 
-  return (stock.currentValue - prevValue) / prevValue;
+  return (currStock.currentValue - prevValue) / prevValue;
 };
 
 export const formatCurrency = (amount: number) => {
@@ -108,8 +103,7 @@ export const getTotalMovementByType = (
 
 export const formatStock = (
   currentInvestments: Investments[],
-  lastInvestments: Investments[],
-  res: MonthReportWithId[]
+  lastInvestments: Investments[]
 ) => {
   return currentInvestments.length
     ? currentInvestments.map((stock) => ({
@@ -120,7 +114,10 @@ export const formatStock = (
           stock,
           lastInvestments.find((f) => f.fund.id === stock.fund.id)
         ),
-        profit: getStockProfit(res, stock, 0),
+        profit: getStockProfit(
+          stock,
+          lastInvestments.find((f) => f.fund.id === stock.fund.id)
+        ),
         currency: stock.currency,
       }))
     : [];
