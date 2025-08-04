@@ -110,7 +110,9 @@ export default function ReportHeader({
                     Number(currentMonthSavingsRate) -
                     Number(lastMonthSavingsRate)
                   ).toFixed(2)}%`,
-                  positive: currentMonthSavingsRate > lastMonthSavingsRate,
+                  positive:
+                    Number(currentMonthSavingsRate) >
+                    Number(lastMonthSavingsRate),
                 }
               : undefined
           }
