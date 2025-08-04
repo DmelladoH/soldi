@@ -14,7 +14,6 @@ export default async function DashBoard() {
   );
 
   const chartTotalData = getTotalChart(monthlyReport);
-  console.log({ chartTotalData });
   const chartInvestmentData = getInvestmentChart(monthlyReport);
 
   const stocks = formatStock(

@@ -6,7 +6,7 @@ export default async function FundEntity() {
 
   return (
     <div className="h-screen">
-      <h1>Fund Entities</h1>
+      <h1 className="text-2xl font-bold">Fund Entities</h1>
       <div className="mt-4">
         <FundEntityView entities={fundEntities} />
       </div>
