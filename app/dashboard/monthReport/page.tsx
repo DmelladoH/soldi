@@ -5,10 +5,11 @@ import { getMovementTags } from "@/server/db/queries/movementTags";
 export default async function page() {
   const fundsOptions = await getFoundEntities();
   const movementTags = await getMovementTags();
+
   return (
     <div className="grid">
       <h1 className="text-2xl font-bold">Month report</h1>
-      <div className="mt-5 grid justify-center">
+      <div className="mt-5 grid">
         <MonthlyReportForm
           fundsOptions={fundsOptions}
           movementTags={movementTags}
