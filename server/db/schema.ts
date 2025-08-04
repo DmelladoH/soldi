@@ -62,7 +62,7 @@ export const monthlyReportMovements = sqliteTable("monthly_report_movements", {
     .references(() => movementTag.id)
     .notNull(),
   type: text("type", { enum: ["expense", "income"] }).notNull(),
-  description: text("name", { length: 256 }),
+  description: text("description", { length: 256 }),
   amount: integer("amount").notNull(),
   currency: text("currency", { length: 3 }).notNull(),
   createdAt: text("created_at")

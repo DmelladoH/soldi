@@ -101,47 +101,51 @@ export async function getMonthlyReportWithInvestments(
 
 export async function addMonthlyReport(monthReport: MonthlyReport) {
   try {
-    const [newReport] = await db
-      .insert(monthlyReports)
-      .values({
-        month: monthReport.month,
-        year: monthReport.year,
-      })
-      .returning();
+    await db.transaction(async (tx) => {
+      const [newReport] = await tx
+        .insert(monthlyReports)
+        .values({
+          month: monthReport.month,
+          year: monthReport.year,
+        })
+        .returning();
 
-    if (monthReport.cash.length > 0) {
-      const cashToInsert = monthReport.cash.map((cash) => ({
-        monthlyReportId: newReport.id,
-        name: cash.name,
-        amount: cash.amount,
-        currency: cash.currency,
-      }));
+      if (monthReport.cash.length > 0) {
+        const cashToInsert = monthReport.cash.map((cash) => ({
+          monthlyReportId: newReport.id,
+          name: cash.name,
+          amount: cash.amount,
+          currency: cash.currency,
+        }));
 
-      await db.insert(monthlyReportCash).values(cashToInsert);
-    }
-    if (monthReport.movements.length > 0) {
-      const movementsToInsert = monthReport.movements.map((movement) => ({
-        monthlyReportId: newReport.id,
-        tagId: movement.tagId,
-        description: movement.description,
-        type: movement.type,
-        amount: movement.amount,
-        currency: movement.currency,
-      }));
-      await db.insert(monthlyReportMovements).values(movementsToInsert);
-    }
+        await tx.insert(monthlyReportCash).values(cashToInsert);
+      }
+      if (monthReport.movements.length > 0) {
+        const movementsToInsert = monthReport.movements.map((movement) => ({
+          monthlyReportId: newReport.id,
+          tagId: movement.tagId,
+          description: movement.description,
+          type: movement.type,
+          amount: movement.amount,
+          currency: movement.currency,
+        }));
+        await tx.insert(monthlyReportMovements).values(movementsToInsert);
+      }
 
-    if (monthReport.investments.length > 0) {
-      const investmentsToInsert = monthReport.investments.map((investment) => ({
-        monthlyReportId: newReport.id,
-        fundEntityId: investment.fund.id,
-        currentValue: investment.currentValue,
-        amountInvested: investment.amountInvested,
-        currency: investment.currency,
-      }));
+      if (monthReport.investments.length > 0) {
+        const investmentsToInsert = monthReport.investments.map(
+          (investment) => ({
+            monthlyReportId: newReport.id,
+            fundEntityId: investment.fund.id,
+            currentValue: investment.currentValue,
+            amountInvested: investment.amountInvested,
+            currency: investment.currency,
+          })
+        );
 
-      await db.insert(monthlyReportInvestments).values(investmentsToInsert);
-    }
+        await tx.insert(monthlyReportInvestments).values(investmentsToInsert);
+      }
+    });
   } catch (e: unknown) {
     if (e instanceof Error) {
       throw new Error(`Error adding monthly report: ${e.message}`);

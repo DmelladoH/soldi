@@ -31,7 +31,8 @@ interface movement {
 interface FromFields {
   month: number;
   year: number;
-  movements: movement[];
+  income: movement[];
+  expense: movement[];
   cash: cash[];
   funds: {
     fund: FundEntityWithId;
@@ -83,7 +84,8 @@ export function MonthlyReportForm({
   console.log(watch());
 
   const onSubmit = async (data: FromFields) => {
-    const movements = data.movements.map(({ tag, amount, currency }) => ({
+    const movementsRaw = [...data.income, ...data.expense];
+    const movements = movementsRaw.map(({ tag, amount, currency }) => ({
       description: "",
       tagId: tag.id,
       amount: Number.parseFloat(amount.replace(",", ".")),
@@ -283,7 +285,7 @@ function IncomeAndExpenses({
   movementTags: MovementTag[];
 }) {
   const { fields, append, remove } = useFieldArray({
-    name: "movements",
+    name: type,
     control,
   });
 
@@ -298,7 +300,7 @@ function IncomeAndExpenses({
               <Label className="flex-grow">
                 Name
                 <Controller
-                  name={`movements.${index}.tag`}
+                  name={`${type}.${index}.tag`}
                   control={control}
                   render={({ field }) => (
                     <Select
@@ -337,7 +339,7 @@ function IncomeAndExpenses({
               <Label>
                 Amount
                 <Controller
-                  name={`movements.${index}.amount`}
+                  name={`${type}.${index}.amount`}
                   control={control}
                   render={({ field }) => (
                     <MonetaryInput
