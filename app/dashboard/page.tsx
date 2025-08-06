@@ -8,10 +8,10 @@ import ReportHeader from "@/components/reportHeader";
 export default async function DashBoard() {
   const today = new Date();
 
-  const monthlyReport = await getMonthlyReportWithInvestments(
-    today.getUTCMonth(),
-    today.getFullYear()
-  );
+  const monthlyReport = await getMonthlyReportWithInvestments({
+    endMonth: today.getUTCMonth(),
+    endYear: today.getFullYear(),
+  });
 
   const chartTotalData = getTotalChart(monthlyReport);
   const chartInvestmentData = getInvestmentChart(monthlyReport);
@@ -20,8 +20,6 @@ export default async function DashBoard() {
     monthlyReport[monthlyReport.length - 1]?.investments || [],
     monthlyReport[0]?.investments || []
   );
-
-  console.log({ monthlyReport });
 
   return (
     <div className="dashboard-grid">

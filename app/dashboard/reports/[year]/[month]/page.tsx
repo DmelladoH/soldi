@@ -38,12 +38,12 @@ export default async function Page({
 
   console.log({ currentDate, previousDate });
 
-  const res = await getMonthlyReportWithInvestments(
-    previousDate.month,
-    previousDate.year,
-    currentDate.month,
-    currentDate.year
-  );
+  const res = await getMonthlyReportWithInvestments({
+    startMonth: previousDate.month,
+    startYear: previousDate.year,
+    endMonth: currentDate.month,
+    endYear: currentDate.year,
+  });
 
   const currentMonth = res.find((report) => report.month === currentDate.month);
   const previousMonth = res.find(

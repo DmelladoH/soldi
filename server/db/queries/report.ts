@@ -7,58 +7,98 @@ import {
   monthlyReportMovements,
 } from "../schema";
 
-export async function getMonthlyReportWithInvestments(
-  startMonth?: number,
-  startYear?: number,
-  endMonth?: number,
-  endYear?: number,
-  orderBy: "asc" | "desc" = "asc"
-): Promise<MonthReportWithId[]> {
+interface Props {
+  startMonth?: number;
+  startYear?: number;
+  endMonth?: number;
+  endYear?: number;
+  orderBy?: "asc" | "desc";
+}
+
+export async function getMonthlyReportWithInvestments({
+  startMonth,
+  startYear,
+  endMonth,
+  endYear,
+  orderBy = "asc",
+}: Props): Promise<MonthReportWithId[]> {
   try {
-    let res = null;
+    const hasStart = startMonth !== undefined && startYear !== undefined;
+    const hasEnd = endMonth !== undefined && endYear !== undefined;
 
-    if (startMonth && startYear && endMonth && endYear) {
-      res = await db.query.monthlyReports.findMany({
-        where: (monthlyReports, { and, gte, lte }) =>
-          and(
-            gte(monthlyReports.month, startMonth),
-            gte(monthlyReports.year, startYear),
-            endMonth ? lte(monthlyReports.month, endMonth) : undefined,
-            endYear ? lte(monthlyReports.year, endYear) : undefined
-          ),
-        with: {
-          investments: {
-            with: {
-              fundEntity: true,
-            },
-          },
-          cash: true,
-          movements: true,
-        },
-        orderBy: (monthlyReports, { asc, desc }) =>
-          orderBy === "asc"
-            ? [asc(monthlyReports.year), asc(monthlyReports.month)]
-            : [desc(monthlyReports.year), desc(monthlyReports.month)],
-      });
-    } else {
-      res = await db.query.monthlyReports.findMany({
-        with: {
-          investments: {
-            with: {
-              fundEntity: true,
-            },
-          },
-          cash: true,
-          movements: true,
-        },
-        orderBy: (monthlyReports, { asc, desc }) =>
-          orderBy === "asc"
-            ? [asc(monthlyReports.year), asc(monthlyReports.month)]
-            : [desc(monthlyReports.year), desc(monthlyReports.month)],
-      });
-    }
+    const whereClause =
+      hasStart || hasEnd
+        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (monthlyReports: any, { and, or, eq, gte, lte }: any) => {
+            const conditions = [];
 
-    const processedReports = res.map((report) => ({
+            if (hasStart && hasEnd) {
+              // Case 1: full range
+              conditions.push(
+                or(
+                  and(
+                    eq(monthlyReports.year, startYear!),
+                    gte(monthlyReports.month, startMonth!)
+                  ),
+                  gte(monthlyReports.year, startYear! + 1)
+                )
+              );
+
+              conditions.push(
+                or(
+                  and(
+                    eq(monthlyReports.year, endYear!),
+                    lte(monthlyReports.month, endMonth!)
+                  ),
+                  lte(monthlyReports.year, endYear! - 1)
+                )
+              );
+            } else if (hasStart) {
+              // Case 2: only start provided
+              conditions.push(
+                or(
+                  and(
+                    eq(monthlyReports.year, startYear!),
+                    gte(monthlyReports.month, startMonth!)
+                  ),
+                  gte(monthlyReports.year, startYear! + 1)
+                )
+              );
+            } else if (hasEnd) {
+              // Case 3: only end provided
+              conditions.push(
+                or(
+                  and(
+                    eq(monthlyReports.year, endYear!),
+                    lte(monthlyReports.month, endMonth!)
+                  ),
+                  lte(monthlyReports.year, endYear! - 1)
+                )
+              );
+            }
+
+            return and(...conditions);
+          }
+        : undefined;
+
+    const res = await db.query.monthlyReports.findMany({
+      where: whereClause,
+      with: {
+        investments: {
+          with: {
+            fundEntity: true,
+          },
+        },
+        cash: true,
+        movements: true,
+      },
+      orderBy: (monthlyReports, { asc, desc }) =>
+        orderBy === "asc"
+          ? [asc(monthlyReports.year), asc(monthlyReports.month)]
+          : [desc(monthlyReports.year), desc(monthlyReports.month)],
+    });
+
+    const processedReports: MonthReportWithId[] = res.map((report) => ({
       id: report.id,
       month: report.month,
       year: report.year,
@@ -87,6 +127,7 @@ export async function getMonthlyReportWithInvestments(
         currency: investment.currency,
       })),
     }));
+
     return processedReports;
   } catch (e: unknown) {
     if (e instanceof Error) {

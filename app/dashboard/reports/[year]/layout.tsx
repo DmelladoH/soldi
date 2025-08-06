@@ -19,7 +19,12 @@ export default async function ReportLayout({
   };
 
   const res = (
-    await getMonthlyReportWithInvestments(0, Number(year), 11, Number(year))
+    await getMonthlyReportWithInvestments({
+      startMonth: 0,
+      startYear: Number(year),
+      endMonth: 11,
+      endYear: Number(year),
+    })
   ).reverse();
 
   const getYearExpenseIncomeReport = (
