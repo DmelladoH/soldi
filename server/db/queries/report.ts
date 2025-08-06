@@ -15,6 +15,29 @@ interface Props {
   orderBy?: "asc" | "desc";
 }
 
+/**
+ * Fetches monthly reports with associated investments, cash, and movements data,
+ * filtered by an optional date range and ordered by year and month.
+ *
+ * The date range can be specified with `start` and/or `end` filters.
+ * - If only `start` is provided, returns all reports from that date onward.
+ * - If only `end` is provided, returns all reports up to and including that date.
+ * - If both are provided, returns reports within the inclusive date range.
+ * - If neither is provided, returns all reports.
+ *
+ * @param {Object} params - The filtering and sorting options.
+ * @param {Object} [params.start] - The start date filter with optional `month` and `year`.
+ * @param {number} [params.start.month] - The start month (1-12).
+ * @param {number} [params.start.year] - The start year (e.g., 2024).
+ * @param {Object} [params.end] - The end date filter with optional `month` and `year`.
+ * @param {number} [params.end.month] - The end month (1-12).
+ * @param {number} [params.end.year] - The end year (e.g., 2025).
+ * @param {"asc" | "desc"} [params.orderBy="asc"] - Sort order by year and month.
+ *
+ * @returns {Promise<MonthReportWithId[]>} A promise resolving to an array of monthly reports with investments, cash, and movements.
+ *
+ * @throws Will throw an error if the database query fails.
+ */
 export async function getMonthlyReportWithInvestments({
   startMonth,
   startYear,
