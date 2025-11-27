@@ -22,14 +22,15 @@ interface MonthGraphProps {
     income: number;
     expense: number;
   }[];
+  year: string;
 }
-export function MonthGraph({ monthReport }: MonthGraphProps) {
+export function MonthGraph({ monthReport, year }: MonthGraphProps) {
   return (
     <div>
       <ChartContainer config={chartConfig} className="w-full h-40">
         <BarChart
           onClick={(e) => {
-            redirect(`/dashboard/reports/2025/${e.activeLabel}`);
+            redirect(`/dashboard/reports/${year}/${e.activeLabel}`);
           }}
           accessibilityLayer
           data={monthReport}

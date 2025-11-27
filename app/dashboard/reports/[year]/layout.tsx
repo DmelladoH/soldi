@@ -20,9 +20,9 @@ export default async function ReportLayout({
 
   const res = (
     await getMonthlyReportWithInvestments({
-      startMonth: 0,
+      startMonth: 1,
       startYear: Number(year),
-      endMonth: 11,
+      endMonth: 12,
       endYear: Number(year),
     })
   ).reverse();
@@ -65,13 +65,14 @@ export default async function ReportLayout({
         <div className="mt-4">
           <div className="flex justify-between">
             <Button asChild>
-              <a href={`/dashboard/reports/${prevYear}/jan`}>prev</a>
+              <a href={`/dashboard/reports/${prevYear}/dec`}>prev</a>
             </Button>
+            <span className="font-bold text-2xl">{year}</span>
             <Button asChild>
               <a href={`/dashboard/reports/${nextYear}/jan`}>next</a>
             </Button>
           </div>
-          <MonthGraph monthReport={yearWithExpenseIncome} />
+          <MonthGraph monthReport={yearWithExpenseIncome} year={year} />
         </div>
       </header>
       <div className=" grow">{children}</div>
