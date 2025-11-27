@@ -25,6 +25,26 @@ export function FundTable({ stocks }: { stocks: Stocks[] }) {
     return "text-red-600";
   };
 
+  const totalCurrentValue = stocks.reduce(
+    (prev, curr) => prev + curr.currentValue,
+    0
+  );
+
+  const totalInvested = stocks.reduce(
+    (prev, curr) => prev + curr.amountInvested,
+    0
+  );
+
+  const totalDiff = stocks.reduce(
+    (prev, curr) => prev + (curr.difference || 0),
+    0
+  );
+
+  const totalProfitRate = stocks.reduce(
+    (prev, curr) => prev + (curr.profit || 0),
+    0
+  );
+
   return (
     <div className="w-full overflow-x-auto">
       <Table>
@@ -74,6 +94,31 @@ export function FundTable({ stocks }: { stocks: Stocks[] }) {
               </TableCell>
             </TableRow>
           ))}
+          <TableRow>
+            <TableCell className="min-w-[120px]"></TableCell>
+            <TableCell className={`min-w-[100px] text-right `}>
+              {formatCurrency(totalCurrentValue)}
+            </TableCell>
+            <TableCell
+              className={`min-w-[100px] text-right ${getTextColor(
+                totalInvested
+              )}`}
+            >
+              {formatCurrency(totalInvested)}
+            </TableCell>
+            <TableCell
+              className={`min-w-[100px] text-right ${getTextColor(totalDiff)}`}
+            >
+              {formatCurrency(totalDiff)}
+            </TableCell>
+            <TableCell
+              className={`min-w-[100px] text-right ${getTextColor(
+                totalProfitRate
+              )}`}
+            >
+              {formatCurrency(totalProfitRate)}
+            </TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     </div>
