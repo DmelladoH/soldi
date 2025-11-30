@@ -65,6 +65,7 @@ export default async function Page({
             <ReportHeader
               currentMonth={currentMonth}
               lastMonth={previousMonth}
+              stocks={stocks}
             />
           </div>
           <div className="mt-5">

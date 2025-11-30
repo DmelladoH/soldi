@@ -1,4 +1,4 @@
-import { FundEntityWithId } from "@/lib/types";
+import { FundEntityWithId, Stock } from "@/lib/types";
 import {
   Table,
   TableHeader,
@@ -9,16 +9,7 @@ import {
 } from "./ui/table";
 import { formatCurrency } from "@/lib/utils";
 
-export interface Stocks {
-  fund: FundEntityWithId;
-  currentValue: number;
-  amountInvested: number;
-  difference: number | undefined;
-  profit: number | null;
-  currency: string;
-}
-
-export function FundTable({ stocks }: { stocks: Stocks[] }) {
+export function FundTable({ stocks }: { stocks: Stock[] }) {
   const getTextColor = (value: number | null | undefined) => {
     if (!value || value === 0) return "";
     if (value >= 0) return "text-green-600";

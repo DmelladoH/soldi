@@ -7,6 +7,15 @@ export interface Entity {
   currency: string;
 }
 
+export interface Stock {
+  fund: FundEntityWithId;
+  currentValue: number;
+  amountInvested: number;
+  difference: number | undefined;
+  profit: number | null;
+  currency: string;
+}
+
 export interface FundEntity {
   ISIN: string;
   name: string;

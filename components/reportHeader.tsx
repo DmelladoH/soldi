@@ -5,14 +5,16 @@ import {
 } from "@/lib/utils";
 import { Wallet, ArrowUp, ArrowDown, TrendingUp } from "lucide-react";
 import FinanceCard from "./financeCard";
-import { MonthReportWithId } from "@/lib/types";
+import { MonthReportWithId, Stock } from "@/lib/types";
 
 export default function ReportHeader({
   currentMonth,
   lastMonth = undefined,
+  stocks,
 }: {
   currentMonth: MonthReportWithId | undefined;
   lastMonth?: MonthReportWithId | undefined;
+  stocks: Stock[];
 }) {
   const currentMonthIncome = getTotalMovementByType(
     currentMonth?.movements || [],
@@ -50,6 +52,13 @@ export default function ReportHeader({
   const previousMonthWealth = lastMonth ? getTotalMoney(lastMonth) : 0;
   const totalWealth = currentMonth ? getTotalMoney(currentMonth) : 0;
 
+  const totalDiff = stocks.reduce(
+    (prev, curr) => prev + (curr.difference || 0),
+    0
+  );
+
+  const gains = currentMonthIncome + totalDiff;
+
   return (
     <>
       <div className="totalNetwork flex-grow">
@@ -67,7 +76,7 @@ export default function ReportHeader({
           icon={<Wallet className="h-5 w-5 text-finance-blue" />}
         />
       </div>
-      <div className="monthIncome flex-grow">
+      {/* <div className="monthIncome flex-grow">
         <FinanceCard
           title="Monthly Income"
           change={
@@ -79,6 +88,13 @@ export default function ReportHeader({
               : undefined
           }
           value={formatCurrency(currentMonthIncome)}
+          icon={<ArrowUp className="h-5 w-5 text-moneyGreen" />}
+        />
+      </div> */}
+      <div className="monthIncome flex-grow">
+        <FinanceCard
+          title="Total gains"
+          value={formatCurrency(gains)}
           icon={<ArrowUp className="h-5 w-5 text-moneyGreen" />}
         />
       </div>
