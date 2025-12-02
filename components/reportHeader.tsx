@@ -3,7 +3,13 @@ import {
   getTotalMoney,
   getTotalMovementByType,
 } from "@/lib/utils";
-import { Wallet, ArrowUp, ArrowDown, TrendingUp } from "lucide-react";
+import {
+  Wallet,
+  ArrowUp,
+  ArrowDown,
+  TrendingUp,
+  BadgeEuro,
+} from "lucide-react";
 import FinanceCard from "./financeCard";
 import { MonthReportWithId, Stock } from "@/lib/types";
 
@@ -93,7 +99,7 @@ export default function ReportHeader({
               : undefined
           }
           value={formatCurrency(cash)}
-          icon={<ArrowUp className="h-5 w-5 text-moneyGreen" />}
+          icon={<BadgeEuro className="h-5 w-5" />}
         />
       </div>
       {/* <div className="monthIncome flex-grow">
