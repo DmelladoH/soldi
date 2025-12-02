@@ -23,7 +23,10 @@ export default async function DashBoard() {
 
   return (
     <div className="dashboard-grid">
-      <ReportHeader currentMonth={monthlyReport[monthlyReport.length - 1]} />
+      <ReportHeader
+        currentMonth={monthlyReport[monthlyReport.length - 1]}
+        stocks={stocks}
+      />
       <div className="networkTrend">
         <TotalChart chartData={chartTotalData} title="Total Money" />
       </div>
