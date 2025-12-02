@@ -58,10 +58,15 @@ export default function ReportHeader({
   );
 
   const gains = currentMonthIncome + totalDiff;
+  const cash =
+    currentMonth?.cash.reduce((curr, acc) => curr + acc.amount, 0) || 0;
+
+  const prevCash =
+    lastMonth?.cash.reduce((curr, acc) => curr + acc.amount, 0) || 0;
 
   return (
-    <>
-      <div className="totalNetwork flex-grow">
+    <div className="grid gap-4 auto-rows-auto [grid-template-columns:repeat(auto-fill,minmax(291px,1fr))] [&>div]:col-span-1">
+      <div className="flex-grow">
         <FinanceCard
           title="Net Worth"
           value={formatCurrency(totalWealth)}
@@ -74,6 +79,21 @@ export default function ReportHeader({
               : undefined
           }
           icon={<Wallet className="h-5 w-5 text-finance-blue" />}
+        />
+      </div>
+      <div className="flex-grow">
+        <FinanceCard
+          title="Cash"
+          change={
+            lastMonth
+              ? {
+                  value: formatCurrency(cash - prevCash),
+                  positive: cash > prevCash,
+                }
+              : undefined
+          }
+          value={formatCurrency(cash)}
+          icon={<ArrowUp className="h-5 w-5 text-moneyGreen" />}
         />
       </div>
       {/* <div className="monthIncome flex-grow">
@@ -91,14 +111,14 @@ export default function ReportHeader({
           icon={<ArrowUp className="h-5 w-5 text-moneyGreen" />}
         />
       </div> */}
-      <div className="monthIncome flex-grow">
+      <div className="flex-grow">
         <FinanceCard
           title="Total gains"
           value={formatCurrency(gains)}
           icon={<ArrowUp className="h-5 w-5 text-moneyGreen" />}
         />
       </div>
-      <div className="monthExpense flex-grow">
+      <div className="flex-grow">
         <FinanceCard
           title="Monthly Expenses"
           change={
@@ -115,7 +135,7 @@ export default function ReportHeader({
           icon={<ArrowDown className="h-5 w-5 text-moneyRed" />}
         />
       </div>
-      <div className="monthSavings flex-grow">
+      <div className="flex-grow">
         <FinanceCard
           title="Saving Rate"
           value={`${currentMonthSavingsRate}%`}
@@ -135,6 +155,6 @@ export default function ReportHeader({
           icon={<TrendingUp className="h-5 w-5 text-yellow-600" />}
         />
       </div>
-    </>
+    </div>
   );
 }

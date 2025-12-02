@@ -36,8 +36,6 @@ export default async function Page({
     year: currentMonthIndex === 0 ? Number(year) - 1 : Number(year),
   };
 
-  console.log({ currentDate, previousDate });
-
   const res = await getMonthlyReportWithInvestments({
     startMonth: previousDate.month,
     startYear: previousDate.year,
@@ -61,7 +59,7 @@ export default async function Page({
         <span>no reports</span>
       ) : (
         <div className="">
-          <div className="flex gap-4 w-full mb-5">
+          <div className="mb-5">
             <ReportHeader
               currentMonth={currentMonth}
               lastMonth={previousMonth}

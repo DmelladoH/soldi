@@ -87,49 +87,6 @@ body {
   }
 }
 
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto;
-  gap: 1rem;
-  grid-template-areas:
-    "totalNetwork"
-    "monthIncome"
-    "monthExpense"
-    "monthSavings"
-    "networkTrend"
-    "investmentsTend"
-    "investmentsState";
-}
-
-.totalNetwork {
-  grid-area: totalNetwork;
-}
-
-.monthIncome {
-  grid-area: monthIncome;
-}
-
-.monthExpense {
-  grid-area: monthExpense;
-}
-
-.monthSavings {
-  grid-area: monthSavings;
-}
-
-.networkTrend {
-  grid-area: networkTrend;
-}
-
-.investmentsTend {
-  grid-area: investmentsTend;
-}
-
-.investmentsState {
-  grid-area: investmentsState;
-}
-
 .btn-reset {
   -webkit-appearance: none;
   border-radius: 0;
@@ -141,35 +98,4 @@ body {
   border: none;
   color: inherit;
   font: inherit;
-}
-
-/* Small screens (sm: 640px and up) */
-@media screen and (min-width: 640px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-areas:
-      "totalNetwork monthIncome"
-      "monthExpense monthSavings"
-      "networkTrend networkTrend"
-      "investmentsTend investmentsTend"
-      "investmentsState investmentsState";
-  }
-}
-
-/* Medium screens (md: 768px and up) */
-@media screen and (min-width: 768px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-areas:
-      "totalNetwork monthIncome monthExpense monthSavings"
-      "networkTrend networkTrend investmentsTend investmentsTend"
-      "investmentsState investmentsState investmentsState investmentsState";
-  }
-}
-
-/* Large screens (lg: 1024px and up) */
-@media screen and (min-width: 1024px) {
-  .dashboard-grid {
-    gap: 1.5rem;
-  }
 }

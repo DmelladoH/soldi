@@ -25,7 +25,7 @@ export function TotalChart({
   title: string;
 }) {
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col h-full flex-grow">
       <CardHeader className="pb-3 sm:pb-6">
         <CardTitle className="text-base sm:text-lg">{title}</CardTitle>
       </CardHeader>

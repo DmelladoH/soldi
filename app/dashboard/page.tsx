@@ -22,18 +22,16 @@ export default async function DashBoard() {
   );
 
   return (
-    <div className="dashboard-grid">
+    <div className="grid gap-4">
       <ReportHeader
         currentMonth={monthlyReport[monthlyReport.length - 1]}
         stocks={stocks}
       />
-      <div className="networkTrend">
+      <div className="flex gap-4 md:flex-row flex-col w-full">
         <TotalChart chartData={chartTotalData} title="Total Money" />
-      </div>
-      <div className="investmentsTend">
         <TotalChart chartData={chartInvestmentData} title="Investments" />
       </div>
-      <div className="investmentsState">
+      <div>
         <h3 className="font-semibold leading-none tracking-tight my-5">
           Investments
         </h3>
