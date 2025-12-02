@@ -6,12 +6,14 @@ export function middleware(request: NextRequest) {
   // Redirect only if the path is exactly "/dashboard/reports" or "/dashboard/reports/"
   if (pathname === "/dashboard/reports" || pathname === "/dashboard/reports/") {
     const currentYear = new Date().getFullYear();
-    const currentMonth = new Intl.DateTimeFormat("en-US", {
+    const lastMonth = new Intl.DateTimeFormat("en-US", {
       month: "short",
-    }).format(new Date());
+    }).format(new Date().setMonth(new Date().getMonth() - 1));
+
+    console.log(lastMonth);
 
     return NextResponse.redirect(
-      new URL(`/dashboard/reports/${currentYear}/${currentMonth}`, request.url)
+      new URL(`/dashboard/reports/${currentYear}/${lastMonth}`, request.url)
     );
   }
 
