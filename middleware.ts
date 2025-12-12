@@ -16,12 +16,12 @@ const customMiddleware = clerkMiddleware(async (auth, req) => {
 
   if (pathname === "/dashboard/reports" || pathname === "/dashboard/reports/") {
     const currentYear = new Date().getFullYear();
-    const currentMonth = new Intl.DateTimeFormat("en-US", {
+    const lastMonth = new Intl.DateTimeFormat("en-US", {
       month: "short",
-    }).format(new Date());
+    }).format(new Date().setMonth(new Date().getMonth() - 1));
 
     const redirectUrl = new URL(
-      `/dashboard/reports/${currentYear}/${currentMonth}`,
+      `/dashboard/reports/${currentYear}/${lastMonth}`,
       req.url
     );
 
