@@ -1,21 +1,11 @@
 import { FundTable } from "@/components/fundsTable";
 import ReportHeader from "@/components/reportHeader";
+import { ChartPieLabelList } from "@/components/ui/pieChart";
+import { MONTHS } from "@/lib/constants";
+import { buildChartConfig, getPieConfigByFundType } from "@/lib/graphs";
 import { formatStock } from "@/lib/utils";
 import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
-const MONTHS = [
-  "jan",
-  "feb",
-  "mar",
-  "apr",
-  "may",
-  "jun",
-  "jul",
-  "aug",
-  "sep",
-  "oct",
-  "nov",
-  "dec",
-];
+
 export default async function Page({
   params,
 }: {
@@ -53,6 +43,9 @@ export default async function Page({
     previousMonth?.investments || []
   );
 
+  const chartData = getPieConfigByFundType(stocks);
+  const chartConfig = buildChartConfig(chartData);
+  console.log({ chartConfig });
   return (
     <>
       {currentMonth === null ? (
@@ -66,8 +59,16 @@ export default async function Page({
               stocks={stocks}
             />
           </div>
-          <div className="mt-5">
-            <FundTable stocks={stocks} />
+          <div className="mt-5 md:flex md:gap-2 ">
+            <div className="grow flex w-[40%]">
+              <ChartPieLabelList
+                chartData={chartData}
+                chartConfig={chartConfig}
+              />
+            </div>
+            <div>
+              <FundTable stocks={stocks} />
+            </div>
           </div>
         </div>
       )}

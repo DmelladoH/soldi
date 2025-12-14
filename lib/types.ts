@@ -7,6 +7,13 @@ export interface Entity {
   currency: string;
 }
 
+export type PieEntity = {
+  type: string;
+  value?: number;
+  percentage: number;
+  fill: string;
+};
+
 export interface Stock {
   fund: FundEntityWithId;
   currentValue: number;

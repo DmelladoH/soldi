@@ -12,7 +12,7 @@ import { CartesianGrid, XAxis, Bar, BarChart } from "recharts";
 const chartConfig = {
   desktop: {
     label: "Amount",
-    color: "hsl(var(--chart-1))",
+    color: "var(--chart-3)",
   },
 } satisfies ChartConfig;
 
