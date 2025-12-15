@@ -1,4 +1,4 @@
-import { FundEntityWithId, Stock } from "@/lib/types";
+import { Stock } from "@/lib/types";
 import {
   Table,
   TableHeader,
@@ -16,6 +16,7 @@ export function FundTable({ stocks }: { stocks: Stock[] }) {
     return "text-red-600";
   };
 
+  console.log({ stocks });
   const totalCurrentValue = stocks.reduce(
     (prev, curr) => prev + curr.currentValue,
     0

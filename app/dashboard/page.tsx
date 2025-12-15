@@ -1,7 +1,11 @@
 import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
 import { TotalChart } from "./_components/totalChart";
 
-import { formatStock, getInvestmentChart, getTotalChart } from "@/lib/utils";
+import {
+  formatStockFromReport,
+  getInvestmentChart,
+  getTotalChart,
+} from "@/lib/utils";
 import { FundTable } from "@/components/fundsTable";
 import ReportHeader from "@/components/reportHeader";
 
@@ -16,10 +20,13 @@ export default async function DashBoard() {
   const chartTotalData = getTotalChart(monthlyReport);
   const chartInvestmentData = getInvestmentChart(monthlyReport);
 
-  const stocks = formatStock(
-    monthlyReport[monthlyReport.length - 1]?.investments || [],
-    monthlyReport[0]?.investments || []
-  );
+  const stocks = formatStockFromReport(monthlyReport);
+
+  console.log({
+    stocks,
+    last: monthlyReport[monthlyReport.length - 1]?.investments,
+    first: monthlyReport[0]?.investments,
+  });
 
   return (
     <div className="grid gap-4">

@@ -45,7 +45,7 @@ export default async function Page({
 
   const chartData = getPieConfigByFundType(stocks);
   const chartConfig = buildChartConfig(chartData);
-  console.log({ chartConfig });
+
   return (
     <>
       {currentMonth === null ? (
@@ -60,7 +60,7 @@ export default async function Page({
             />
           </div>
           <div className="mt-5 md:flex md:gap-2 ">
-            <div className="grow flex w-[40%]">
+            <div className="grow flex w-[20%]">
               <ChartPieLabelList
                 chartData={chartData}
                 chartConfig={chartConfig}

@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import {
   Cash,
   Investments,
+  MonthlyReport,
   MonthReportWithId,
   Movement,
   movementType,
@@ -121,4 +122,58 @@ export const formatStock = (
         currency: stock.currency,
       }))
     : [];
+};
+
+export const formatStockFromReport = (reports: MonthlyReport[]) => {
+  if (!reports.length) return [];
+
+  // Ensure chronological order
+  const sortedReports = [...reports].sort((a, b) =>
+    a.year !== b.year ? a.year - b.year : a.month - b.month
+  );
+
+  const fundMap = new Map<
+    number,
+    {
+      fund: Investments["fund"];
+      currency: string;
+      totalInvested: number;
+      value: number;
+    }
+  >();
+  console.log(sortedReports);
+  debugger;
+  for (const report of sortedReports) {
+    for (const inv of report.investments) {
+      const existing = fundMap.get(inv.fund.id);
+
+      if (!existing) {
+        fundMap.set(inv.fund.id, {
+          fund: inv.fund,
+          currency: inv.currency,
+          totalInvested: inv.amountInvested,
+          value: inv.currentValue,
+        });
+      } else {
+        existing.totalInvested += inv.amountInvested;
+        existing.value = inv.currentValue;
+      }
+    }
+  }
+
+  return Array.from(fundMap.values()).map((f) => {
+    const profit =
+      f.totalInvested === 0
+        ? 0
+        : ((f.value - f.totalInvested) / f.totalInvested) * 100;
+
+    return {
+      fund: f.fund,
+      currentValue: f.value,
+      amountInvested: f.totalInvested,
+      difference: f.value - f.totalInvested,
+      profit, // 0 = sin beneficio, 100 = duplicas, 200 = triplicas
+      currency: f.currency,
+    };
+  });
 };
