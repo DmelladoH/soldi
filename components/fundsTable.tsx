@@ -16,7 +16,6 @@ export function FundTable({ stocks }: { stocks: Stock[] }) {
     return "text-red-600";
   };
 
-  console.log({ stocks });
   const totalCurrentValue = stocks.reduce(
     (prev, curr) => prev + curr.currentValue,
     0
@@ -32,10 +31,10 @@ export function FundTable({ stocks }: { stocks: Stock[] }) {
     0
   );
 
-  const totalProfitRate = stocks.reduce(
-    (prev, curr) => prev + (curr.profit || 0),
-    0
-  );
+  const totalProfitRate =
+    totalInvested === 0
+      ? 0
+      : ((totalCurrentValue - totalInvested) / totalInvested) * 100;
 
   return (
     <div className="w-full overflow-x-auto">
@@ -108,7 +107,8 @@ export function FundTable({ stocks }: { stocks: Stock[] }) {
                 totalProfitRate
               )}`}
             >
-              {formatCurrency(totalProfitRate)}
+              {totalProfitRate >= 0 ? "+" : ""}
+              {totalProfitRate.toFixed(2)}%
             </TableCell>
           </TableRow>
         </TableBody>
