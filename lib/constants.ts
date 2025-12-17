@@ -27,3 +27,16 @@ export const MONTHS = [
   "nov",
   "dec",
 ];
+
+export const MovementsCategory = {
+  rent: 1,
+  payroll: 2,
+  groceries: 3,
+  restaurants: 4,
+  other: [5, 6],
+  freelance: 7,
+  traveling: 8,
+  home: 9,
+  books: 10,
+  tech: 11,
+};
