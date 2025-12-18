@@ -141,8 +141,7 @@ export const formatStockFromReport = (reports: MonthlyReport[]) => {
       value: number;
     }
   >();
-  console.log(sortedReports);
-  debugger;
+
   for (const report of sortedReports) {
     for (const inv of report.investments) {
       const existing = fundMap.get(inv.fund.id);
