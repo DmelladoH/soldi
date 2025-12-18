@@ -59,7 +59,7 @@ export default async function Page({
               stocks={stocks}
             />
           </div>
-          <div className="mt-5 md:flex md:gap-2 ">
+          <div className="mt-5 md:flex md:gap-2">
             <div className="grow flex w-[20%]">
               <ChartPieLabelList
                 chartData={chartData}
@@ -67,7 +67,11 @@ export default async function Page({
               />
             </div>
             <div>
-              <FundTable stocks={stocks} />
+              <FundTable
+                stocks={stocks.sort((a, b) =>
+                  a.fund.name.localeCompare(b.fund.name)
+                )}
+              />
             </div>
           </div>
         </div>
