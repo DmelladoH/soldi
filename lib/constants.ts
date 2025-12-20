@@ -1,6 +1,6 @@
 import { Currency, Found } from "./types";
 
-export const fundTypes: Record<Found, string> = {
+export const FundTypes: Record<Found, string> = {
   monetary: "Monetary",
   fixed: "Fixed",
   variable: "Variable",

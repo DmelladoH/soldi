@@ -139,26 +139,33 @@ export const formatStockFromReport = (reports: MonthlyReport[]) => {
       currency: string;
       totalInvested: number;
       value: number;
+      acc: number;
     }
   >();
 
   for (const report of sortedReports) {
     for (const inv of report.investments) {
       const existing = fundMap.get(inv.fund.id);
-
+      if (inv.fund.name === "Bitcoin") {
+        console.log({ inv });
+      }
       if (!existing) {
         fundMap.set(inv.fund.id, {
           fund: inv.fund,
           currency: inv.currency,
           totalInvested: inv.amountInvested,
           value: inv.currentValue,
+          acc: 0,
         });
       } else {
         existing.totalInvested += inv.amountInvested;
+        existing.acc += inv.currentValue - existing.value;
         existing.value = inv.currentValue;
       }
     }
   }
+
+  console.log({ fundMap });
 
   return Array.from(fundMap.values()).map((f) => {
     const profit =
