@@ -8,7 +8,7 @@ interface FinanceCardProps {
     value: string;
     positive: boolean;
   };
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   className?: string;
 }
 
@@ -27,7 +27,11 @@ export default function FinanceCard({
       )}
     >
       <div className="flex items-center">
-        <div className="p-2 rounded-md bg-slate-200 flex-shrink-0">{icon}</div>
+        {icon && (
+          <div className="p-2 rounded-md bg-slate-200 flex-shrink-0">
+            {icon}
+          </div>
+        )}
         <div className="ml-3 sm:ml-4 min-w-0 flex-1">
           <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">
             {title}

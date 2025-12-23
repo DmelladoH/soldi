@@ -12,7 +12,7 @@ export default async function ReportLayout({
   children: React.ReactNode;
   params: Promise<{ year: string }>;
 }>) {
-  const { year } = await params;
+  const { month, year } = await params;
 
   const currentYearRange = {
     start: new Date(Number(year), 0, 1),
