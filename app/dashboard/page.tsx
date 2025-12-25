@@ -29,7 +29,7 @@ export default async function DashBoard() {
         currentMonth={monthlyReport[monthlyReport.length - 1]}
         stocks={stocks}
       />
-      <div className="flex gap-4 md:flex-row flex-col w-full">
+      <div className="w-full ">
         <TotalChart chartData={chartTotalData} title="Total Money" />
       </div>
       <div>
