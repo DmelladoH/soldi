@@ -20,13 +20,8 @@ export default async function DashBoard() {
   const chartTotalData = getTotalChart(monthlyReport);
   const chartInvestmentData = getInvestmentChart(monthlyReport);
 
+  
   const stocks = formatStockFromReport(monthlyReport);
-
-  console.log({
-    stocks,
-    last: monthlyReport[monthlyReport.length - 1]?.investments,
-    first: monthlyReport[0]?.investments,
-  });
 
   return (
     <div className="grid gap-4">
@@ -36,7 +31,6 @@ export default async function DashBoard() {
       />
       <div className="flex gap-4 md:flex-row flex-col w-full">
         <TotalChart chartData={chartTotalData} title="Total Money" />
-        <TotalChart chartData={chartInvestmentData} title="Investments" />
       </div>
       <div>
         <h3 className="font-semibold leading-none tracking-tight my-5">

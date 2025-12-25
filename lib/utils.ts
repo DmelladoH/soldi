@@ -49,13 +49,14 @@ export const getInvestmentChart = (
 
 export const getTotalChart = (
   report: MonthReportWithId[]
-): { month: string; amount: number }[] => {
+): { month: string; total: number; invested: number }[] => {
   return report.map((report) => ({
     month: new Date(report.year, report.month, 1).toLocaleDateString("en-GB", {
       month: "long",
       timeZone: "UTC",
     }),
-    amount: getTotalMoney(report),
+    total: getTotalMoney(report),
+    invested: getTotalInvestments(report.investments),
   }));
 };
 
