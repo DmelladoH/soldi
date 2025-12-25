@@ -3,7 +3,7 @@ import ReportHeader from "@/components/reportHeader";
 import { ChartPieLabelList } from "@/components/ui/pieChart";
 import { MONTHS } from "@/lib/constants";
 import { buildChartConfig, getPieConfigByFundType } from "@/lib/graphs";
-import { formatStock } from "@/lib/utils";
+import { formatCurrency, formatStock } from "@/lib/utils";
 import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
 
 export default async function Page({
@@ -74,6 +74,18 @@ export default async function Page({
               />
             </div>
           </div>
+            <div>
+              cash:
+              <ul>
+                {
+                  currentMonth?.cash.map(e => (
+                    <div>
+                      {e.name} {formatCurrency(e.amount)}  
+                    </div>
+                  ))
+                }
+              </ul>
+            </div>
         </div>
       )}
     </>

@@ -1,13 +1,15 @@
 import FinanceCard from "@/components/financeCard";
 import { FundTable } from "@/components/fundsTable";
-import { MovementsCategory } from "@/lib/constants";
+import { MonthMap, MovementsCategory } from "@/lib/constants";
 import { MonthReportWithId } from "@/lib/types";
 import {
+  calculateAllMonthlyGains,
   formatCurrency,
   formatStockFromReport,
   getTotalMoney,
 } from "@/lib/utils";
 import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
+import { InvestmentSummary } from "../_components/investmentSummary";
 
 function getInfo({ data }: { data: MonthReportWithId[] }) {
   if (data.length === 0) {
@@ -31,30 +33,27 @@ function getInfo({ data }: { data: MonthReportWithId[] }) {
     (prev, curr) => prev + curr.amountInvested,
     0
   );
-  const totalInvestmentsLastMonth = data[data.length - 1].investments?.reduce(
-    (prev, curr) => prev + curr.currentValue,
-    0
-  );
 
-  const totalInvestmentsFirstMonth = data[0].investments?.reduce(
-    (prev, curr) => prev + curr.currentValue,
-    0
-  );
+  
   const groups = Object.groupBy(movements, (e) => e.tagId);
   const foo = Object.values(groups).map((elem) => ({
     id: elem && elem[0]?.tagId,
     type: elem && elem[0]?.type,
     val: elem?.reduce((prev, curr) => prev + curr.amount, 0),
   }));
-
+  
   const totalNetSalary =
     foo.find((elem) => elem.id === MovementsCategory.payroll)?.val || 0;
 
-  const totalExpendInRent =
+    const totalExpendInRent =
     foo.find((elem) => elem.id === MovementsCategory.rent)?.val || 0;
-
-  const stocks = formatStockFromReport(data);
-
+    
+    const stocks = formatStockFromReport(data);
+    const totalDiff = stocks?.reduce(
+      (prev, curr) => prev + (curr.difference || 0),
+      0
+    );
+    
   return {
     totalLastYear,
     totalCurrYear,
@@ -62,8 +61,7 @@ function getInfo({ data }: { data: MonthReportWithId[] }) {
     totalNetSalary,
     totalExpendInRent,
     stocks,
-    totalInvestmentsFirstMonth,
-    totalInvestmentsLastMonth,
+    totalDiff,
   };
 }
 
@@ -81,6 +79,8 @@ export default async function YearReport({
     endYear: Number(year),
   });
 
+  console.log({currentYearData})
+  
   const prevYearData = await getMonthlyReportWithInvestments({
     startMonth: 12,
     startYear: Number(year) - 2,
@@ -97,6 +97,21 @@ export default async function YearReport({
   } = getInfo({
     data: prevYearData,
   });
+
+  const data = calculateAllMonthlyGains(currentYearData)
+  const foo = data.map(e => ({month: MonthMap[e.month], value: e.fundGains.reduce((acc, curr) => curr.gain + acc, 0)}))
+  const formattedData = [...foo.slice(1)]
+
+  const totalInvestemtgains = formattedData.reduce((acc, curr) => acc + curr.value, 0)
+
+
+  const dataPrevYear = calculateAllMonthlyGains(prevYearData)
+  const foo2 = dataPrevYear.map(e => ({month: MonthMap[e.month], value: e.fundGains.reduce((acc, curr) => curr.gain + acc, 0)}))
+  const formattedDataPrevYear = [...foo2.slice(1)]
+  const totalInvestemtgainsPrev = formattedDataPrevYear.reduce((acc, curr) => acc + curr.value, 0)
+
+  const totalInInvetments = currentYearData[currentYearData.length - 1].investments.reduce((acc, curr) => acc + curr.currentValue, 0)
+  const percentageGains = (totalInvestemtgains / totalInInvetments) * 100
   return (
     <div>
       <section className="flex gap-2">
@@ -125,8 +140,30 @@ export default async function YearReport({
             positive: totalInvested - totalInvestedLastYear >= 0,
           }}
         />
+        <FinanceCard
+          title="total In investments"
+          value={formatCurrency(totalInInvetments)}
+         
+        />
+        
+      </section>
+      <section>
+        <FinanceCard
+          title="Total investments gains"
+          value={formatCurrency(totalInvestemtgains)}
+          change={{
+            value: formatCurrency(totalInvestemtgains - totalInvestemtgainsPrev),
+            positive: totalInvestemtgains - totalInvestemtgainsPrev >= 0,
+          }}
+        />
+        <FinanceCard
+          title="Total investments gains"
+          value={`${percentageGains.toFixed(2)}%`}
+        />
+        <InvestmentSummary rangeData={formattedData} />
       </section>
       {/* <FundTable stocks={stocks} /> */}
     </div>
   );
 }
+
