@@ -2,6 +2,9 @@ import { ChartConfig } from "@/components/ui/chart";
 import { PieEntity, Stock } from "./types";
 
 export const getPieConfigByFundType = (stocks: Stock[]): PieEntity[] => {
+  if (stocks.length === 0) {
+    return [];
+  }
   const totalValue = stocks.reduce((sum, stock) => sum + stock.currentValue, 0);
 
   const groupedByType = Object.groupBy(stocks, (s) => s.fund.type);

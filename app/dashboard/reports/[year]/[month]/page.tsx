@@ -3,7 +3,7 @@ import ReportHeader from "@/components/reportHeader";
 import { ChartPieLabelList } from "@/components/ui/pieChart";
 import { MONTHS } from "@/lib/constants";
 import { buildChartConfig, getPieConfigByFundType } from "@/lib/graphs";
-import { formatStock } from "@/lib/utils";
+import { formatCurrency, formatStock } from "@/lib/utils";
 import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
 
 export default async function Page({
@@ -59,7 +59,7 @@ export default async function Page({
               stocks={stocks}
             />
           </div>
-          <div className="mt-5 md:flex md:gap-2 ">
+          <div className="mt-5 md:flex md:gap-2">
             <div className="grow flex w-[20%]">
               <ChartPieLabelList
                 chartData={chartData}
@@ -67,9 +67,25 @@ export default async function Page({
               />
             </div>
             <div>
-              <FundTable stocks={stocks} />
+              <FundTable
+                stocks={stocks.sort((a, b) =>
+                  a.fund.name.localeCompare(b.fund.name)
+                )}
+              />
             </div>
           </div>
+            <div>
+              cash:
+              <ul>
+                {
+                  currentMonth?.cash.map(e => (
+                    <div>
+                      {e.name} {formatCurrency(e.amount)}  
+                    </div>
+                  ))
+                }
+              </ul>
+            </div>
         </div>
       )}
     </>

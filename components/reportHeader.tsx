@@ -5,7 +5,6 @@ import {
 } from "@/lib/utils";
 import {
   Wallet,
-  ArrowUp,
   ArrowDown,
   TrendingUp,
   BadgeEuro,
@@ -100,28 +99,6 @@ export default function ReportHeader({
           }
           value={formatCurrency(cash)}
           icon={<BadgeEuro className="h-5 w-5" />}
-        />
-      </div>
-      {/* <div className="monthIncome flex-grow">
-        <FinanceCard
-          title="Monthly Income"
-          change={
-            lastMonth
-              ? {
-                  value: formatCurrency(currentMonthIncome - lastMonthIncome),
-                  positive: currentMonthIncome > lastMonthIncome,
-                }
-              : undefined
-          }
-          value={formatCurrency(currentMonthIncome)}
-          icon={<ArrowUp className="h-5 w-5 text-moneyGreen" />}
-        />
-      </div> */}
-      <div className="flex-grow">
-        <FinanceCard
-          title="Total gains"
-          value={formatCurrency(gains)}
-          icon={<ArrowUp className="h-5 w-5 text-moneyGreen" />}
         />
       </div>
       <div className="flex-grow">

@@ -3,6 +3,7 @@ import { MonthGraph } from "../_components/monthGraph";
 import { getTotalMovementByType } from "@/lib/utils";
 import { MonthReportWithId } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default async function ReportLayout({
   params,
@@ -11,7 +12,7 @@ export default async function ReportLayout({
   children: React.ReactNode;
   params: Promise<{ year: string }>;
 }>) {
-  const { year } = await params;
+  const { month, year } = await params;
 
   const currentYearRange = {
     start: new Date(Number(year), 0, 1),
@@ -67,7 +68,9 @@ export default async function ReportLayout({
             <Button asChild>
               <a href={`/dashboard/reports/${prevYear}/dec`}>prev</a>
             </Button>
-            <span className="font-bold text-2xl">{year}</span>
+            <Link href={`/dashboard/reports/${year}`}>
+              <span className="font-bold text-2xl">{year}</span>
+            </Link>
             <Button asChild>
               <a href={`/dashboard/reports/${nextYear}/jan`}>next</a>
             </Button>
