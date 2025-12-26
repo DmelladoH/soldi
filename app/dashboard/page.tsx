@@ -3,7 +3,6 @@ import { TotalChart } from "./_components/totalChart";
 
 import {
   formatStockFromReport,
-  getInvestmentChart,
   getTotalChart,
 } from "@/lib/utils";
 import { FundTable } from "@/components/fundsTable";
@@ -18,8 +17,6 @@ export default async function DashBoard() {
   });
 
   const chartTotalData = getTotalChart(monthlyReport);
-  const chartInvestmentData = getInvestmentChart(monthlyReport);
-
   
   const stocks = formatStockFromReport(monthlyReport);
 
