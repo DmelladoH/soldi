@@ -170,7 +170,6 @@ export default async function YearReport({
         </div>
         <InvestmentSummary rangeData={formattedData} />
       </section>
-      <FundTable stocks={stocks.sort((a, b) => a.fund.name.localeCompare(b.fund.name))} />
     </div>
   );
 }
