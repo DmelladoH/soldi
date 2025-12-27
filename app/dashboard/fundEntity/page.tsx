@@ -5,7 +5,7 @@ export default async function FundEntity() {
   const fundEntities = await getFoundEntities();
 
   return (
-    <div className="h-screen">
+    <div className="h-screen p-3 sm:p-5">
       <h1 className="text-2xl font-bold">Fund Entities</h1>
       <div className="mt-4">
         <FundEntityView entities={fundEntities} />

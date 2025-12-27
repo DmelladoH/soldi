@@ -110,8 +110,11 @@ export default async function YearReport({
   const formattedDataPrevYear = [...foo2.slice(1)]
   const totalInvestemtgainsPrev = formattedDataPrevYear.reduce((acc, curr) => acc + curr.value, 0)
 
+  console.log(formattedDataPrevYear)
+
   const totalInInvetments = currentYearData[currentYearData.length - 1].investments.reduce((acc, curr) => acc + curr.currentValue, 0)
   const percentageGains = (totalInvestemtgains / totalInInvetments) * 100
+  
   return (
     <div>
       <section className="flex gap-2">
