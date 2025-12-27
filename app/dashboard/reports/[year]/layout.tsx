@@ -60,7 +60,7 @@ export default async function ReportLayout({
   const nextYear = Number(year) + 1;
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col p-3 sm:p-5">
       <header>
         <h1 className="text-2xl font-bold">Financial Reports</h1>
         <div className="mt-4">

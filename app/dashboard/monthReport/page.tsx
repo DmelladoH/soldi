@@ -7,7 +7,7 @@ export default async function page() {
   const movementTags = await getMovementTags();
 
   return (
-    <div className="grid">
+    <div className="grid p-3 sm:p-5">
       <h1 className="text-2xl font-bold">Month report</h1>
       <div className="mt-5 grid">
         <MonthlyReportForm

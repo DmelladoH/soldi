@@ -1,5 +1,4 @@
 import FinanceCard from "@/components/financeCard";
-import { FundTable } from "@/components/fundsTable";
 import { MonthMap, MovementsCategory } from "@/lib/constants";
 import { MonthReportWithId } from "@/lib/types";
 import {
@@ -24,11 +23,11 @@ function getInfo({ data }: { data: MonthReportWithId[] }) {
       totalInvestmentsLastMonth: 0,
     };
   }
-  const totalLastYear = getTotalMoney(data[0]);
-  const totalCurrYear = getTotalMoney(data[11]);
 
-  const movements = data.map((elem) => elem.movements).flat();
-  const investments = data.map((elem) => elem.investments).flat();
+  const totalCurrYear = getTotalMoney(data[data.length - 1]);
+
+  const movements = data.map((elem) => elem.movements)?.flat();
+  const investments = data.map((elem) => elem.investments)?.flat();
   const totalInvested = investments?.reduce(
     (prev, curr) => prev + curr.amountInvested,
     0
@@ -55,7 +54,6 @@ function getInfo({ data }: { data: MonthReportWithId[] }) {
     );
     
   return {
-    totalLastYear,
     totalCurrYear,
     totalInvested,
     totalNetSalary,
@@ -79,8 +77,8 @@ export default async function YearReport({
     endYear: Number(year),
   });
 
-  console.log({currentYearData})
-  
+  if(!currentYearData.length) return (<div className="flex justify-center w-full pt-14"><p>No Data</p></div>)
+
   const prevYearData = await getMonthlyReportWithInvestments({
     startMonth: 12,
     startYear: Number(year) - 2,
@@ -88,10 +86,14 @@ export default async function YearReport({
     endYear: Number(year) - 1,
   });
 
-  const { totalLastYear, totalCurrYear, totalInvested, totalNetSalary } =
+
+  console.log({currentYearData, prevYearData})
+
+  const { totalCurrYear, totalInvested, totalNetSalary } =
     getInfo({ data: currentYearData });
 
   const {
+    totalCurrYear: totalLastYear,
     totalNetSalary: totalNetSalaryLastYear,
     totalInvested: totalInvestedLastYear,
   } = getInfo({
@@ -100,18 +102,22 @@ export default async function YearReport({
 
   const data = calculateAllMonthlyGains(currentYearData)
   const foo = data.map(e => ({month: MonthMap[e.month], value: e.fundGains.reduce((acc, curr) => curr.gain + acc, 0)}))
-  const formattedData = [...foo.slice(1)]
+  const formattedData = foo[0]?.month === "December" ? [...foo.slice(1)] : foo
 
+  console.log(formattedData)
   const totalInvestemtgains = formattedData.reduce((acc, curr) => acc + curr.value, 0)
 
 
   const dataPrevYear = calculateAllMonthlyGains(prevYearData)
   const foo2 = dataPrevYear.map(e => ({month: MonthMap[e.month], value: e.fundGains.reduce((acc, curr) => curr.gain + acc, 0)}))
-  const formattedDataPrevYear = [...foo2.slice(1)]
+  const formattedDataPrevYear = foo2[0]?.month === "December" ? [...foo2.slice(1)] : foo2
   const totalInvestemtgainsPrev = formattedDataPrevYear.reduce((acc, curr) => acc + curr.value, 0)
 
-  const totalInInvetments = currentYearData[currentYearData.length - 1].investments.reduce((acc, curr) => acc + curr.currentValue, 0)
-  const percentageGains = (totalInvestemtgains / totalInInvetments) * 100
+  const totalInInvetments = currentYearData[currentYearData.length - 1].investments?.reduce((acc, curr) => acc + curr.currentValue, 0)
+  
+  console.log({totalInvestemtgains, totalInInvetments,totalInvested})
+  const percentageGains = (totalInInvetments - (totalInInvetments - totalInvestemtgains)) / totalInvested * 100
+  
   return (
     <div>
       <section className="flex gap-2">
@@ -133,7 +139,7 @@ export default async function YearReport({
           }}
         />
         <FinanceCard
-          title="total invested"
+          title="Total invested this year"
           value={formatCurrency(totalInvested)}
           change={{
             value: formatCurrency(totalInvested - totalInvestedLastYear),
@@ -141,25 +147,26 @@ export default async function YearReport({
           }}
         />
         <FinanceCard
-          title="total In investments"
+          title="Total In investments"
           value={formatCurrency(totalInInvetments)}
          
         />
-        
       </section>
-      <section>
-        <FinanceCard
-          title="Total investments gains"
-          value={formatCurrency(totalInvestemtgains)}
-          change={{
-            value: formatCurrency(totalInvestemtgains - totalInvestemtgainsPrev),
-            positive: totalInvestemtgains - totalInvestemtgainsPrev >= 0,
-          }}
-        />
-        <FinanceCard
-          title="Total investments gains"
-          value={`${percentageGains.toFixed(2)}%`}
-        />
+      <section className="mt-2">
+        <div className="flex gap-2 mb-2">
+          <FinanceCard
+            title="Total investments gains"
+            value={formatCurrency(totalInvestemtgains)}
+            change={{
+              value: formatCurrency(totalInvestemtgains - totalInvestemtgainsPrev),
+              positive: totalInvestemtgains - totalInvestemtgainsPrev >= 0,
+            }}
+          />
+          <FinanceCard
+            title="Total investments gains"
+            value={`${percentageGains.toFixed(2)}%`}
+          />
+        </div>
         <InvestmentSummary rangeData={formattedData} />
       </section>
       {/* <FundTable stocks={stocks} /> */}

@@ -34,7 +34,7 @@ export function FundTable({ stocks }: { stocks: Stock[] }) {
   const totalProfitRate =
     totalInvested === 0
       ? 0
-      : ((totalCurrentValue - totalInvested) / totalInvested) * 100;
+      : ((totalCurrentValue - (totalCurrentValue - totalDiff)) / totalInvested) * 100;
 
   return (
     <div className="w-full overflow-x-auto">
@@ -58,6 +58,7 @@ export function FundTable({ stocks }: { stocks: Stock[] }) {
               <TableCell className="min-w-[120px]">
                 <div className="font-medium">{stock.fund.name}</div>
               </TableCell>
+              
               <TableCell className="min-w-[120px] text-right">
                 {formatCurrency(stock.currentValue)}
               </TableCell>
@@ -68,6 +69,7 @@ export function FundTable({ stocks }: { stocks: Stock[] }) {
               >
                 {formatCurrency(stock.amountInvested)}
               </TableCell>
+              
               <TableCell
                 className={`min-w-[100px] text-right ${getTextColor(
                   stock.difference
