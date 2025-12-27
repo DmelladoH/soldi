@@ -12,24 +12,13 @@ import { Button } from "@/components/ui/button";
 import Link from "@/node_modules/next/link";
 
 export default async function DashBoard() {
-  const today = new Date();
-
-  const monthlyReport = await getMonthlyReportWithInvestments({
-    endMonth: today.getUTCMonth(),
-    endYear: today.getFullYear(),
-  });
-
+  const monthlyReport = await getMonthlyReportWithInvestments({});
 
   if(!monthlyReport.length) return <EmptyState />
-
-  console.log({monthlyReport})
 
   const chartTotalData = getTotalChart(monthlyReport);
 
   const stocks = formatStockFromReport(monthlyReport);
-  
-  console.log(stocks, monthlyReport.map(e => e.investments.filter(i => i.fund.id === 16)))
-
 
   return (
     <div className="grid gap-4 p-3 sm:p-5">

@@ -9,6 +9,7 @@ import {
 } from "@/lib/utils";
 import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
 import { InvestmentSummary } from "../_components/investmentSummary";
+import { FundTable } from "@/components/fundsTable";
 
 function getInfo({ data }: { data: MonthReportWithId[] }) {
   if (data.length === 0) {
@@ -89,7 +90,7 @@ export default async function YearReport({
 
   console.log({currentYearData, prevYearData})
 
-  const { totalCurrYear, totalInvested, totalNetSalary } =
+  const { totalCurrYear, totalInvested, totalNetSalary, stocks } =
     getInfo({ data: currentYearData });
 
   const {
@@ -169,7 +170,7 @@ export default async function YearReport({
         </div>
         <InvestmentSummary rangeData={formattedData} />
       </section>
-      {/* <FundTable stocks={stocks} /> */}
+      <FundTable stocks={stocks.sort((a, b) => a.fund.name.localeCompare(b.fund.name))} />
     </div>
   );
 }
