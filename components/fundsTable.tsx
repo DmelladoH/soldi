@@ -34,7 +34,7 @@ export function FundTable({ stocks }: { stocks: Stock[] }) {
   const totalProfitRate =
     totalInvested === 0
       ? 0
-      : ((totalCurrentValue - totalInvested) / totalInvested) * 100;
+      : ((totalCurrentValue - (totalCurrentValue - totalDiff)) / totalInvested) * 100;
 
   return (
     <div className="w-full overflow-x-auto">

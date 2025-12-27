@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import MonetaryInput from "@/components/ui/monetaryInput";
 import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
+import { MONTHS, MonthMap } from "@/lib/constants";
 import { FundEntityWithId, MovementTag, movementType } from "@/lib/types";
 import { SelectItem, SelectValue } from "@radix-ui/react-select";
 import { Plus, Trash } from "lucide-react";
@@ -68,8 +69,6 @@ export function MonthlyReportForm({
     formState: { isSubmitting },
   } = useForm<FromFields>({ defaultValues });
 
-  console.log(watch());
-
   const onSubmit = async (data: FromFields) => {
     const movementsRaw = [...data.income, ...data.expense];
     const movements = movementsRaw.map(({ tag, amount, currency }) => ({
@@ -123,11 +122,11 @@ export function MonthlyReportForm({
                 >
                   <SelectTrigger>
                     <SelectValue>
-                      {Months[field.value as keyof typeof Months]}
+                      {MonthMap[field.value as keyof typeof MonthMap]}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.entries(Months).map(([num, name]) => (
+                    {Object.entries(MonthMap).map(([num, name]) => (
                       <SelectItem key={num} value={num}>
                         {name}
                       </SelectItem>

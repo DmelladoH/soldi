@@ -75,11 +75,12 @@ export const getStockProfit = (
   if (!currStock || !prevStock) return 0;
 
   const prevValue = prevStock?.currentValue ?? 0;
-
+  console.log({currStock, prevStock})
   // Prevent division by zero
   if (prevValue === 0) return 0;
 
-  return (currStock.currentValue - prevValue) / prevValue;
+  const diff = (currStock.currentValue - currStock.amountInvested) - prevStock.currentValue 
+  return (currStock.currentValue - (currStock.currentValue  - diff)) / currStock.amountInvested * 100;
 };
 
 export const formatCurrency = (amount: number) => {
