@@ -9,7 +9,6 @@ import {
 } from "@/lib/utils";
 import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
 import { InvestmentSummary } from "../_components/investmentSummary";
-import { console } from "inspector";
 
 function getInfo({ data }: { data: MonthReportWithId[] }) {
   if (data.length === 0) {
@@ -110,7 +109,7 @@ export default async function YearReport({
   }));
   const formattedData = foo[0]?.month === "December" ? [...foo.slice(1)] : foo;
 
-  const totalInvestemtgains = formattedData.reduce(
+  const totalInvestmentGains = formattedData.reduce(
     (acc, curr) => acc + curr.value,
     0
   );
@@ -125,21 +124,22 @@ export default async function YearReport({
   const formattedDataPrevYear =
     foo2[0]?.month === "December" ? [...foo2.slice(1)] : foo2;
 
-  const totalInvestemtgainsPrev = formattedDataPrevYear.reduce(
+  const totalInvestmentGainsPrev = formattedDataPrevYear.reduce(
     (acc, curr) => acc + curr.value,
     0
   );
 
-  const totalInInvetments = currentYearData[
+  const totalInInvestments = currentYearData[
     currentYearData.length - 1
   ].investments?.reduce((acc, curr) => acc + curr.currentValue, 0);
 
   const percentageGainsThisYear =
-    ((totalInInvetments - (totalInInvetments - totalInvestemtgains)) /
+    ((totalInInvestments - (totalInInvestments - totalInvestmentGains)) /
       totalInvested) *
     100;
 
-  const percentageGainsTotal = (totalInvestemtgains / totalInInvetments) * 100;
+  const percentageGainsTotal =
+    (totalInvestmentGains / totalInInvestments) * 100;
 
   return (
     <div>
@@ -171,19 +171,19 @@ export default async function YearReport({
         />
         <FinanceCard
           title="Total In investments"
-          value={formatCurrency(totalInInvetments)}
+          value={formatCurrency(totalInInvestments)}
         />
       </section>
       <section className="mt-2">
         <div className="flex gap-2 mb-2">
           <FinanceCard
             title="Total investments gains"
-            value={formatCurrency(totalInvestemtgains)}
+            value={formatCurrency(totalInvestmentGains)}
             change={{
               value: formatCurrency(
-                totalInvestemtgains - totalInvestemtgainsPrev
+                totalInvestmentGains - totalInvestmentGainsPrev
               ),
-              positive: totalInvestemtgains - totalInvestemtgainsPrev >= 0,
+              positive: totalInvestmentGains - totalInvestmentGainsPrev >= 0,
             }}
           />
           <FinanceCard
