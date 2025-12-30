@@ -43,8 +43,6 @@ interface FromFields {
   }[];
 }
 
-
-
 const defaultValues = {
   month: new Date().getUTCMonth() + 1,
   year: new Date().getFullYear(),
@@ -275,7 +273,6 @@ function IncomeAndExpenses({
     control,
   });
 
-  console.log({ fields, type });
   return (
     <>
       <ul className="grid gap-5">

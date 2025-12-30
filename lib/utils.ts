@@ -30,8 +30,8 @@ export const geStockDifference = (
   currStock: Investments | undefined,
   prevStock: Investments | undefined
 ) => {
-  if (!currStock || !prevStock) return 0;
-  const prevValue = prevStock.currentValue;
+  if (!currStock) return 0;
+  const prevValue = prevStock?.currentValue || 0;
   return currStock.currentValue - currStock.amountInvested - prevValue;
 };
 
@@ -75,12 +75,16 @@ export const getStockProfit = (
   if (!currStock || !prevStock) return 0;
 
   const prevValue = prevStock?.currentValue ?? 0;
-  console.log({currStock, prevStock})
   // Prevent division by zero
   if (prevValue === 0) return 0;
 
-  const diff = (currStock.currentValue - currStock.amountInvested) - prevStock.currentValue 
-  return (currStock.currentValue - (currStock.currentValue  - diff)) / currStock.amountInvested * 100;
+  const diff =
+    currStock.currentValue - currStock.amountInvested - prevStock.currentValue;
+  return (
+    ((currStock.currentValue - (currStock.currentValue - diff)) /
+      currStock.amountInvested) *
+    100
+  );
 };
 
 export const formatCurrency = (amount: number) => {
@@ -204,34 +208,34 @@ export const formatStockFromReport = (reports: MonthlyReport[]) => {
  * @returns {Object} return.fund - Fund details
  */
 export function calculateFundGain(currentMonthFund, previousMonthFund) {
-  const { currentValue, amountInvested, fund } = currentMonthFund
+  const { currentValue, amountInvested, fund } = currentMonthFund;
 
   if (!previousMonthFund) {
     // Fund is new (first appearance or not in previous month)
     // Gain = currentValue - amountInvested
-    const gain = currentValue - amountInvested
+    const gain = currentValue - amountInvested;
 
     return {
-      gain: 0,
+      gain: gain,
       currentValue,
       previousValue: 0,
       amountInvested,
-      fund
-    }
+      fund,
+    };
   }
 
   // Fund exists in previous month
   // Gain = currentValue - (previousValue + amountInvested)
-  const previousValue = previousMonthFund.currentValue
-  const gain = currentValue - (previousValue + amountInvested)
+  const previousValue = previousMonthFund.currentValue;
+  const gain = currentValue - (previousValue + amountInvested);
 
   return {
     gain,
     currentValue,
     previousValue,
     amountInvested,
-    fund
-  }
+    fund,
+  };
 }
 
 /**
@@ -247,44 +251,47 @@ export function calculateFundGain(currentMonthFund, previousMonthFund) {
  * @returns {number} return.totalGain - Sum of all gains for the month
  * @returns {Array<Object>} return.soldFunds - Funds that existed in previous month but not current (were sold)
  */
-export function calculateMonthlyInvestmentGains(currentMonth, previousMonth = null) {
-  const currentInvestments = currentMonth.investments || []
-  const previousInvestments = previousMonth?.investments || []
+export function calculateMonthlyInvestmentGains(
+  currentMonth,
+  previousMonth = null
+) {
+  const currentInvestments = currentMonth.investments || [];
+  const previousInvestments = previousMonth?.investments || [];
 
   // Calculate gains for each fund in current month
-  const fundGains = currentInvestments.map(currentFund => {
+  const fundGains = currentInvestments.map((currentFund) => {
     // Find matching fund in previous month by fund ID
     const previousFund = previousInvestments.find(
-      prevFund => prevFund.fund.id === currentFund.fund.id
-    )
+      (prevFund) => prevFund.fund.id === currentFund.fund.id
+    );
 
-    return calculateFundGain(currentFund, previousFund)
-  })
+    return calculateFundGain(currentFund, previousFund);
+  });
 
   // Find funds that were sold (existed in previous month but not in current)
   const soldFunds = previousInvestments
-    .filter(prevFund => {
+    .filter((prevFund) => {
       const stillExists = currentInvestments.some(
-        currFund => currFund.fund.id === prevFund.fund.id
-      )
-      return !stillExists
+        (currFund) => currFund.fund.id === prevFund.fund.id
+      );
+      return !stillExists;
     })
-    .map(soldFund => ({
+    .map((soldFund) => ({
       fund: soldFund.fund,
       finalValue: soldFund.currentValue,
-      wasSold: true
-    }))
+      wasSold: true,
+    }));
 
   // Calculate total gain for the month
-  const totalGain = fundGains.reduce((sum, fundGain) => sum + fundGain.gain, 0)
+  const totalGain = fundGains.reduce((sum, fundGain) => sum + fundGain.gain, 0);
 
   return {
     month: currentMonth.month,
     year: currentMonth.year,
     fundGains,
     totalGain,
-    soldFunds
-  }
+    soldFunds,
+  };
 }
 
 /**
@@ -296,17 +303,17 @@ export function calculateMonthlyInvestmentGains(currentMonth, previousMonth = nu
  */
 export function calculateAllMonthlyGains(monthlyReports) {
   if (!Array.isArray(monthlyReports) || monthlyReports.length === 0) {
-    return []
+    return [];
   }
 
   // Sort by year and month to ensure chronological order
   const sortedReports = [...monthlyReports].sort((a, b) => {
-    if (a.year !== b.year) return a.year - b.year
-    return a.month - b.month
-  })
+    if (a.year !== b.year) return a.year - b.year;
+    return a.month - b.month;
+  });
 
   return sortedReports.map((currentMonth, index) => {
-    const previousMonth = index > 0 ? sortedReports[index - 1] : null
-    return calculateMonthlyInvestmentGains(currentMonth, previousMonth)
-  })
+    const previousMonth = index > 0 ? sortedReports[index - 1] : null;
+    return calculateMonthlyInvestmentGains(currentMonth, previousMonth);
+  });
 }

@@ -9,7 +9,7 @@ import {
 } from "@/lib/utils";
 import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
 import { InvestmentSummary } from "../_components/investmentSummary";
-import { FundTable } from "@/components/fundsTable";
+import { console } from "inspector";
 
 function getInfo({ data }: { data: MonthReportWithId[] }) {
   if (data.length === 0) {
@@ -34,26 +34,25 @@ function getInfo({ data }: { data: MonthReportWithId[] }) {
     0
   );
 
-  
   const groups = Object.groupBy(movements, (e) => e.tagId);
   const foo = Object.values(groups).map((elem) => ({
     id: elem && elem[0]?.tagId,
     type: elem && elem[0]?.type,
     val: elem?.reduce((prev, curr) => prev + curr.amount, 0),
   }));
-  
+
   const totalNetSalary =
     foo.find((elem) => elem.id === MovementsCategory.payroll)?.val || 0;
 
-    const totalExpendInRent =
+  const totalExpendInRent =
     foo.find((elem) => elem.id === MovementsCategory.rent)?.val || 0;
-    
-    const stocks = formatStockFromReport(data);
-    const totalDiff = stocks?.reduce(
-      (prev, curr) => prev + (curr.difference || 0),
-      0
-    );
-    
+
+  const stocks = formatStockFromReport(data);
+  const totalDiff = stocks?.reduce(
+    (prev, curr) => prev + (curr.difference || 0),
+    0
+  );
+
   return {
     totalCurrYear,
     totalInvested,
@@ -78,7 +77,12 @@ export default async function YearReport({
     endYear: Number(year),
   });
 
-  if(!currentYearData.length) return (<div className="flex justify-center w-full pt-14"><p>No Data</p></div>)
+  if (!currentYearData.length)
+    return (
+      <div className="flex justify-center w-full pt-14">
+        <p>No Data</p>
+      </div>
+    );
 
   const prevYearData = await getMonthlyReportWithInvestments({
     startMonth: 12,
@@ -87,11 +91,9 @@ export default async function YearReport({
     endYear: Number(year) - 1,
   });
 
-
-  console.log({currentYearData, prevYearData})
-
-  const { totalCurrYear, totalInvested, totalNetSalary, stocks } =
-    getInfo({ data: currentYearData });
+  const { totalCurrYear, totalInvested, totalNetSalary, stocks } = getInfo({
+    data: currentYearData,
+  });
 
   const {
     totalCurrYear: totalLastYear,
@@ -101,24 +103,44 @@ export default async function YearReport({
     data: prevYearData,
   });
 
-  const data = calculateAllMonthlyGains(currentYearData)
-  const foo = data.map(e => ({month: MonthMap[e.month], value: e.fundGains.reduce((acc, curr) => curr.gain + acc, 0)}))
-  const formattedData = foo[0]?.month === "December" ? [...foo.slice(1)] : foo
+  const data = calculateAllMonthlyGains(currentYearData);
+  const foo = data.map((e) => ({
+    month: MonthMap[e.month],
+    value: e.fundGains.reduce((acc, curr) => curr.gain + acc, 0),
+  }));
+  const formattedData = foo[0]?.month === "December" ? [...foo.slice(1)] : foo;
 
-  console.log(formattedData)
-  const totalInvestemtgains = formattedData.reduce((acc, curr) => acc + curr.value, 0)
+  const totalInvestemtgains = formattedData.reduce(
+    (acc, curr) => acc + curr.value,
+    0
+  );
 
+  const dataPrevYear = calculateAllMonthlyGains(prevYearData);
 
-  const dataPrevYear = calculateAllMonthlyGains(prevYearData)
-  const foo2 = dataPrevYear.map(e => ({month: MonthMap[e.month], value: e.fundGains.reduce((acc, curr) => curr.gain + acc, 0)}))
-  const formattedDataPrevYear = foo2[0]?.month === "December" ? [...foo2.slice(1)] : foo2
-  const totalInvestemtgainsPrev = formattedDataPrevYear.reduce((acc, curr) => acc + curr.value, 0)
+  const foo2 = dataPrevYear.map((e) => ({
+    month: MonthMap[e.month],
+    value: e.fundGains.reduce((acc, curr) => curr.gain + acc, 0),
+  }));
 
-  const totalInInvetments = currentYearData[currentYearData.length - 1].investments?.reduce((acc, curr) => acc + curr.currentValue, 0)
-  
-  console.log({totalInvestemtgains, totalInInvetments,totalInvested})
-  const percentageGains = (totalInInvetments - (totalInInvetments - totalInvestemtgains)) / totalInvested * 100
-  
+  const formattedDataPrevYear =
+    foo2[0]?.month === "December" ? [...foo2.slice(1)] : foo2;
+
+  const totalInvestemtgainsPrev = formattedDataPrevYear.reduce(
+    (acc, curr) => acc + curr.value,
+    0
+  );
+
+  const totalInInvetments = currentYearData[
+    currentYearData.length - 1
+  ].investments?.reduce((acc, curr) => acc + curr.currentValue, 0);
+
+  const percentageGainsThisYear =
+    ((totalInInvetments - (totalInInvetments - totalInvestemtgains)) /
+      totalInvested) *
+    100;
+
+  const percentageGainsTotal = (totalInvestemtgains / totalInInvetments) * 100;
+
   return (
     <div>
       <section className="flex gap-2">
@@ -150,7 +172,6 @@ export default async function YearReport({
         <FinanceCard
           title="Total In investments"
           value={formatCurrency(totalInInvetments)}
-         
         />
       </section>
       <section className="mt-2">
@@ -159,13 +180,19 @@ export default async function YearReport({
             title="Total investments gains"
             value={formatCurrency(totalInvestemtgains)}
             change={{
-              value: formatCurrency(totalInvestemtgains - totalInvestemtgainsPrev),
+              value: formatCurrency(
+                totalInvestemtgains - totalInvestemtgainsPrev
+              ),
               positive: totalInvestemtgains - totalInvestemtgainsPrev >= 0,
             }}
           />
           <FinanceCard
-            title="Total investments gains"
-            value={`${percentageGains.toFixed(2)}%`}
+            title="Profit over invested this year"
+            value={`${percentageGainsThisYear.toFixed(2)}%`}
+          />
+          <FinanceCard
+            title="Profit over total invested"
+            value={`${percentageGainsTotal.toFixed(2)}%`}
           />
         </div>
         <InvestmentSummary rangeData={formattedData} />
@@ -173,4 +200,3 @@ export default async function YearReport({
     </div>
   );
 }
-

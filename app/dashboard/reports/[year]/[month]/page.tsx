@@ -74,18 +74,16 @@ export default async function Page({
               />
             </div>
           </div>
-            <div>
-              cash:
-              <ul>
-                {
-                  currentMonth?.cash.map(e => (
-                    <div>
-                      {e.name} {formatCurrency(e.amount)}  
-                    </div>
-                  ))
-                }
-              </ul>
-            </div>
+          <div>
+            cash:
+            <ul>
+              {currentMonth?.cash.map((e) => (
+                <div>
+                  {e.name} {formatCurrency(e.amount)}
+                </div>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
     </>
