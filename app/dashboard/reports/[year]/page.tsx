@@ -83,6 +83,13 @@ export default async function YearReport({
       </div>
     );
 
+  const currentYearTotalExpense = currentYearData
+    ?.map((e) => e.movements)
+    ?.flat()
+    ?.filter((e) => e.type === "expense")
+    ?.reduce((acc, curr) => acc + curr.amount, 0);
+  console.log({ currentYearTotalExpense });
+
   const prevYearData = await getMonthlyReportWithInvestments({
     startMonth: 12,
     startYear: Number(year) - 2,
@@ -90,7 +97,13 @@ export default async function YearReport({
     endYear: Number(year) - 1,
   });
 
-  const { totalCurrYear, totalInvested, totalNetSalary, stocks } = getInfo({
+  const prevYearTotalExpense = prevYearData
+    ?.map((e) => e.movements)
+    ?.flat()
+    ?.filter((e) => e.type === "expense")
+    ?.reduce((acc, curr) => acc + curr.amount, 0);
+
+  const { totalCurrYear, totalInvested, totalNetSalary } = getInfo({
     data: currentYearData,
   });
 
@@ -104,8 +117,11 @@ export default async function YearReport({
 
   const data = calculateAllMonthlyGains(currentYearData);
   const foo = data.map((e) => ({
-    month: MonthMap[e.month],
-    value: e.fundGains.reduce((acc, curr) => curr.gain + acc, 0),
+    month: MonthMap[e.month as keyof typeof MonthMap],
+    value: e.fundGains.reduce(
+      (acc: number, curr: { gain: number }) => curr.gain + acc,
+      0
+    ),
   }));
   const formattedData = foo[0]?.month === "December" ? [...foo.slice(1)] : foo;
 
@@ -117,8 +133,11 @@ export default async function YearReport({
   const dataPrevYear = calculateAllMonthlyGains(prevYearData);
 
   const foo2 = dataPrevYear.map((e) => ({
-    month: MonthMap[e.month],
-    value: e.fundGains.reduce((acc, curr) => curr.gain + acc, 0),
+    month: MonthMap[e.month as keyof typeof MonthMap],
+    value: e.fundGains.reduce(
+      (acc: number, curr: { gain: number }) => curr.gain + acc,
+      0
+    ),
   }));
 
   const formattedDataPrevYear =
@@ -141,6 +160,8 @@ export default async function YearReport({
   const percentageGainsTotal =
     (totalInvestmentGains / totalInInvestments) * 100;
 
+  const savingsRate =
+    ((totalNetSalary - currentYearTotalExpense) / totalNetSalary) * 100;
   return (
     <div>
       <section className="flex gap-2">
@@ -159,6 +180,16 @@ export default async function YearReport({
           change={{
             value: formatCurrency(totalNetSalary - totalNetSalaryLastYear),
             positive: totalNetSalary - totalNetSalaryLastYear >= 0,
+          }}
+        />
+        <FinanceCard
+          title="Total Expenses"
+          value={formatCurrency(currentYearTotalExpense)}
+          change={{
+            value: formatCurrency(
+              currentYearTotalExpense - prevYearTotalExpense
+            ),
+            positive: currentYearTotalExpense - prevYearTotalExpense >= 0,
           }}
         />
         <FinanceCard
@@ -194,7 +225,12 @@ export default async function YearReport({
             title="Profit over total invested"
             value={`${percentageGainsTotal.toFixed(2)}%`}
           />
+          <FinanceCard
+            title="Savings Rate"
+            value={`${savingsRate.toFixed(2)}%`}
+          />
         </div>
+
         <InvestmentSummary rangeData={formattedData} />
       </section>
     </div>

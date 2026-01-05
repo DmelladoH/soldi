@@ -3,12 +3,7 @@ import {
   getTotalMoney,
   getTotalMovementByType,
 } from "@/lib/utils";
-import {
-  Wallet,
-  ArrowDown,
-  TrendingUp,
-  BadgeEuro,
-} from "lucide-react";
+import { Wallet, ArrowDown, TrendingUp, BadgeEuro } from "lucide-react";
 import FinanceCard from "./financeCard";
 import { MonthReportWithId, Stock } from "@/lib/types";
 
@@ -46,6 +41,7 @@ export default function ReportHeader({
           100
         ).toFixed(2);
 
+  console.log({ currentMonthIncome, currentMonthExpenses });
   const currentMonthSavingsRate =
     currentMonthIncome === 0
       ? 0
@@ -99,6 +95,21 @@ export default function ReportHeader({
           }
           value={formatCurrency(cash)}
           icon={<BadgeEuro className="h-5 w-5" />}
+        />
+      </div>
+      <div className="flex-grow">
+        <FinanceCard
+          title="Monthly Income"
+          change={
+            lastMonth
+              ? {
+                  value: formatCurrency(currentMonthIncome - lastMonthIncome),
+                  positive: currentMonthIncome > lastMonthIncome,
+                }
+              : undefined
+          }
+          value={formatCurrency(currentMonthIncome)}
+          icon={<ArrowDown className="h-5 w-5 text-moneyRed" />}
         />
       </div>
       <div className="flex-grow">
