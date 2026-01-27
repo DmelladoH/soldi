@@ -30,7 +30,7 @@ function getInfo({ data }: { data: MonthReportWithId[] }) {
   const investments = data.map((elem) => elem.investments)?.flat();
   const totalInvested = investments?.reduce(
     (prev, curr) => prev + curr.amountInvested,
-    0
+    0,
   );
 
   const groups = Object.groupBy(movements, (e) => e.tagId);
@@ -49,7 +49,7 @@ function getInfo({ data }: { data: MonthReportWithId[] }) {
   const stocks = formatStockFromReport(data);
   const totalDiff = stocks?.reduce(
     (prev, curr) => prev + (curr.difference || 0),
-    0
+    0,
   );
 
   return {
@@ -88,7 +88,6 @@ export default async function YearReport({
     ?.flat()
     ?.filter((e) => e.type === "expense")
     ?.reduce((acc, curr) => acc + curr.amount, 0);
-  console.log({ currentYearTotalExpense });
 
   const prevYearData = await getMonthlyReportWithInvestments({
     startMonth: 12,
@@ -120,14 +119,14 @@ export default async function YearReport({
     month: MonthMap[e.month as keyof typeof MonthMap],
     value: e.fundGains.reduce(
       (acc: number, curr: { gain: number }) => curr.gain + acc,
-      0
+      0,
     ),
   }));
   const formattedData = foo[0]?.month === "December" ? [...foo.slice(1)] : foo;
 
   const totalInvestmentGains = formattedData.reduce(
     (acc, curr) => acc + curr.value,
-    0
+    0,
   );
 
   const dataPrevYear = calculateAllMonthlyGains(prevYearData);
@@ -136,7 +135,7 @@ export default async function YearReport({
     month: MonthMap[e.month as keyof typeof MonthMap],
     value: e.fundGains.reduce(
       (acc: number, curr: { gain: number }) => curr.gain + acc,
-      0
+      0,
     ),
   }));
 
@@ -145,7 +144,7 @@ export default async function YearReport({
 
   const totalInvestmentGainsPrev = formattedDataPrevYear.reduce(
     (acc, curr) => acc + curr.value,
-    0
+    0,
   );
 
   const totalInInvestments = currentYearData[
@@ -187,7 +186,7 @@ export default async function YearReport({
           value={formatCurrency(currentYearTotalExpense)}
           change={{
             value: formatCurrency(
-              currentYearTotalExpense - prevYearTotalExpense
+              currentYearTotalExpense - prevYearTotalExpense,
             ),
             positive: currentYearTotalExpense - prevYearTotalExpense >= 0,
           }}
@@ -212,7 +211,7 @@ export default async function YearReport({
             value={formatCurrency(totalInvestmentGains)}
             change={{
               value: formatCurrency(
-                totalInvestmentGains - totalInvestmentGainsPrev
+                totalInvestmentGains - totalInvestmentGainsPrev,
               ),
               positive: totalInvestmentGains - totalInvestmentGainsPrev >= 0,
             }}

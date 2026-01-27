@@ -18,19 +18,19 @@ export default function ReportHeader({
 }) {
   const currentMonthIncome = getTotalMovementByType(
     currentMonth?.movements || [],
-    "income"
+    "income",
   );
   const currentMonthExpenses = getTotalMovementByType(
     currentMonth?.movements || [],
-    "expense"
+    "expense",
   );
   const lastMonthIncome = getTotalMovementByType(
     lastMonth?.movements || [],
-    "income"
+    "income",
   );
   const lastMonthExpenses = getTotalMovementByType(
     lastMonth?.movements || [],
-    "expense"
+    "expense",
   );
 
   const lastMonthSavingsRate =
@@ -41,7 +41,6 @@ export default function ReportHeader({
           100
         ).toFixed(2);
 
-  console.log({ currentMonthIncome, currentMonthExpenses });
   const currentMonthSavingsRate =
     currentMonthIncome === 0
       ? 0
@@ -55,7 +54,7 @@ export default function ReportHeader({
 
   const totalDiff = stocks.reduce(
     (prev, curr) => prev + (curr.difference || 0),
-    0
+    0,
   );
 
   const gains = currentMonthIncome + totalDiff;
@@ -119,7 +118,7 @@ export default function ReportHeader({
             lastMonth
               ? {
                   value: formatCurrency(
-                    currentMonthExpenses - lastMonthExpenses
+                    currentMonthExpenses - lastMonthExpenses,
                   ),
                   positive: currentMonthExpenses > lastMonthExpenses,
                 }

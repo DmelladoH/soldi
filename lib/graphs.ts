@@ -12,7 +12,6 @@ export const getPieConfigByFundType = (stocks: Stock[]): PieEntity[] => {
   return Object.entries(groupedByType).map(([type, items]) => {
     const value = items!.reduce((sum, i) => sum + i.currentValue, 0);
 
-    console.log(`var(--color-${type})`);
     return {
       type,
       value,

@@ -6,6 +6,7 @@ export const FundTypes: Record<Found, string> = {
   variable: "Variable",
   crypto: "Crypto",
   EFT: "ETF",
+  Mix: "Mix",
 };
 
 export const CurrencyTypes: Record<Currency, string> = {
