@@ -1,6 +1,6 @@
 import FinanceCard from "@/components/financeCard";
 import { MonthMap, MovementsCategory } from "@/lib/constants";
-import { MonthReportWithId } from "@/lib/types";
+import { MonthReportWithId } from "@/types/database";
 import {
   calculateAllMonthlyGains,
   formatCurrency,

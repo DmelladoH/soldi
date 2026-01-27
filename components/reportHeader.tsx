@@ -5,7 +5,8 @@ import {
 } from "@/lib/utils";
 import { Wallet, ArrowDown, TrendingUp, BadgeEuro } from "lucide-react";
 import FinanceCard from "./financeCard";
-import { MonthReportWithId, Stock } from "@/lib/types";
+import { MonthReportWithId } from "@/types/database";
+import { Stock } from "@/types/database/queries";
 
 export default function ReportHeader({
   currentMonth,

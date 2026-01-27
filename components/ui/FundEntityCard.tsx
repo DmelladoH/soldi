@@ -1,4 +1,4 @@
-import { FundEntity } from "@/lib/types";
+import { FundEntity } from "@/types/database";
 import { Card, CardContent, CardFooter, CardHeader } from "./card";
 import { Button } from "./button";
 

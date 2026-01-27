@@ -1,5 +1,5 @@
 import { ChartConfig } from "@/components/ui/chart";
-import { PieEntity, Stock } from "./types";
+import { PieEntity, Stock } from "@/types/database/queries";
 
 export const getPieConfigByFundType = (stocks: Stock[]): PieEntity[] => {
   if (stocks.length === 0) {

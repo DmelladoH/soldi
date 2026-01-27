@@ -1,4 +1,4 @@
-import { Cash } from "@/lib/types";
+import { Cash } from "@/types/database";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 export default function AccountsCart({

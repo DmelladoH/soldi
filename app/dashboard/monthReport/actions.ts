@@ -1,6 +1,6 @@
 "use server";
 
-import { MonthlyReport } from "@/lib/types";
+import { MonthlyReport } from "@/types/database";
 import { addMonthlyReport } from "@/server/db/queries/report";
 import { revalidatePath } from "next/cache";
 

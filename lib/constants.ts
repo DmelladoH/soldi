@@ -1,4 +1,4 @@
-import { Currency, Found } from "./types";
+import { Currency, Found } from "@/types/business";
 
 export const FundTypes: Record<Found, string> = {
   monetary: "Monetary",

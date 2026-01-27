@@ -1,6 +1,6 @@
 "use server";
 
-import { FundEntity, FundEntityWithId } from "@/lib/types";
+import { FundEntity, FundEntityWithId } from "@/types/database";
 import {
   addFoundEntity,
   getReportsFromFundEntity,

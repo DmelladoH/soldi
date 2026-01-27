@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import MonetaryInput from "@/components/ui/monetaryInput";
 import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
 import { MONTHS, MonthMap } from "@/lib/constants";
-import { FundEntityWithId, MovementTag, movementType } from "@/lib/types";
+import { FundEntityWithId, MovementTag } from "@/types/database";
+import { movementType } from "@/types/business";
 import { SelectItem, SelectValue } from "@radix-ui/react-select";
 import { Plus, Trash } from "lucide-react";
 import {

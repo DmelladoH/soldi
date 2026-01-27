@@ -1,7 +1,7 @@
 import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
 import { MonthGraph } from "../_components/monthGraph";
 import { getTotalMovementByType } from "@/lib/utils";
-import { MonthReportWithId } from "@/lib/types";
+import { MonthReportWithId } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -12,7 +12,7 @@ export default async function ReportLayout({
   children: React.ReactNode;
   params: Promise<{ year: string }>;
 }>) {
-  const { month, year } = await params;
+  const { year } = await params;
 
   const currentYearRange = {
     start: new Date(Number(year), 0, 1),

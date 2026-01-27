@@ -1,31 +1,8 @@
-export type Found =
-  | "monetary"
-  | "fixed"
-  | "variable"
-  | "crypto"
-  | "EFT"
-  | "Mix";
-export type movementType = "expense" | "income";
-export type Currency = "Euro" | "Dollar";
+import { movementType } from '../business/financial';
+
 export interface Entity {
   name: string;
   currentAmount: number;
-  currency: string;
-}
-
-export type PieEntity = {
-  type: string;
-  value?: number;
-  percentage: number;
-  fill: string;
-};
-
-export interface Stock {
-  fund: FundEntityWithId;
-  currentValue: number;
-  amountInvested: number;
-  difference: number | undefined;
-  profit: number | null;
   currency: string;
 }
 
@@ -39,6 +16,7 @@ export interface FundEntity {
 export interface FundEntityWithId extends FundEntity {
   id: number;
 }
+
 export interface Investments {
   fund: FundEntityWithId;
   currentValue: number;
@@ -53,11 +31,13 @@ export interface Movement {
   amount: number;
   currency: string;
 }
+
 export interface Cash {
   name: string;
   amount: number;
   currency: string;
 }
+
 export interface MonthlyReport {
   month: number;
   year: number;

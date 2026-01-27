@@ -6,8 +6,36 @@ import {
   MonthlyReport,
   MonthReportWithId,
   Movement,
-  movementType,
-} from "./types";
+  FundEntityWithId,
+} from "@/types/database";
+import { movementType } from "@/types/business";
+
+// Type definitions for utility functions
+interface FundData {
+  currentValue: number;
+  amountInvested: number;
+  fund: FundEntityWithId;
+}
+
+interface GainCalculationResult {
+  gain: number;
+  currentValue: number;
+  previousValue: number;
+  amountInvested: number;
+  fund: FundEntityWithId;
+}
+
+interface MonthlyGainsResult {
+  month: number;
+  year: number;
+  fundGains: GainCalculationResult[];
+  totalGain: number;
+  soldFunds: Array<{
+    fund: FundEntityWithId;
+    finalValue: number;
+    wasSold: boolean;
+  }>;
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -208,7 +236,7 @@ export const formatStockFromReport = (reports: MonthlyReport[]) => {
  * @returns {number} return.amountInvested - Amount invested this month
  * @returns {Object} return.fund - Fund details
  */
-export function calculateFundGain(currentMonthFund, previousMonthFund) {
+export function calculateFundGain(currentMonthFund: FundData, previousMonthFund: FundData | null): GainCalculationResult {
   const { currentValue, amountInvested, fund } = currentMonthFund;
 
   if (!previousMonthFund) {
@@ -253,9 +281,9 @@ export function calculateFundGain(currentMonthFund, previousMonthFund) {
  * @returns {Array<Object>} return.soldFunds - Funds that existed in previous month but not current (were sold)
  */
 export function calculateMonthlyInvestmentGains(
-  currentMonth,
-  previousMonth = null
-) {
+  currentMonth: MonthlyReport,
+  previousMonth: MonthlyReport | null = null
+): MonthlyGainsResult {
   const currentInvestments = currentMonth.investments || [];
   const previousInvestments = previousMonth?.investments || [];
 
@@ -266,7 +294,18 @@ export function calculateMonthlyInvestmentGains(
       (prevFund) => prevFund.fund.id === currentFund.fund.id
     );
 
-    return calculateFundGain(currentFund, previousFund);
+    return calculateFundGain(
+      {
+        currentValue: currentFund.currentValue,
+        amountInvested: currentFund.amountInvested,
+        fund: currentFund.fund,
+      },
+      previousFund ? {
+        currentValue: previousFund.currentValue,
+        amountInvested: previousFund.amountInvested,
+        fund: previousFund.fund,
+      } : null
+    );
   });
 
   // Find funds that were sold (existed in previous month but not in current)
@@ -302,7 +341,7 @@ export function calculateMonthlyInvestmentGains(
  *
  * @returns {Array<Object>} - Array of monthly gain calculations
  */
-export function calculateAllMonthlyGains(monthlyReports) {
+export function calculateAllMonthlyGains(monthlyReports: MonthlyReport[]): MonthlyGainsResult[] {
   if (!Array.isArray(monthlyReports) || monthlyReports.length === 0) {
     return [];
   }

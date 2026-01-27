@@ -1,4 +1,4 @@
-import { MonthlyReport, MonthReportWithId } from "@/lib/types";
+import { MonthlyReport, MonthReportWithId } from "@/types/database";
 import { db } from "..";
 import {
   monthlyReportInvestments,

@@ -8,4 +8,6 @@ export default defineConfig({
     url: process.env.TURSO_DATABASE_PROD_URL!,
     authToken: process.env.TURSO_AUTH_PROD_TOKEN!,
   },
+  verbose: true,
+  strict: true,
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { FundEntityWithId } from "@/lib/types";
+import { FundEntityWithId } from "@/types/database";
 import FundEntityCard from "@/components/ui/FundEntityCard";
 import EntityForm from "./form";
 import { removeFundEntity } from "../actions";

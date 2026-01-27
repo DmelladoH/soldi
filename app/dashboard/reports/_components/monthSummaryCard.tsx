@@ -2,7 +2,7 @@ import AccountsCart from "@/components/accountsCart";
 import { FundTable } from "@/components/fundsTable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { Cash, FundEntityWithId } from "@/lib/types";
+import { Cash, FundEntityWithId } from "@/types/database";
 import Link from "next/link";
 
 export interface Stocks {

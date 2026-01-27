@@ -1,4 +1,4 @@
-import { FundEntityWithId, FundEntity } from "@/lib/types";
+import { FundEntityWithId, FundEntity } from "@/types/database";
 import { eq } from "drizzle-orm";
 import { db } from "..";
 import { monthlyReportInvestments, fundEntities } from "../schema";

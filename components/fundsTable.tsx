@@ -1,4 +1,4 @@
-import { Stock } from "@/lib/types";
+import { Stock } from "@/types/database/queries";
 import {
   Table,
   TableHeader,

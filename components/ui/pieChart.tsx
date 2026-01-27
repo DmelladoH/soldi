@@ -16,7 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { PieEntity } from "@/lib/types";
+import { PieEntity } from "@/types/database/queries";
 
 export function ChartPieLabelList({
   title,
