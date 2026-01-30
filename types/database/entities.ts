@@ -55,3 +55,13 @@ export interface MovementTag {
   name: string;
   type: movementType;
 }
+
+export interface MonthlyReportQueryOptions {
+  startMonth?: number;
+  startYear?: number;
+  endMonth?: number;
+  endYear?: number;
+  orderBy?: "asc" | "desc";
+  limit?: number;
+  offset?: number;
+}
