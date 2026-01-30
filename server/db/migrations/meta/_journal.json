@@ -57,6 +57,13 @@
       "when": 1751903644469,
       "tag": "0007_moaning_manta",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1769789928374,
+      "tag": "0008_special_mephisto",
+      "breakpoints": true
     }
   ]
 }

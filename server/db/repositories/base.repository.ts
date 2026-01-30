@@ -64,6 +64,31 @@ export abstract class BaseRepository<T = any> {
   }
 
   /**
+   * Performance timing helper
+   */
+  protected async withTiming<T>(
+    operation: () => Promise<T>,
+    operationName: string
+  ): Promise<T> {
+    const startTime = Date.now();
+    try {
+      const result = await operation();
+      const duration = Date.now() - startTime;
+      console.log(`[PERF] ${operationName}: ${duration}ms`);
+      
+      if (duration > 1000) {
+        console.warn(`[SLOW QUERY] ${operationName} took ${duration}ms`);
+      }
+      
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      console.error(`[ERROR] ${operationName} failed after ${duration}ms:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Date range filter helper - FIXED VERSION
    */
   protected applyDateRange(

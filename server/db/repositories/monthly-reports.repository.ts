@@ -1,4 +1,4 @@
-import { and, desc, eq, asc, or, gt, gte, lt, lte } from "drizzle-orm";
+import { and, desc, eq, asc, or, gt, gte, lt, lte, inArray } from "drizzle-orm";
 import {
   monthlyReports,
   monthlyReportInvestments,
@@ -21,6 +21,22 @@ interface MonthlyReportQueryOptions {
 }
 
 export class MonthlyReportsRepository extends BaseRepository {
+  
+  /**
+   * Helper method to group array by monthlyReportId
+   */
+  private groupByReportId(
+    items: any[]
+  ): Record<number, any[]> {
+    return items.reduce((groups: Record<number, any[]>, item: any) => {
+      const reportId = item.monthlyReportId;
+      if (!groups[reportId]) {
+        groups[reportId] = [];
+      }
+      groups[reportId].push(item);
+      return groups;
+    }, {} as Record<number, any[]>);
+  }
   /**
    * Get monthly reports with all related data (investments, cash, movements)
    */
@@ -69,15 +85,23 @@ export class MonthlyReportsRepository extends BaseRepository {
 
         // Get the main reports
         const reports = await finalQuery;
-        console.log("Fetched reports:", reports);
-        // For each report, fetch related data
-        const reportsWithRelations: MonthReportWithId[] = [];
+        const mainQueryTime = Date.now();
+        console.log(`[PERF] Fetched ${reports.length} reports`);
+        
+        if (reports.length === 0) {
+          return [];
+        }
 
-        for (const report of reports) {
-          // Get investments for this report with fund details
-          const investments = await this.db
+        const reportIds = reports.map((r: any) => r.id);
+        const batchStartTime = Date.now();
+
+        // BATCH: Get ALL related data in 3 parallel queries instead of 3×N queries
+        const [allInvestments, allCash, allMovements] = await this.db.batch([
+          // Batch query 1: All investments for these reports
+          this.db
             .select({
               id: monthlyReportInvestments.id,
+              monthlyReportId: monthlyReportInvestments.monthlyReportId,
               fundEntityId: monthlyReportInvestments.fundEntityId,
               currentValue: monthlyReportInvestments.currentValue,
               amountInvested: monthlyReportInvestments.amountInvested,
@@ -91,22 +115,20 @@ export class MonthlyReportsRepository extends BaseRepository {
               },
             })
             .from(monthlyReportInvestments)
-            .leftJoin(
-              fundEntities,
-              eq(monthlyReportInvestments.fundEntityId, fundEntities.id),
-            )
-            .where(eq(monthlyReportInvestments.monthlyReportId, report.id));
-
-          // Get cash for this report
-          const cash = await this.db
+            .leftJoin(fundEntities, eq(monthlyReportInvestments.fundEntityId, fundEntities.id))
+            .where(inArray(monthlyReportInvestments.monthlyReportId, reportIds)),
+            
+          // Batch query 2: All cash records for these reports  
+          this.db
             .select()
             .from(monthlyReportCash)
-            .where(eq(monthlyReportCash.monthlyReportId, report.id));
-
-          // Get movements with tags for this report
-          const movements = await this.db
+            .where(inArray(monthlyReportCash.monthlyReportId, reportIds)),
+            
+          // Batch query 3: All movements with tags for these reports
+          this.db
             .select({
               id: monthlyReportMovements.id,
+              monthlyReportId: monthlyReportMovements.monthlyReportId,
               tagId: monthlyReportMovements.tagId,
               type: monthlyReportMovements.type,
               description: monthlyReportMovements.description,
@@ -116,14 +138,28 @@ export class MonthlyReportsRepository extends BaseRepository {
               tagType: movementTag.type,
             })
             .from(monthlyReportMovements)
-            .leftJoin(
-              movementTag,
-              eq(monthlyReportMovements.tagId, movementTag.id),
-            )
-            .where(eq(monthlyReportMovements.monthlyReportId, report.id));
+            .leftJoin(movementTag, eq(monthlyReportMovements.tagId, movementTag.id))
+            .where(inArray(monthlyReportMovements.monthlyReportId, reportIds)),
+        ]);
 
-          // Transform the data to match expected types
-          const transformedInvestments = this.transform(investments, (inv) => ({
+        console.log(`[PERF] Batch queries completed in ${Date.now() - batchStartTime}ms`);
+
+        // Group results by monthlyReportId
+        const investmentsByReport = this.groupByReportId(allInvestments);
+        const cashByReport = this.groupByReportId(allCash);
+        const movementsByReport = this.groupByReportId(allMovements);
+
+        // Transform and combine results
+        const reportsWithRelations: MonthReportWithId[] = reports.map((report: any) => ({
+          id: report.id,
+          month: report.month,
+          year: report.year,
+          cash: this.transform(cashByReport[report.id] || [], (c) => ({
+            name: c.name,
+            amount: c.amount,
+            currency: c.currency,
+          })),
+          investments: this.transform(investmentsByReport[report.id] || [], (inv) => ({
             fund: {
               id: inv.fundEntityId,
               ISIN: inv.fund?.ISIN || "",
@@ -134,32 +170,17 @@ export class MonthlyReportsRepository extends BaseRepository {
             currentValue: inv.currentValue,
             amountInvested: inv.amountInvested,
             currency: inv.currency,
-          }));
-
-          const transformedCash = this.transform(cash, (c) => ({
-            name: c.name,
-            amount: c.amount,
-            currency: c.currency,
-          }));
-
-          const transformedMovements = this.transform(movements, (m) => ({
+          })),
+          movements: this.transform(movementsByReport[report.id] || [], (m) => ({
             description: m.description || "",
             tagId: m.tagId,
             type: m.type as "expense" | "income",
             amount: m.amount,
             currency: m.currency,
-          }));
+          })),
+        }));
 
-          reportsWithRelations.push({
-            id: report.id,
-            month: report.month,
-            year: report.year,
-            cash: transformedCash,
-            investments: transformedInvestments,
-            movements: transformedMovements,
-          });
-        }
-
+        console.log(`[PERF] Total findWithRelations processing: ${Date.now() - mainQueryTime}ms`);
         return reportsWithRelations;
       },
       "fetching monthly reports with relations",

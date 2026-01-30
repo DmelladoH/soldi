@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { sqliteTable, integer, text, index } from "drizzle-orm/sqlite-core";
 
 export const fundEntities = sqliteTable("fund_entity", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
@@ -19,7 +19,9 @@ export const monthlyReports = sqliteTable("monthly_report", {
   createdAt: text("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-});
+}, (table) => ({
+  yearMonthIdx: index("idx_monthly_report_year_month").on(table.year, table.month),
+}));
 
 export const monthlyReportInvestments = sqliteTable(
   "monthly_report_investment",
@@ -37,7 +39,10 @@ export const monthlyReportInvestments = sqliteTable(
     createdAt: text("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-  }
+  },
+  (table) => ({
+    reportIdIdx: index("idx_monthly_report_investment_report_id").on(table.monthlyReportId),
+  })
 );
 
 export const monthlyReportCash = sqliteTable("monthly_report_cash", {
@@ -51,7 +56,9 @@ export const monthlyReportCash = sqliteTable("monthly_report_cash", {
   createdAt: text("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-});
+}, (table) => ({
+  reportIdIdx: index("idx_monthly_report_cash_report_id").on(table.monthlyReportId),
+}));
 
 export const monthlyReportMovements = sqliteTable("monthly_report_movements", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
@@ -68,7 +75,9 @@ export const monthlyReportMovements = sqliteTable("monthly_report_movements", {
   createdAt: text("created_at")
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-});
+}, (table) => ({
+  reportIdIdx: index("idx_monthly_report_movements_report_id").on(table.monthlyReportId),
+}));
 
 export const movementTag = sqliteTable("movement_tag", {
   id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
