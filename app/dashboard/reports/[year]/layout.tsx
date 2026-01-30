@@ -38,18 +38,16 @@ export default async function ReportLayout({
       const report = reports.find((report) => report.month === i + 1);
 
       if (!report) {
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         res.push({
-          month: new Intl.DateTimeFormat("en-US", {
-            month: "short",
-          }).format(new Date(currentYearRange.start.getFullYear(), i)),
+          month: months[i],
           income: 0,
           expense: 0,
         });
       } else {
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         res.push({
-          month: new Intl.DateTimeFormat("en-US", {
-            month: "short",
-          }).format(new Date(report.year, report.month - 1, 1)),
+          month: months[report.month - 1],
           income: getTotalMovementByType(report.movements, "income"),
           expense: getTotalMovementByType(report.movements, "expense"),
         });

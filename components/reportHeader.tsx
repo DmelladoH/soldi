@@ -1,3 +1,6 @@
+"use client"
+
+import React, { memo, useMemo } from 'react'
 import {
   formatCurrency,
   getTotalMoney,
@@ -8,74 +11,86 @@ import FinanceCard from "./financeCard";
 import { MonthReportWithId } from "@/types/database";
 import { Stock } from "@/types/database/queries";
 
-export default function ReportHeader({
-  currentMonth,
-  lastMonth = undefined,
-  stocks,
-}: {
+interface ReportHeaderProps {
   currentMonth: MonthReportWithId | undefined;
   lastMonth?: MonthReportWithId | undefined;
   stocks: Stock[];
-}) {
-  const currentMonthIncome = getTotalMovementByType(
-    currentMonth?.movements || [],
-    "income",
-  );
-  const currentMonthExpenses = getTotalMovementByType(
-    currentMonth?.movements || [],
-    "expense",
-  );
-  const lastMonthIncome = getTotalMovementByType(
-    lastMonth?.movements || [],
-    "income",
-  );
-  const lastMonthExpenses = getTotalMovementByType(
-    lastMonth?.movements || [],
-    "expense",
-  );
+}
 
-  const lastMonthSavingsRate =
-    lastMonthIncome === 0
-      ? 0
-      : (
-          ((lastMonthIncome - lastMonthExpenses) / lastMonthIncome) *
-          100
-        ).toFixed(2);
+export const ReportHeader = memo<ReportHeaderProps>(({ currentMonth, lastMonth, stocks }) => {
+  const financialCalculations = useMemo(() => {
+    const currentMonthIncome = getTotalMovementByType(
+      currentMonth?.movements || [],
+      "income",
+    );
+    const currentMonthExpenses = getTotalMovementByType(
+      currentMonth?.movements || [],
+      "expense",
+    );
+    const lastMonthIncome = getTotalMovementByType(
+      lastMonth?.movements || [],
+      "income",
+    );
+    const lastMonthExpenses = getTotalMovementByType(
+      lastMonth?.movements || [],
+      "expense",
+    );
 
-  const currentMonthSavingsRate =
-    currentMonthIncome === 0
-      ? 0
-      : (
-          ((currentMonthIncome - currentMonthExpenses) / currentMonthIncome) *
-          100
-        ).toFixed(2);
+    const lastMonthSavingsRate =
+      lastMonthIncome === 0
+        ? "0"
+        : (
+            ((lastMonthIncome - lastMonthExpenses) / lastMonthIncome) *
+            100
+          ).toFixed(2);
 
-  const previousMonthWealth = lastMonth ? getTotalMoney(lastMonth) : 0;
-  const totalWealth = currentMonth ? getTotalMoney(currentMonth) : 0;
+    const currentMonthSavingsRate =
+      currentMonthIncome === 0
+        ? "0"
+        : (
+            ((currentMonthIncome - currentMonthExpenses) / currentMonthIncome) *
+            100
+          ).toFixed(2);
 
-  const totalDiff = stocks.reduce(
-    (prev, curr) => prev + (curr.difference || 0),
-    0,
-  );
+    const previousMonthWealth = lastMonth ? getTotalMoney(lastMonth) : 0;
+    const totalWealth = currentMonth ? getTotalMoney(currentMonth) : 0;
 
-  const gains = currentMonthIncome + totalDiff;
-  const cash =
-    currentMonth?.cash.reduce((curr, acc) => curr + acc.amount, 0) || 0;
+    const totalDiff = stocks.reduce(
+      (prev, curr) => prev + (curr.difference || 0),
+      0,
+    );
 
-  const prevCash =
-    lastMonth?.cash.reduce((curr, acc) => curr + acc.amount, 0) || 0;
+    const gains = currentMonthIncome + totalDiff;
+    const cash = currentMonth?.cash.reduce((curr, acc) => curr + acc.amount, 0) || 0;
+    const prevCash = lastMonth?.cash.reduce((curr, acc) => curr + acc.amount, 0) || 0;
+
+    return {
+      currentMonthIncome,
+      currentMonthExpenses,
+      lastMonthIncome,
+      lastMonthExpenses,
+      lastMonthSavingsRate,
+      currentMonthSavingsRate,
+      previousMonthWealth,
+      totalWealth,
+      totalDiff,
+      gains,
+      cash,
+      prevCash,
+    };
+  }, [currentMonth, lastMonth, stocks]);
 
   return (
     <div className="grid gap-4 auto-rows-auto [grid-template-columns:repeat(auto-fill,minmax(291px,1fr))] [&>div]:col-span-1">
       <div className="flex-grow">
         <FinanceCard
           title="Net Worth"
-          value={formatCurrency(totalWealth)}
+          value={formatCurrency(financialCalculations.totalWealth)}
           change={
             lastMonth
               ? {
-                  value: formatCurrency(totalWealth - previousMonthWealth),
-                  positive: totalWealth > previousMonthWealth,
+                  value: formatCurrency(financialCalculations.totalWealth - financialCalculations.previousMonthWealth),
+                  positive: financialCalculations.totalWealth > financialCalculations.previousMonthWealth,
                 }
               : undefined
           }
@@ -88,12 +103,12 @@ export default function ReportHeader({
           change={
             lastMonth
               ? {
-                  value: formatCurrency(cash - prevCash),
-                  positive: cash > prevCash,
+                  value: formatCurrency(financialCalculations.cash - financialCalculations.prevCash),
+                  positive: financialCalculations.cash > financialCalculations.prevCash,
                 }
               : undefined
           }
-          value={formatCurrency(cash)}
+          value={formatCurrency(financialCalculations.cash)}
           icon={<BadgeEuro className="h-5 w-5" />}
         />
       </div>
@@ -103,12 +118,12 @@ export default function ReportHeader({
           change={
             lastMonth
               ? {
-                  value: formatCurrency(currentMonthIncome - lastMonthIncome),
-                  positive: currentMonthIncome > lastMonthIncome,
+                  value: formatCurrency(financialCalculations.currentMonthIncome - financialCalculations.lastMonthIncome),
+                  positive: financialCalculations.currentMonthIncome > financialCalculations.lastMonthIncome,
                 }
               : undefined
           }
-          value={formatCurrency(currentMonthIncome)}
+          value={formatCurrency(financialCalculations.currentMonthIncome)}
           icon={<ArrowDown className="h-5 w-5 text-moneyRed" />}
         />
       </div>
@@ -119,30 +134,30 @@ export default function ReportHeader({
             lastMonth
               ? {
                   value: formatCurrency(
-                    currentMonthExpenses - lastMonthExpenses,
+                    financialCalculations.currentMonthExpenses - financialCalculations.lastMonthExpenses,
                   ),
-                  positive: currentMonthExpenses > lastMonthExpenses,
+                  positive: financialCalculations.currentMonthExpenses > financialCalculations.lastMonthExpenses,
                 }
               : undefined
           }
-          value={formatCurrency(currentMonthExpenses)}
+          value={formatCurrency(financialCalculations.currentMonthExpenses)}
           icon={<ArrowDown className="h-5 w-5 text-moneyRed" />}
         />
       </div>
       <div className="flex-grow">
         <FinanceCard
           title="Saving Rate"
-          value={`${currentMonthSavingsRate}%`}
+          value={`${financialCalculations.currentMonthSavingsRate}%`}
           change={
             lastMonth
               ? {
                   value: `${(
-                    Number(currentMonthSavingsRate) -
-                    Number(lastMonthSavingsRate)
+                    Number(financialCalculations.currentMonthSavingsRate) -
+                    Number(financialCalculations.lastMonthSavingsRate)
                   ).toFixed(2)}%`,
                   positive:
-                    Number(currentMonthSavingsRate) >
-                    Number(lastMonthSavingsRate),
+                    Number(financialCalculations.currentMonthSavingsRate) >
+                    Number(financialCalculations.lastMonthSavingsRate),
                 }
               : undefined
           }
@@ -151,4 +166,6 @@ export default function ReportHeader({
       </div>
     </div>
   );
-}
+})
+
+ReportHeader.displayName = 'ReportHeader'

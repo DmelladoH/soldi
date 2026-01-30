@@ -1,3 +1,6 @@
+"use client"
+
+import React, { memo, useMemo } from 'react'
 import { Stock } from "@/types/database/queries";
 import {
   Table,
@@ -9,34 +12,47 @@ import {
 } from "./ui/table";
 import { formatCurrency } from "@/lib/utils";
 
-export function FundTable({ stocks }: { stocks: Stock[] }) {
-  const getTextColor = (value: number | null | undefined) => {
+interface FundTableProps {
+  stocks: Stock[];
+}
+
+export const FundTable = memo<FundTableProps>(({ stocks }) => {
+  const tableData = useMemo(() => {
+    const totalCurrentValue = stocks.reduce(
+      (prev, curr) => prev + curr.currentValue,
+      0
+    );
+
+    const totalInvested = stocks.reduce(
+      (prev, curr) => prev + curr.amountInvested,
+      0
+    );
+
+    const totalDiff = stocks.reduce(
+      (prev, curr) => prev + (curr.difference || 0),
+      0
+    );
+
+    const totalProfitRate =
+      totalInvested === 0
+        ? 0
+        : ((totalCurrentValue - (totalCurrentValue - totalDiff)) /
+            totalInvested) *
+          100;
+
+    return {
+      totalCurrentValue,
+      totalInvested,
+      totalDiff,
+      totalProfitRate,
+    };
+  }, [stocks]);
+
+  const getTextColor = useMemo(() => (value: number | null | undefined) => {
     if (!value || value === 0) return "";
     if (value >= 0) return "text-green-600";
     return "text-red-600";
-  };
-
-  const totalCurrentValue = stocks.reduce(
-    (prev, curr) => prev + curr.currentValue,
-    0
-  );
-
-  const totalInvested = stocks.reduce(
-    (prev, curr) => prev + curr.amountInvested,
-    0
-  );
-
-  const totalDiff = stocks.reduce(
-    (prev, curr) => prev + (curr.difference || 0),
-    0
-  );
-
-  const totalProfitRate =
-    totalInvested === 0
-      ? 0
-      : ((totalCurrentValue - (totalCurrentValue - totalDiff)) /
-          totalInvested) *
-        100;
+  }, []);
 
   return (
     <div className="w-full overflow-x-auto">
@@ -92,31 +108,33 @@ export function FundTable({ stocks }: { stocks: Stock[] }) {
           <TableRow>
             <TableCell className="min-w-[120px]"></TableCell>
             <TableCell className={`min-w-[100px] text-right `}>
-              {formatCurrency(totalCurrentValue)}
+              {formatCurrency(tableData.totalCurrentValue)}
             </TableCell>
             <TableCell
               className={`min-w-[100px] text-right ${getTextColor(
-                totalInvested
+                tableData.totalInvested
               )}`}
             >
-              {formatCurrency(totalInvested)}
+              {formatCurrency(tableData.totalInvested)}
             </TableCell>
             <TableCell
-              className={`min-w-[100px] text-right ${getTextColor(totalDiff)}`}
+              className={`min-w-[100px] text-right ${getTextColor(tableData.totalDiff)}`}
             >
-              {formatCurrency(totalDiff)}
+              {formatCurrency(tableData.totalDiff)}
             </TableCell>
             <TableCell
               className={`min-w-[100px] text-right ${getTextColor(
-                totalProfitRate
+                tableData.totalProfitRate
               )}`}
             >
-              {totalProfitRate >= 0 ? "+" : ""}
-              {totalProfitRate.toFixed(2)}%
+              {tableData.totalProfitRate >= 0 ? "+" : ""}
+              {tableData.totalProfitRate.toFixed(2)}%
             </TableCell>
           </TableRow>
         </TableBody>
       </Table>
     </div>
   );
-}
+})
+
+FundTable.displayName = 'FundTable'

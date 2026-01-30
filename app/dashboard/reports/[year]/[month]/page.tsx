@@ -1,5 +1,5 @@
 import { FundTable } from "@/components/fundsTable";
-import ReportHeader from "@/components/reportHeader";
+import { ReportHeader } from "@/components/reportHeader";
 import { ChartPieLabelList } from "@/components/ui/pieChart";
 import { MONTHS } from "@/lib/constants";
 import { buildChartConfig, getPieConfigByFundType } from "@/lib/graphs";

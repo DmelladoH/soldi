@@ -68,16 +68,27 @@ export abstract class BaseRepository<T = any> {
    */
   protected async withTiming<T>(
     operation: () => Promise<T>,
-    operationName: string
+    operationName: string,
+    thresholds: { warn: number; critical: number } = { warn: 500, critical: 2000 }
   ): Promise<T> {
     const startTime = Date.now();
     try {
       const result = await operation();
       const duration = Date.now() - startTime;
-      console.log(`[PERF] ${operationName}: ${duration}ms`);
       
-      if (duration > 1000) {
-        console.warn(`[SLOW QUERY] ${operationName} took ${duration}ms`);
+      // Structured logging for better monitoring
+      console.log(JSON.stringify({
+        type: 'performance',
+        operation: operationName,
+        duration,
+        status: duration > thresholds.critical ? 'critical' : 
+                  duration > thresholds.warn ? 'warning' : 'ok'
+      }));
+      
+      if (duration > thresholds.critical) {
+        console.warn(`[CRITICAL] ${operationName} took ${duration}ms`);
+      } else if (duration > thresholds.warn) {
+        console.warn(`[SLOW] ${operationName} took ${duration}ms`);
       }
       
       return result;
