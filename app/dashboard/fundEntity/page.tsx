@@ -1,8 +1,10 @@
-import { getFoundEntities } from "@/server/db/queries/foundEntities";
+import { FundEntitiesRepository } from "@/server/db/repositories";
 import FundEntityView from "./components/view";
 
+const fundEntitiesRepository = new FundEntitiesRepository();
+
 export default async function FundEntity() {
-  const fundEntities = await getFoundEntities();
+  const fundEntities = await fundEntitiesRepository.findMany();
 
   return (
     <div className="h-screen p-3 sm:p-5">

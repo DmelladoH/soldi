@@ -24,7 +24,7 @@ import {
 
 import { CurrencyTypes, FundTypes } from "@/lib/constants";
 import { formSchema } from "../formSchema";
-import { saveFundEntity } from "../actions";
+import { addFundEntity } from "../actions";
 import { useState } from "react";
 
 export default function EntityForm() {
@@ -47,7 +47,7 @@ export default function EntityForm() {
       setPending(true);
       form.reset(defaultForm);
       const fund = values;
-      await saveFundEntity(fund);
+      await addFundEntity(fund);
     } catch (e) {
       console.log(e);
     } finally {

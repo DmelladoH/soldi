@@ -1,31 +1,25 @@
 "use server";
 
 import { FundEntity, FundEntityWithId } from "@/types/database";
-import {
-  addFoundEntity,
-  getReportsFromFundEntity,
-  deleteFundEntity,
-} from "@/server/db/queries/foundEntities";
-
+import { FundEntitiesRepository } from "@/server/db/repositories";
 import { revalidatePath } from "next/cache";
 
-export async function saveFundEntity(
-  fundEntity: FundEntity
-): Promise<FundEntityWithId[]> {
-  const res = await addFoundEntity(fundEntity);
+const fundEntitiesRepository = new FundEntitiesRepository();
+
+export async function addFundEntity(fundEntity: FundEntity) {
+  const res = await fundEntitiesRepository.create(fundEntity);
   revalidatePath("/");
   return res;
 }
 
-export async function removeFundEntity(
-  id: number
-): Promise<{ success: boolean; res: FundEntityWithId | null }> {
-  const entities = await getReportsFromFundEntity(id);
-  if (entities.length > 0) {
-    return { success: false, res: null };
-  }
-
-  const deletedEntity = await deleteFundEntity(id);
+export async function getFundReports(id: number) {
+  const entities = await fundEntitiesRepository.getInvestmentHistory(id);
   revalidatePath("/");
-  return { success: true, res: deletedEntity[0] };
+  return entities;
+}
+
+export async function removeFundEntity(id: number): Promise<FundEntityWithId> {
+  const deletedEntity = await fundEntitiesRepository.delete(id);
+  revalidatePath("/");
+  return deletedEntity;
 }

@@ -9,3 +9,9 @@ const client = tursoClient();
 
 // Use this object to send drizzle queries to your DB
 export const db = drizzle(client, { schema });
+
+// Export repositories for clean data access
+export * from "./repositories";
+
+// Export services for business logic
+export * from "./services";

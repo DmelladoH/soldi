@@ -1,10 +1,12 @@
-import { getFoundEntities } from "@/server/db/queries/foundEntities";
+import { FundEntitiesRepository, MovementTagsRepository } from "@/server/db/repositories";
 import { MonthlyReportForm } from "./_components/monthlyReportForm";
-import { getMovementTags } from "@/server/db/queries/movementTags";
+
+const fundEntitiesRepository = new FundEntitiesRepository();
+const movementTagsRepository = new MovementTagsRepository();
 
 export default async function page() {
-  const fundsOptions = await getFoundEntities();
-  const movementTags = await getMovementTags();
+  const fundsOptions = await fundEntitiesRepository.findMany();
+  const movementTags = await movementTagsRepository.findMany();
 
   return (
     <div className="grid p-3 sm:p-5">

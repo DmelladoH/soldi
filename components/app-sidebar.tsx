@@ -36,7 +36,7 @@ export function AppSidebar() {
                 variant="ghost"
                 className="w-full justify-start text-sm sm:text-base"
               >
-                <Link href={"/dashboard/"}>Home</Link>
+                <Link href={"/dashboard"}>Home</Link>
               </Button>
             </li>
             <li>

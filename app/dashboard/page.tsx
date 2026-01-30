@@ -1,20 +1,18 @@
-import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
+import { MonthlyReportsRepository } from "@/server/db/repositories";
 import { TotalChart } from "./_components/totalChart";
 import { BarChart } from "lucide-react";
 
-import {
-  formatStockFromReport,
-  getTotalChart,
-} from "@/lib/utils";
+import { formatStockFromReport, getTotalChart } from "@/lib/utils";
 import { FundTable } from "@/components/fundsTable";
 import ReportHeader from "@/components/reportHeader";
 import { Button } from "@/components/ui/button";
 import Link from "@/node_modules/next/link";
 
-export default async function DashBoard() {
-  const monthlyReport = await getMonthlyReportWithInvestments({});
+const monthlyReportsRepository = new MonthlyReportsRepository();
 
-  if(!monthlyReport.length) return <EmptyState />
+export default async function DashBoard() {
+  const monthlyReport = await monthlyReportsRepository.findWithRelations({});
+  if (!monthlyReport.length) return <EmptyState />;
 
   const chartTotalData = getTotalChart(monthlyReport);
 
@@ -39,7 +37,6 @@ export default async function DashBoard() {
   );
 }
 
-
 function EmptyState() {
   return (
     <div className="flex flex-col justify-center items-center flex-nowrap h-screen">
@@ -53,5 +50,5 @@ function EmptyState() {
         </Button>
       </div>
     </div>
-  )
+  );
 }

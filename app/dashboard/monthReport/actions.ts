@@ -1,10 +1,12 @@
 "use server";
 
 import { MonthlyReport } from "@/types/database";
-import { addMonthlyReport } from "@/server/db/queries/report";
+import { MonthlyReportsRepository } from "@/server/db/repositories";
 import { revalidatePath } from "next/cache";
 
+const monthlyReportsRepository = new MonthlyReportsRepository();
+
 export async function saveMonthReport(monthReport: MonthlyReport) {
-  await addMonthlyReport(monthReport);
+  await monthlyReportsRepository.create(monthReport);
   revalidatePath("/");
 }

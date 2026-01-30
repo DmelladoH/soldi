@@ -7,8 +7,10 @@ import {
   formatStockFromReport,
   getTotalMoney,
 } from "@/lib/utils";
-import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
+import { MonthlyReportsRepository } from "@/server/db/repositories";
 import { InvestmentSummary } from "../_components/investmentSummary";
+
+const monthlyReportsRepository = new MonthlyReportsRepository();
 
 function getInfo({ data }: { data: MonthReportWithId[] }) {
   if (data.length === 0) {
@@ -69,12 +71,14 @@ export default async function YearReport({
 }) {
   const { year } = await params;
 
-  const currentYearData = await getMonthlyReportWithInvestments({
+  const currentYearData = await monthlyReportsRepository.findWithRelations({
     startMonth: 12,
     startYear: Number(year) - 1,
     endMonth: 12,
     endYear: Number(year),
   });
+
+  console.log({ currentYearData });
 
   if (!currentYearData.length)
     return (
@@ -89,7 +93,7 @@ export default async function YearReport({
     ?.filter((e) => e.type === "expense")
     ?.reduce((acc, curr) => acc + curr.amount, 0);
 
-  const prevYearData = await getMonthlyReportWithInvestments({
+  const prevYearData = await monthlyReportsRepository.findWithRelations({
     startMonth: 12,
     startYear: Number(year) - 2,
     endMonth: 12,

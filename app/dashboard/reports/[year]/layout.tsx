@@ -1,9 +1,11 @@
-import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
+import { MonthlyReportsRepository } from "@/server/db/repositories";
 import { MonthGraph } from "../_components/monthGraph";
 import { getTotalMovementByType } from "@/lib/utils";
 import { MonthReportWithId } from "@/types/database";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+
+const monthlyReportsRepository = new MonthlyReportsRepository();
 
 export default async function ReportLayout({
   params,
@@ -20,7 +22,7 @@ export default async function ReportLayout({
   };
 
   const res = (
-    await getMonthlyReportWithInvestments({
+    await monthlyReportsRepository.findWithRelations({
       startMonth: 1,
       startYear: Number(year),
       endMonth: 12,

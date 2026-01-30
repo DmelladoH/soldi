@@ -4,7 +4,9 @@ import { ChartPieLabelList } from "@/components/ui/pieChart";
 import { MONTHS } from "@/lib/constants";
 import { buildChartConfig, getPieConfigByFundType } from "@/lib/graphs";
 import { formatCurrency, formatStock } from "@/lib/utils";
-import { getMonthlyReportWithInvestments } from "@/server/db/queries/report";
+import { MonthlyReportsRepository } from "@/server/db/repositories";
+
+const monthlyReportsRepository = new MonthlyReportsRepository();
 
 export default async function Page({
   params,
@@ -26,21 +28,23 @@ export default async function Page({
     year: currentMonthIndex === 0 ? Number(year) - 1 : Number(year),
   };
 
-  const res = await getMonthlyReportWithInvestments({
+  const res = await monthlyReportsRepository.findWithRelations({
     startMonth: previousDate.month,
     startYear: previousDate.year,
     endMonth: currentDate.month,
     endYear: currentDate.year,
   });
 
+  console.log(res);
+
   const currentMonth = res.find((report) => report.month === currentDate.month);
   const previousMonth = res.find(
-    (report) => report.month === previousDate.month
+    (report) => report.month === previousDate.month,
   );
 
   const stocks = formatStock(
     currentMonth?.investments || [],
-    previousMonth?.investments || []
+    previousMonth?.investments || [],
   );
 
   const chartData = getPieConfigByFundType(stocks);
@@ -69,7 +73,7 @@ export default async function Page({
             <div>
               <FundTable
                 stocks={stocks.sort((a, b) =>
-                  a.fund.name.localeCompare(b.fund.name)
+                  a.fund.name.localeCompare(b.fund.name),
                 )}
               />
             </div>
@@ -78,7 +82,7 @@ export default async function Page({
             cash:
             <ul>
               {currentMonth?.cash.map((e) => (
-                <div>
+                <div key={e.name}>
                   {e.name} {formatCurrency(e.amount)}
                 </div>
               ))}
