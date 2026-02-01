@@ -56,7 +56,7 @@ export function getTotalMoney(resume: MonthReportWithId) {
 
 export const geStockDifference = (
   currStock: Investments | undefined,
-  prevStock: Investments | undefined
+  prevStock: Investments | undefined,
 ) => {
   if (!currStock) return 0;
   const prevValue = prevStock?.currentValue || 0;
@@ -64,7 +64,7 @@ export const geStockDifference = (
 };
 
 export const getInvestmentChart = (
-  report: MonthReportWithId[]
+  report: MonthReportWithId[],
 ): { month: string; amount: number }[] => {
   return report.map((report) => ({
     month: new Date(report.year, report.month, 1).toLocaleDateString("en-GB", {
@@ -76,7 +76,7 @@ export const getInvestmentChart = (
 };
 
 export const getTotalChart = (
-  report: MonthReportWithId[]
+  report: MonthReportWithId[],
 ): { month: string; total: number; invested: number }[] => {
   return report.map((report) => ({
     month: new Date(report.year, report.month, 1).toLocaleDateString("en-GB", {
@@ -98,7 +98,7 @@ export const getBankAccounts = (lastMonth: MonthReportWithId): Cash[] => {
 
 export const getStockProfit = (
   currStock: Investments | undefined,
-  prevStock: Investments | undefined
+  prevStock: Investments | undefined,
 ) => {
   if (!currStock || !prevStock) return 0;
 
@@ -128,7 +128,7 @@ export const formatCurrency = (amount: number) => {
 // Gets the total of a movement type for a given movement array
 export const getTotalMovementByType = (
   reportList: Movement[],
-  type: movementType
+  type: movementType,
 ) => {
   return reportList?.length
     ? reportList
@@ -139,7 +139,7 @@ export const getTotalMovementByType = (
 
 export const formatStock = (
   currentInvestments: Investments[],
-  prevInvestments: Investments[]
+  prevInvestments: Investments[],
 ) => {
   return currentInvestments.length
     ? currentInvestments.map((stock) => ({
@@ -148,11 +148,11 @@ export const formatStock = (
         amountInvested: stock.amountInvested,
         difference: geStockDifference(
           stock,
-          prevInvestments.find((f) => f.fund.id === stock.fund.id)
+          prevInvestments.find((f) => f.fund.id === stock.fund.id),
         ),
         profit: getStockProfit(
           stock,
-          prevInvestments.find((f) => f.fund.id === stock.fund.id)
+          prevInvestments.find((f) => f.fund.id === stock.fund.id),
         ),
         currency: stock.currency,
       }))
@@ -164,7 +164,7 @@ export const formatStockFromReport = (reports: MonthlyReport[]) => {
 
   // Ensure chronological order
   const sortedReports = [...reports].sort((a, b) =>
-    a.year !== b.year ? a.year - b.year : a.month - b.month
+    a.year !== b.year ? a.year - b.year : a.month - b.month,
   );
 
   const fundMap = new Map<
@@ -175,6 +175,8 @@ export const formatStockFromReport = (reports: MonthlyReport[]) => {
       totalInvested: number;
       value: number;
       acc: number;
+      closed: boolean;
+      closingAmount?: number;
     }
   >();
 
@@ -189,10 +191,20 @@ export const formatStockFromReport = (reports: MonthlyReport[]) => {
           totalInvested: inv.amountInvested,
           value: inv.currentValue,
           acc: 0,
+          closed: inv.currentValue === 0,
+          closingAmount:
+            inv.currentValue === 0 ? inv.amountInvested : undefined,
         });
       } else {
-        existing.totalInvested += inv.amountInvested;
-        existing.acc += inv.currentValue - existing.value;
+        if (inv.currentValue === 0 && !existing.closed) {
+          // Investment is being closed
+          existing.value = 99;
+          existing.closed = true;
+          existing.closingAmount = -inv.amountInvested;
+        } else if (!existing.closed) {
+          // Normal investment update
+          existing.totalInvested += inv.amountInvested;
+        }
         existing.value = inv.currentValue;
       }
     }
@@ -202,15 +214,20 @@ export const formatStockFromReport = (reports: MonthlyReport[]) => {
     const profit =
       f.totalInvested === 0
         ? 0
-        : ((f.value - f.totalInvested) / f.totalInvested) * 100;
+        : ((f.closed && f.closingAmount ? f.closingAmount : f.value) - f.totalInvested) / f.totalInvested * 100;
 
     return {
       fund: f.fund,
       currentValue: f.value,
       amountInvested: f.totalInvested,
-      difference: f.value - f.totalInvested,
-      profit, // 0 = sin beneficio, 100 = duplicas, 200 = triplicas
+      difference:
+        f.closed && f.closingAmount
+          ? f.closingAmount - f.totalInvested
+          : f.value - f.totalInvested,
+      profit,
       currency: f.currency,
+      closingAmount: f.closed ? f.closingAmount : undefined,
+      closed: f.closed,
     };
   });
 };
@@ -236,7 +253,10 @@ export const formatStockFromReport = (reports: MonthlyReport[]) => {
  * @returns {number} return.amountInvested - Amount invested this month
  * @returns {Object} return.fund - Fund details
  */
-export function calculateFundGain(currentMonthFund: FundData, previousMonthFund: FundData | null): GainCalculationResult {
+export function calculateFundGain(
+  currentMonthFund: FundData,
+  previousMonthFund: FundData | null,
+): GainCalculationResult {
   const { currentValue, amountInvested, fund } = currentMonthFund;
 
   if (!previousMonthFund) {
@@ -282,7 +302,7 @@ export function calculateFundGain(currentMonthFund: FundData, previousMonthFund:
  */
 export function calculateMonthlyInvestmentGains(
   currentMonth: MonthlyReport,
-  previousMonth: MonthlyReport | null = null
+  previousMonth: MonthlyReport | null = null,
 ): MonthlyGainsResult {
   const currentInvestments = currentMonth.investments || [];
   const previousInvestments = previousMonth?.investments || [];
@@ -291,7 +311,7 @@ export function calculateMonthlyInvestmentGains(
   const fundGains = currentInvestments.map((currentFund) => {
     // Find matching fund in previous month by fund ID
     const previousFund = previousInvestments.find(
-      (prevFund) => prevFund.fund.id === currentFund.fund.id
+      (prevFund) => prevFund.fund.id === currentFund.fund.id,
     );
 
     return calculateFundGain(
@@ -300,11 +320,13 @@ export function calculateMonthlyInvestmentGains(
         amountInvested: currentFund.amountInvested,
         fund: currentFund.fund,
       },
-      previousFund ? {
-        currentValue: previousFund.currentValue,
-        amountInvested: previousFund.amountInvested,
-        fund: previousFund.fund,
-      } : null
+      previousFund
+        ? {
+            currentValue: previousFund.currentValue,
+            amountInvested: previousFund.amountInvested,
+            fund: previousFund.fund,
+          }
+        : null,
     );
   });
 
@@ -312,7 +334,7 @@ export function calculateMonthlyInvestmentGains(
   const soldFunds = previousInvestments
     .filter((prevFund) => {
       const stillExists = currentInvestments.some(
-        (currFund) => currFund.fund.id === prevFund.fund.id
+        (currFund) => currFund.fund.id === prevFund.fund.id,
       );
       return !stillExists;
     })
@@ -341,7 +363,9 @@ export function calculateMonthlyInvestmentGains(
  *
  * @returns {Array<Object>} - Array of monthly gain calculations
  */
-export function calculateAllMonthlyGains(monthlyReports: MonthlyReport[]): MonthlyGainsResult[] {
+export function calculateAllMonthlyGains(
+  monthlyReports: MonthlyReport[],
+): MonthlyGainsResult[] {
   if (!Array.isArray(monthlyReports) || monthlyReports.length === 0) {
     return [];
   }

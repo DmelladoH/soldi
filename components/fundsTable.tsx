@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { memo, useMemo } from 'react'
+import React, { memo, useMemo } from "react";
 import { Stock } from "@/types/database/queries";
 import {
   Table,
@@ -17,20 +17,26 @@ interface FundTableProps {
 }
 
 export const FundTable = memo<FundTableProps>(({ stocks }) => {
+  const sortedStocks = useMemo(() => {
+    return [...stocks].sort((a, b) => b.currentValue - a.currentValue);
+  }, [stocks]);
+
+  console.log({ sortedStocks, stocks });
   const tableData = useMemo(() => {
-    const totalCurrentValue = stocks.reduce(
-      (prev, curr) => prev + curr.currentValue,
-      0
+    const totalCurrentValue = sortedStocks.reduce(
+      (prev, curr) =>
+        prev + (curr.closed ? curr.closingAmount || 0 : curr.currentValue),
+      0,
     );
 
     const totalInvested = stocks.reduce(
       (prev, curr) => prev + curr.amountInvested,
-      0
+      0,
     );
 
-    const totalDiff = stocks.reduce(
+    const totalDiff = sortedStocks.reduce(
       (prev, curr) => prev + (curr.difference || 0),
-      0
+      0,
     );
 
     const totalProfitRate =
@@ -46,13 +52,16 @@ export const FundTable = memo<FundTableProps>(({ stocks }) => {
       totalDiff,
       totalProfitRate,
     };
-  }, [stocks]);
+  }, [sortedStocks, stocks]);
 
-  const getTextColor = useMemo(() => (value: number | null | undefined) => {
-    if (!value || value === 0) return "";
-    if (value >= 0) return "text-green-600";
-    return "text-red-600";
-  }, []);
+  const getTextColor = useMemo(
+    () => (value: number | null | undefined) => {
+      if (!value || value === 0) return "";
+      if (value >= 0) return "text-green-600";
+      return "text-red-600";
+    },
+    [],
+  );
 
   return (
     <div className="w-full overflow-x-auto">
@@ -71,18 +80,23 @@ export const FundTable = memo<FundTableProps>(({ stocks }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {stocks.map((stock) => (
-            <TableRow key={stock.fund.id}>
+          {sortedStocks.map((stock) => (
+            <TableRow
+              key={stock.fund.id}
+              className={stock.closed ? "bg-gray-100 opacity-75" : ""}
+            >
               <TableCell className="min-w-[120px]">
                 <div className="font-medium">{stock.fund.name}</div>
               </TableCell>
 
               <TableCell className="min-w-[120px] text-right">
-                {formatCurrency(stock.currentValue)}
+                {formatCurrency(
+                  stock.closed ? stock.closingAmount || 0 : stock.currentValue,
+                )}
               </TableCell>
               <TableCell
                 className={`min-w-[100px] text-right ${getTextColor(
-                  stock.amountInvested
+                  stock.amountInvested,
                 )}`}
               >
                 {formatCurrency(stock.amountInvested)}
@@ -90,14 +104,14 @@ export const FundTable = memo<FundTableProps>(({ stocks }) => {
 
               <TableCell
                 className={`min-w-[100px] text-right ${getTextColor(
-                  stock.difference
+                  stock.difference,
                 )}`}
               >
                 {formatCurrency(stock.difference || 0)}
               </TableCell>
               <TableCell
                 className={`min-w-[80px] text-right ${getTextColor(
-                  stock.profit
+                  stock.profit,
                 )}`}
               >
                 {stock.profit && stock.profit >= 0 ? "+" : ""}
@@ -112,7 +126,7 @@ export const FundTable = memo<FundTableProps>(({ stocks }) => {
             </TableCell>
             <TableCell
               className={`min-w-[100px] text-right ${getTextColor(
-                tableData.totalInvested
+                tableData.totalInvested,
               )}`}
             >
               {formatCurrency(tableData.totalInvested)}
@@ -124,7 +138,7 @@ export const FundTable = memo<FundTableProps>(({ stocks }) => {
             </TableCell>
             <TableCell
               className={`min-w-[100px] text-right ${getTextColor(
-                tableData.totalProfitRate
+                tableData.totalProfitRate,
               )}`}
             >
               {tableData.totalProfitRate >= 0 ? "+" : ""}
@@ -135,6 +149,6 @@ export const FundTable = memo<FundTableProps>(({ stocks }) => {
       </Table>
     </div>
   );
-})
+});
 
-FundTable.displayName = 'FundTable'
+FundTable.displayName = "FundTable";

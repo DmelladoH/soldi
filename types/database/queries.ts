@@ -7,6 +7,8 @@ export interface Stock {
   difference: number | undefined;
   profit: number | null;
   currency: string;
+  closed?: boolean;
+  closingAmount?: number;
 }
 
 export type PieEntity = {
