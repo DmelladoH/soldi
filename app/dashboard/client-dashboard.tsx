@@ -66,7 +66,7 @@ export function ClientDashboard() {
   const lastMonth = monthlyReport[monthlyReport.length - 2];
 
   return (
-    <div className="grid gap-4 p-3 sm:p-5">
+    <div className="grid gap-4 p-3 sm:p-5 m-3 ">
       <ReportHeader
         currentMonth={currentMonth}
         lastMonth={lastMonth}

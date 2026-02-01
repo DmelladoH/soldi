@@ -13,7 +13,7 @@ import UserFooter from "./userFooter";
 
 export function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar variant="inset">
       <SidebarHeader>
         <div className="pl-6 sm:pl-10 flex items-center justify-between p-3 sm:p-4">
           <Link href="/dashboard" className="text-lg sm:text-xl font-semibold">
@@ -64,7 +64,7 @@ export function AppSidebar() {
       <SidebarFooter>
         <div className="flex justify-between items-center p-3 sm:p-4">
           <UserFooter />
-          <ThemeSwitchButton />
+          {/* <ThemeSwitchButton /> */}
         </div>
       </SidebarFooter>
     </Sidebar>
