@@ -12,8 +12,14 @@ import { InvestmentSummary } from "../_components/investmentSummary";
 
 const monthlyReportsRepository = new MonthlyReportsRepository();
 
-function getInfo({ data }: { data: MonthReportWithId[] }) {
-  if (data.length === 0) {
+function getInfo({
+  lastMonthOfPrevYear,
+  currentYear,
+}: {
+  lastMonthOfPrevYear: MonthReportWithId[];
+  currentYear: MonthReportWithId[];
+}) {
+  if (currentYear.length === 0) {
     return {
       totalLastYear: 0,
       totalCurrYear: 0,
@@ -26,24 +32,27 @@ function getInfo({ data }: { data: MonthReportWithId[] }) {
     };
   }
 
-  const totalCurrYear = getTotalMoney(data[data.length - 1]);
+  const totalCurrYear = getTotalMoney(currentYear[currentYear.length - 1]);
 
-  const movements = data.map((elem) => elem.movements)?.flat();
-  const investments = data.map((elem) => elem.investments)?.flat();
+  const movements = currentYear.map((elem) => elem.movements)?.flat();
+  const investments = currentYear.map((elem) => elem.investments)?.flat();
   const totalInvested = investments?.reduce(
     (prev, curr) => prev + curr.amountInvested,
     0,
   );
 
-  const groups = movements.reduce((acc, movement) => {
-    const tagId = movement.tagId;
-    if (!acc[tagId]) {
-      acc[tagId] = [];
-    }
-    acc[tagId].push(movement);
-    return acc;
-  }, {} as Record<string, typeof movements>);
-  
+  const groups = movements.reduce(
+    (acc, movement) => {
+      const tagId = movement.tagId;
+      if (!acc[tagId]) {
+        acc[tagId] = [];
+      }
+      acc[tagId].push(movement);
+      return acc;
+    },
+    {} as Record<string, typeof movements>,
+  );
+
   const foo = Object.values(groups).map((elem) => ({
     id: elem && elem[0]?.tagId,
     type: elem && elem[0]?.type,
@@ -56,7 +65,10 @@ function getInfo({ data }: { data: MonthReportWithId[] }) {
   const totalExpendInRent =
     foo.find((elem) => elem.id === MovementsCategory.rent)?.val || 0;
 
-  const stocks = formatStockFromReport(data);
+  const stocks = formatStockFromReport([
+    ...lastMonthOfPrevYear,
+    ...currentYear,
+  ]);
   const totalDiff = stocks?.reduce(
     (prev, curr) => prev + (curr.difference || 0),
     0,
@@ -115,7 +127,8 @@ export default async function YearReport({
     ?.reduce((acc, curr) => acc + curr.amount, 0);
 
   const { totalCurrYear, totalInvested, totalNetSalary } = getInfo({
-    data: currentYearData,
+    lastMonthOfPrevYear: prevYearData.slice(-1),
+    currentYear: currentYearData.slice(1),
   });
 
   const {
@@ -123,7 +136,8 @@ export default async function YearReport({
     totalNetSalary: totalNetSalaryLastYear,
     totalInvested: totalInvestedLastYear,
   } = getInfo({
-    data: prevYearData,
+    lastMonthOfPrevYear: prevYearData.slice(-1),
+    currentYear: prevYearData.slice(1),
   });
 
   const data = calculateAllMonthlyGains(currentYearData);
