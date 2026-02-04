@@ -21,7 +21,6 @@ export const FundTable = memo<FundTableProps>(({ stocks }) => {
     return [...stocks].sort((a, b) => b.currentValue - a.currentValue);
   }, [stocks]);
 
-  console.log({ sortedStocks, stocks });
   const tableData = useMemo(() => {
     const totalCurrentValue = sortedStocks.reduce(
       (prev, curr) =>

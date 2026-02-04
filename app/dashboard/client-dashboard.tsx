@@ -4,6 +4,7 @@ import { useMonthlyReports } from "@/hooks/use-monthly-reports";
 import { useTransformedData } from "@/hooks/use-data-transformations";
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrency, getTotalMoney } from "@/lib/utils";
 
 // Dynamic imports with loading states
 const TotalChart = dynamic(
@@ -28,22 +29,10 @@ const FundTable = dynamic(
   },
 );
 
-const ReportHeader = dynamic(
-  () =>
-    import("@/components/reportHeader").then((mod) => ({
-      default: mod.ReportHeader,
-    })),
-  {
-    loading: () => <Skeleton className="h-[200px] w-full" />,
-    ssr: false,
-  },
-);
-
 export function ClientDashboard() {
   const { data: monthlyReport, isLoading, error } = useMonthlyReports();
   const { stocks, chartData } = useTransformedData(monthlyReport || []);
 
-  console.log({ stocks });
   if (isLoading) {
     return (
       <div className="grid gap-4 p-3 sm:p-5">
@@ -63,17 +52,11 @@ export function ClientDashboard() {
   }
 
   const currentMonth = monthlyReport[monthlyReport.length - 1];
-  const lastMonth = monthlyReport[monthlyReport.length - 2];
-
+  const totalWealth = currentMonth ? getTotalMoney(currentMonth) : 0;
   return (
-    <div className="grid gap-4 p-3 sm:p-5 m-3 ">
-      <ReportHeader
-        currentMonth={currentMonth}
-        lastMonth={lastMonth}
-        stocks={stocks}
-      />
+    <div className="grid gap-4 p-3 sm:p-5">
       <div className="w-full ">
-        <TotalChart chartData={chartData} title="Total Money" />
+        <TotalChart chartData={chartData} title={formatCurrency(totalWealth)} />
       </div>
       <div>
         <h3 className="font-semibold leading-none tracking-tight my-5">

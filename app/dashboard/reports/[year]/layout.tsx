@@ -31,21 +31,47 @@ export default async function ReportLayout({
   ).reverse();
 
   const getYearExpenseIncomeReport = (
-    reports: MonthReportWithId[]
+    reports: MonthReportWithId[],
   ): { month: string; income: number; expense: number }[] => {
     const res = [];
     for (let i = 0; i < 12; i++) {
       const report = reports.find((report) => report.month === i + 1);
 
       if (!report) {
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const months = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
         res.push({
           month: months[i],
           income: 0,
           expense: 0,
         });
       } else {
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const months = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
         res.push({
           month: months[report.month - 1],
           income: getTotalMovementByType(report.movements, "income"),
@@ -60,7 +86,7 @@ export default async function ReportLayout({
   const nextYear = Number(year) + 1;
 
   return (
-    <div className="h-screen flex flex-col p-3 sm:p-5">
+    <div className="min-h-screen flex flex-col p-3 sm:p-5">
       <header>
         <h1 className="text-2xl font-bold">Financial Reports</h1>
         <div className="mt-4">

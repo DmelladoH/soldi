@@ -1,5 +1,6 @@
 import { FundTable } from "@/components/fundsTable";
 import { ReportHeader } from "@/components/reportHeader";
+import { Card } from "@/components/ui/card";
 import { ChartPieLabelList } from "@/components/ui/pieChart";
 import { MONTHS } from "@/lib/constants";
 import { buildChartConfig, getPieConfigByFundType } from "@/lib/graphs";
@@ -63,22 +64,22 @@ export default async function Page({
               stocks={stocks}
             />
           </div>
-          <div className="mt-5 md:flex md:gap-2">
+          <div className="mt-5 md:flex md:gap-4">
             <div className="grow flex w-[20%]">
               <ChartPieLabelList
                 chartData={chartData}
                 chartConfig={chartConfig}
               />
             </div>
-            <div>
+            <Card className="p-2">
               <FundTable
                 stocks={stocks.sort((a, b) =>
                   a.fund.name.localeCompare(b.fund.name),
                 )}
               />
-            </div>
+            </Card>
           </div>
-          <div>
+          {/* <div>
             cash:
             <ul>
               {currentMonth?.cash.map((e) => (
@@ -87,7 +88,7 @@ export default async function Page({
                 </div>
               ))}
             </ul>
-          </div>
+          </div> */}
         </div>
       )}
     </>
