@@ -7,10 +7,17 @@ export const getPieConfigByFundType = (stocks: Stock[]): PieEntity[] => {
   }
   const totalValue = stocks.reduce((sum, stock) => sum + stock.currentValue, 0);
 
-  const groupedByType = Object.groupBy(stocks, (s) => s.fund.type);
+  const groupedByType = stocks.reduce((acc, stock) => {
+    const type = stock.fund.type;
+    if (!acc[type]) {
+      acc[type] = [];
+    }
+    acc[type].push(stock);
+    return acc;
+  }, {} as Record<string, Stock[]>);
 
   return Object.entries(groupedByType).map(([type, items]) => {
-    const value = items!.reduce((sum, i) => sum + i.currentValue, 0);
+    const value = items.reduce((sum, i) => sum + i.currentValue, 0);
 
     return {
       type,
