@@ -1,10 +1,11 @@
 import { FundTable } from "@/components/fundsTable";
+import { CashTable } from "@/components/cashTable";
 import { ReportHeader } from "@/components/reportHeader";
 import { Card } from "@/components/ui/card";
 import { ChartPieLabelList } from "@/components/ui/pieChart";
 import { MONTHS } from "@/lib/constants";
 import { buildChartConfig, getPieConfigByFundType } from "@/lib/graphs";
-import { formatCurrency, formatStock } from "@/lib/utils";
+import { formatStock } from "@/lib/utils";
 import { MonthlyReportsRepository } from "@/server/db/repositories";
 
 const monthlyReportsRepository = new MonthlyReportsRepository();
@@ -71,7 +72,7 @@ export default async function Page({
                 chartConfig={chartConfig}
               />
             </div>
-            <Card className="p-2">
+            <Card className="p-2 mb-4">
               <FundTable
                 stocks={stocks.sort((a, b) =>
                   a.fund.name.localeCompare(b.fund.name),
@@ -79,16 +80,14 @@ export default async function Page({
               />
             </Card>
           </div>
-          {/* <div>
-            cash:
-            <ul>
-              {currentMonth?.cash.map((e) => (
-                <div key={e.name}>
-                  {e.name} {formatCurrency(e.amount)}
-                </div>
-              ))}
-            </ul>
-          </div> */}
+          {currentMonth?.cash && currentMonth.cash.length > 0 && (
+            <div className="mt-5">
+              <h3 className="text-lg font-semibold mb-3">Cash Accounts</h3>
+              <Card className="p-2">
+                <CashTable cash={currentMonth.cash} />
+              </Card>
+            </div>
+          )}
         </div>
       )}
     </>

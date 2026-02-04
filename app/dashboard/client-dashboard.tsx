@@ -1,10 +1,7 @@
 "use client";
 
 import { useMonthlyReports } from "@/hooks/use-monthly-reports";
-import {
-  useTransformedData,
-  useFinancialCalculations,
-} from "@/hooks/use-data-transformations";
+import { useTransformedData } from "@/hooks/use-data-transformations";
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency, getTotalMoney } from "@/lib/utils";

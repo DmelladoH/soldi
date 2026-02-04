@@ -16,11 +16,6 @@ export default async function ReportLayout({
 }>) {
   const { year } = await params;
 
-  const currentYearRange = {
-    start: new Date(Number(year), 0, 1),
-    end: new Date(Number(year), 11, 31),
-  };
-
   const res = (
     await monthlyReportsRepository.findWithRelations({
       startMonth: 1,
