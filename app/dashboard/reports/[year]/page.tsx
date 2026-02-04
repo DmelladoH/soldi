@@ -35,7 +35,15 @@ function getInfo({ data }: { data: MonthReportWithId[] }) {
     0,
   );
 
-  const groups = Object.groupBy(movements, (e) => e.tagId);
+  const groups = movements.reduce((acc, movement) => {
+    const tagId = movement.tagId;
+    if (!acc[tagId]) {
+      acc[tagId] = [];
+    }
+    acc[tagId].push(movement);
+    return acc;
+  }, {} as Record<string, typeof movements>);
+  
   const foo = Object.values(groups).map((elem) => ({
     id: elem && elem[0]?.tagId,
     type: elem && elem[0]?.type,
