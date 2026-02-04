@@ -15,7 +15,6 @@ export default async function ReportLayout({
   params: Promise<{ year: string }>;
 }>) {
   const { year } = await params;
-
   const res = (
     await monthlyReportsRepository.findWithRelations({
       startMonth: 1,
@@ -32,41 +31,28 @@ export default async function ReportLayout({
     for (let i = 0; i < 12; i++) {
       const report = reports.find((report) => report.month === i + 1);
 
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+
       if (!report) {
-        const months = [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ];
         res.push({
           month: months[i],
           income: 0,
           expense: 0,
         });
       } else {
-        const months = [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Oct",
-          "Nov",
-          "Dec",
-        ];
         res.push({
           month: months[report.month - 1],
           income: getTotalMovementByType(report.movements, "income"),

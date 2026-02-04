@@ -269,8 +269,8 @@ export class MonthlyReportsRepository extends BaseRepository {
   }
 
   /**
-   * Get reports for a specific year
-   */
+    * Get reports for a specific year
+    */
   async findByYear(year: number): Promise<MonthReportWithId[]> {
     return this.findWithRelations({
       startYear: year,
@@ -279,6 +279,26 @@ export class MonthlyReportsRepository extends BaseRepository {
       endMonth: 12,
       orderBy: "asc",
     });
+  }
+
+  /**
+    * Get a single monthly report by year and month
+    */
+  async findByYearMonth(month: number, year: number): Promise<MonthReportWithId | null> {
+    return this.safeExecute(
+      async () => {
+        const reports = await this.findWithRelations({
+          startMonth: month,
+          startYear: year,
+          endMonth: month,
+          endYear: year,
+          orderBy: "asc",
+        });
+        return reports.length > 0 ? reports[0] : null;
+      },
+      "finding monthly report by year and month",
+      "MonthlyReport",
+    );
   }
 
   /**

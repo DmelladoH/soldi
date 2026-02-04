@@ -17,7 +17,7 @@ import {
   useForm,
   UseFormRegister,
 } from "react-hook-form";
-import { saveMonthReport } from "../actions";
+import { saveMonthReport, updateMonthReport } from "../actions";
 
 interface cash {
   name: string;
@@ -44,21 +44,65 @@ interface FromFields {
   }[];
 }
 
-const defaultValues = {
-  month: new Date().getUTCMonth() + 1,
-  year: new Date().getFullYear(),
-  movements: [],
-  cash: [],
-  funds: [],
-};
+
 
 export function MonthlyReportForm({
   fundsOptions,
   movementTags,
+  initialData,
+  isEditing = false,
+  reportId,
 }: {
   fundsOptions: FundEntityWithId[];
   movementTags: MovementTag[];
+  initialData?: any;
+  isEditing?: boolean;
+  reportId?: number;
 }) {
+  const getDefaultValues = () => {
+    if (isEditing && initialData) {
+      // Transform initial data to match form structure
+      const income = initialData.movements.filter((m: any) => m.type === "income").map((m: any) => ({
+        tag: movementTags.find((tag: MovementTag) => tag.id === m.tagId) || movementTags[0],
+        amount: m.amount.toString(),
+        currency: m.currency,
+      }));
+      
+      const expense = initialData.movements.filter((m: any) => m.type === "expense").map((m: any) => ({
+        tag: movementTags.find((tag: MovementTag) => tag.id === m.tagId) || movementTags[0],
+        amount: m.amount.toString(),
+        currency: m.currency,
+      }));
+      
+      return {
+        month: initialData.month,
+        year: initialData.year,
+        income,
+        expense,
+        cash: initialData.cash.map((c: any) => ({
+          name: c.name,
+          amount: c.amount.toString(),
+          currency: c.currency,
+        })),
+        funds: initialData.investments.map((inv: any) => ({
+          fund: inv.fund,
+          currentValue: inv.currentValue.toString(),
+          amountInvested: inv.amountInvested.toString(),
+          currency: inv.currency,
+        })),
+      };
+    }
+    
+    return {
+      month: new Date().getUTCMonth() + 1,
+      year: new Date().getFullYear(),
+      income: [],
+      expense: [],
+      cash: [],
+      funds: [],
+    };
+  };
+
   const {
     register,
     control,
@@ -66,7 +110,7 @@ export function MonthlyReportForm({
     reset,
     watch,
     formState: { isSubmitting },
-  } = useForm<FromFields>({ defaultValues });
+  } = useForm<FromFields>({ defaultValues: getDefaultValues() });
 
   const onSubmit = async (data: FromFields) => {
     const movementsRaw = [...data.income, ...data.expense];
@@ -98,8 +142,12 @@ export function MonthlyReportForm({
       movements: movements,
     };
 
-    await saveMonthReport(formattedValues);
-    reset(defaultValues);
+    if (isEditing && reportId) {
+      await updateMonthReport(reportId, formattedValues);
+    } else {
+      await saveMonthReport(formattedValues);
+    }
+    reset(getDefaultValues());
   };
 
   return (
@@ -118,6 +166,7 @@ export function MonthlyReportForm({
                     field.onChange(Number(id));
                   }}
                   value={field.value.toString()}
+                  disabled={isEditing}
                 >
                   <SelectTrigger>
                     <SelectValue>
@@ -137,7 +186,7 @@ export function MonthlyReportForm({
           </Label>
           <Label className="w-full grid gap-2">
             Year
-            <Input type="number" {...register("year")} />
+            <Input type="number" {...register("year")} disabled={isEditing} />
           </Label>
         </div>
       </fieldset>
@@ -179,8 +228,18 @@ export function MonthlyReportForm({
           <Funds fundsOptions={fundsOptions} control={control} />
         </div>
       </fieldset>
-      <div className="mt-20 flex justify-end">
-        <Button disabled={isSubmitting}>Submit</Button>
+      <div className="mt-20 flex justify-end gap-2">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={() => reset(getDefaultValues())}
+          disabled={isSubmitting}
+        >
+          {isEditing ? "Reset Changes" : "Clear Form"}
+        </Button>
+        <Button disabled={isSubmitting}>
+          {isEditing ? "Update Report" : "Submit"}
+        </Button>
       </div>
     </form>
   );
