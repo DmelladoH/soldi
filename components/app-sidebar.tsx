@@ -5,7 +5,6 @@ import {
   SidebarGroup,
   SidebarHeader,
 } from "@/components/ui/sidebar";
-import ThemeSwitchButton from "./theme-switch";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { BarChart } from "lucide-react";

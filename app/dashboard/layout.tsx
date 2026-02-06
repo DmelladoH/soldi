@@ -20,8 +20,8 @@ export default function DashboardLayout({
             <AppSidebar />
           </div>
         </header>
-        <main className="w-full bg-sidebar md:pl-4">
-          <SidebarTrigger className="fixed left-2 top-4 z-50 sm:left-4 sm:top-6" />
+        <main className="w-full bg-sidebar md:px-4">
+          <SidebarTrigger className="fixed left-2 top-4 z-50 sm:left-4 sm:top-8" />
           <div className="md:pt-0 pt-16 rounded-xl bg-white mt-3">
             {children}
           </div>
