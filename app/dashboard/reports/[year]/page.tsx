@@ -3,6 +3,7 @@ import { YearReportSummary } from "./components/YearReportSummary";
 import { FinancialMetricsPanel } from "./components/FinancialMetricsPanel";
 import { InvestmentChartSection } from "./components/InvestmentChartSection";
 import { NoDataState } from "./components/NoDataState";
+import { ExpenseMovementsTable } from "@/app/dashboard/reports/_components/ExpenseMovementsTable";
 import {
   FinancialCalculator,
   ReportDataProcessor,
@@ -87,6 +88,48 @@ export default async function YearReport({
   const { avgMonthlySavings, avgMonthlyInvested } =
     MetricsCalculator.calculateMonthlyAverages(currentYearData);
 
+  const monthsInYear = currentYearData.slice(1).length;
+  const yearlyExpenseByCategory = (() => {
+    const acc = new Map<
+      string,
+      {
+        tagId: number;
+        tagName?: string;
+        currency: string;
+        amount: number;
+      }
+    >();
+
+    for (const month of currentYearData.slice(1)) {
+      for (const m of month.movements) {
+        if (m.type !== "expense") continue;
+
+        const key = `${m.tagId}-${m.currency}`;
+        const existing = acc.get(key);
+
+        if (!existing) {
+          acc.set(key, {
+            tagId: m.tagId,
+            tagName: m.tagName,
+            currency: m.currency,
+            amount: m.amount,
+          });
+          continue;
+        }
+
+        existing.amount += m.amount;
+        if (!existing.tagName && m.tagName) existing.tagName = m.tagName;
+      }
+    }
+
+    return Array.from(acc.values())
+      .map((row) => ({
+        ...row,
+        avgAmount: monthsInYear > 0 ? row.amount / monthsInYear : 0,
+      }))
+      .sort((a, b) => b.amount - a.amount);
+  })();
+
   const financialMetrics = {
     totalInInvestments,
     percentageGainsThisYear,
@@ -115,6 +158,8 @@ export default async function YearReport({
         />
         <InvestmentChartSection formattedData={formattedData} />
       </section>
+
+      <ExpenseMovementsTable movements={yearlyExpenseByCategory} showAverage />
     </div>
   );
 }
