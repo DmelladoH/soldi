@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { MONTHS } from "@/lib/constants";
 import { buildChartConfig, getPieConfigByFundType } from "@/lib/graphs";
 import { formatStock } from "@/lib/utils";
+import { ExpenseMovementsTable } from "@/app/dashboard/reports/_components/ExpenseMovementsTable";
 import { MonthlyReportsRepository } from "@/server/db/repositories";
 import { Edit } from "lucide-react";
 import Link from "next/link";
@@ -57,6 +58,10 @@ export default async function Page({
 
   const monthDisplayName = month.charAt(0).toUpperCase() + month.slice(1);
 
+  const expenseMovements = (currentMonth?.movements || [])
+    .filter((m) => m.type === "expense")
+    .sort((a, b) => b.amount - a.amount);
+
   return (
     <>
       {currentMonth === null ? (
@@ -104,6 +109,8 @@ export default async function Page({
               </Card>
             </div>
           )}
+
+          <ExpenseMovementsTable movements={expenseMovements} />
         </div>
       )}
     </>

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import MonetaryInput from "@/components/ui/monetaryInput";
 import { Select, SelectContent, SelectTrigger } from "@/components/ui/select";
-import { MONTHS, MonthMap } from "@/lib/constants";
+import { MonthMap } from "@/lib/constants";
 import { FundEntityWithId, MovementTag } from "@/types/database";
 import { movementType } from "@/types/business";
 import { SelectItem, SelectValue } from "@radix-ui/react-select";
@@ -44,7 +44,23 @@ interface FromFields {
   }[];
 }
 
-
+type InitialReportData = {
+  month: number;
+  year: number;
+  movements: Array<{
+    type: movementType;
+    tagId: number;
+    amount: number;
+    currency: string;
+  }>;
+  cash: Array<{ name: string; amount: number; currency: string }>;
+  investments: Array<{
+    fund: FundEntityWithId;
+    currentValue: number;
+    amountInvested: number;
+    currency: string;
+  }>;
+};
 
 export function MonthlyReportForm({
   fundsOptions,
@@ -55,36 +71,44 @@ export function MonthlyReportForm({
 }: {
   fundsOptions: FundEntityWithId[];
   movementTags: MovementTag[];
-  initialData?: any;
+  initialData?: InitialReportData;
   isEditing?: boolean;
   reportId?: number;
 }) {
   const getDefaultValues = () => {
     if (isEditing && initialData) {
       // Transform initial data to match form structure
-      const income = initialData.movements.filter((m: any) => m.type === "income").map((m: any) => ({
-        tag: movementTags.find((tag: MovementTag) => tag.id === m.tagId) || movementTags[0],
-        amount: m.amount.toString(),
-        currency: m.currency,
-      }));
-      
-      const expense = initialData.movements.filter((m: any) => m.type === "expense").map((m: any) => ({
-        tag: movementTags.find((tag: MovementTag) => tag.id === m.tagId) || movementTags[0],
-        amount: m.amount.toString(),
-        currency: m.currency,
-      }));
-      
+      const income = initialData.movements
+        .filter((m) => m.type === "income")
+        .map((m) => ({
+          tag:
+            movementTags.find((tag: MovementTag) => tag.id === m.tagId) ||
+            movementTags[0],
+          amount: m.amount.toString(),
+          currency: m.currency,
+        }));
+
+      const expense = initialData.movements
+        .filter((m) => m.type === "expense")
+        .map((m) => ({
+          tag:
+            movementTags.find((tag: MovementTag) => tag.id === m.tagId) ||
+            movementTags[0],
+          amount: m.amount.toString(),
+          currency: m.currency,
+        }));
+
       return {
         month: initialData.month,
         year: initialData.year,
         income,
         expense,
-        cash: initialData.cash.map((c: any) => ({
+        cash: initialData.cash.map((c) => ({
           name: c.name,
           amount: c.amount.toString(),
           currency: c.currency,
         })),
-        funds: initialData.investments.map((inv: any) => ({
+        funds: initialData.investments.map((inv) => ({
           fund: inv.fund,
           currentValue: inv.currentValue.toString(),
           amountInvested: inv.amountInvested.toString(),
@@ -92,7 +116,7 @@ export function MonthlyReportForm({
         })),
       };
     }
-    
+
     return {
       month: new Date().getUTCMonth() + 1,
       year: new Date().getFullYear(),
@@ -108,7 +132,6 @@ export function MonthlyReportForm({
     control,
     handleSubmit,
     reset,
-    watch,
     formState: { isSubmitting },
   } = useForm<FromFields>({ defaultValues: getDefaultValues() });
 
@@ -132,10 +155,10 @@ export function MonthlyReportForm({
       investments: data.funds.map((investment) => ({
         fund: investment.fund,
         amountInvested: Number.parseFloat(
-          investment.amountInvested.replace(",", ".")
+          investment.amountInvested.replace(",", "."),
         ),
         currentValue: Number.parseFloat(
-          investment.currentValue.replace(",", ".")
+          investment.currentValue.replace(",", "."),
         ),
         currency: investment.currency,
       })),
@@ -229,9 +252,9 @@ export function MonthlyReportForm({
         </div>
       </fieldset>
       <div className="mt-20 flex justify-end gap-2">
-        <Button 
-          type="button" 
-          variant="outline" 
+        <Button
+          type="button"
+          variant="outline"
           onClick={() => reset(getDefaultValues())}
           disabled={isSubmitting}
         >
@@ -352,8 +375,8 @@ function IncomeAndExpenses({
 
                         field.onChange(
                           movementTags.find(
-                            (tag) => tag.id === Number.parseInt(id)
-                          )
+                            (tag) => tag.id === Number.parseInt(id),
+                          ),
                         );
                       }}
                       value={field.value?.name}
@@ -452,8 +475,8 @@ function Funds({
                       if (id == "") return;
                       field.onChange(
                         fundsOptions.find(
-                          (fund) => fund.id === Number.parseInt(id)
-                        )
+                          (fund) => fund.id === Number.parseInt(id),
+                        ),
                       );
                     }}
                     value={field.value?.name}

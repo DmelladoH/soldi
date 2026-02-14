@@ -1,4 +1,4 @@
-import { movementType } from '../business/financial';
+import { movementType } from "../business/financial";
 
 export interface Entity {
   name: string;
@@ -27,6 +27,8 @@ export interface Investments {
 export interface Movement {
   description: string;
   tagId: number;
+  tagName?: string;
+  tagType?: movementType;
   type: movementType;
   amount: number;
   currency: string;

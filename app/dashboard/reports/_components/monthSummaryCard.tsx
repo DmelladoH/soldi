@@ -32,7 +32,6 @@ export default function MonthSummaryCard({
   regularIncome,
   additionalIncomes,
   bankAccounts,
-  expenses,
   stocks,
 }: FinanceSummaryProps) {
   const totalIncome =

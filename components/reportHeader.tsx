@@ -6,7 +6,7 @@ import {
   getTotalMoney,
   getTotalMovementByType,
 } from "@/lib/utils";
-import { Wallet, ArrowDown, TrendingUp, BadgeEuro } from "lucide-react";
+import { Wallet, ArrowDown, TrendingUp } from "lucide-react";
 import FinanceCard from "./financeCard";
 import { MonthReportWithId } from "@/types/database";
 import { Stock } from "@/types/database/queries";
